@@ -1,0 +1,64 @@
+.banner {
+  position: relative; height: 340px; overflow: hidden; flex-shrink: 0;
+}
+.banner img { width: 100%; height: 100%; object-fit: cover; opacity: 0.18; filter: grayscale(50%); }
+.overlay {
+  position: absolute; inset: 0;
+  background: rgba(10,10,10,0.75);
+  display: flex; align-items: center; justify-content: center;
+}
+.text {
+  padding: 0 3rem;
+  max-width: 760px;
+  width: 100%;
+  text-align: center;
+}
+.text blockquote {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(20px, 3vw, 32px); font-weight: 300;
+  font-style: italic; line-height: 1.5; color: var(--text-primary); margin-bottom: 1rem;
+}
+.text cite {
+  display: block;
+  font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--gold); font-style: normal;
+  text-align: right;
+}
+
+/* FOOTER */
+.footer {
+  border-top: 0.5px solid var(--gold-border);
+  background: var(--black-2);
+}
+.footerTop {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 2rem 2rem 1.5rem; flex-wrap: wrap; gap: 1.5rem;
+  border-bottom: 0.5px solid var(--gold-border);
+}
+.footerBrand { display: flex; align-items: center; gap: 12px; }
+.footerLogo {
+  width: 44px; height: 44px; object-fit: contain;
+  filter: drop-shadow(0 0 6px rgba(201,168,76,0.3));
+}
+.footerLogoText {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px; color: var(--gold); letter-spacing: 2.5px;
+}
+.footerTagline { font-size: 11px; color: var(--text-muted); margin-top: 2px; letter-spacing: 0.3px; }
+.footerLinks {
+  display: flex; gap: 2rem; flex-wrap: wrap;
+}
+.footerLinks button {
+  font-size: 12px; color: var(--text-secondary); cursor: pointer; letter-spacing: 0.3px;
+  transition: color 0.15s; background: none; border: none; padding: 0; font-family: 'Outfit', sans-serif;
+}
+.footerLinks button:hover { color: var(--gold); }
+.footerBottom { padding: 1.25rem 2rem; text-align: center; }
+.footerBottom p { font-size: 11px; color: var(--text-muted); line-height: 1.7; }
+
+@media (max-width: 640px) {
+  .text { padding: 0 1.5rem; }
+  .banner { height: 260px; }
+  .footerTop { flex-direction: column; }
+  .footerLinks { gap: 1.25rem; }
+}

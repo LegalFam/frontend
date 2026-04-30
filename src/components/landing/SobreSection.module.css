@@ -1,0 +1,115 @@
+.section {
+  padding: 7rem 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.images {
+  position: relative;
+  height: 480px;
+}
+
+.imgMain {
+  position: absolute;
+  top: 0; left: 0;
+  width: 72%;
+  height: 85%;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--gold-border);
+}
+
+.imgAccent {
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 52%;
+  height: 55%;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--gold);
+}
+
+.badge {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(10, 10, 10, 0.95);
+  border: 1px solid var(--gold);
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+  text-align: center;
+  backdrop-filter: blur(8px);
+  z-index: 2;
+}
+.badgeNum {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px;
+  color: var(--gold);
+  line-height: 1;
+}
+.badgeLbl {
+  font-size: 10px;
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+.intro {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  margin-bottom: 2rem;
+}
+
+.features {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.featureItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.featureItem p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+.featureItem strong {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.featureIcon {
+  width: 32px;
+  height: 32px;
+  background: var(--gold-bg);
+  border: 0.5px solid var(--gold-border);
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--gold);
+}
+.featureIcon svg {
+  width: 14px;
+  height: 14px;
+}
+
+@media (max-width: 900px) {
+  .grid { grid-template-columns: 1fr; gap: 2.5rem; }
+  .images { height: 300px; }
+}
+@media (max-width: 480px) {
+  .section { padding: 4rem 0; }
+  .images { height: 220px; }
+}

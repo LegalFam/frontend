@@ -1,0 +1,227 @@
+.page {
+  min-height: 100vh;
+  background: var(--black);
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  height: 64px;
+  background: var(--black-2);
+  border-bottom: 0.5px solid var(--gold-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  flex-shrink: 0;
+}
+
+.backBtn {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: none; border: none; color: var(--text-secondary);
+  font-size: 13px; cursor: pointer; letter-spacing: 0.3px;
+  transition: color 0.15s; padding: 0;
+}
+.backBtn:hover { color: var(--gold); }
+
+.logo {
+  display: flex; align-items: center; gap: 9px;
+}
+.logo img {
+  width: 32px; height: 32px; object-fit: contain;
+  filter: drop-shadow(0 0 5px rgba(201,168,76,0.3));
+}
+.logo span {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px; color: var(--gold); letter-spacing: 2.5px;
+}
+
+/* ── Layout ── */
+.body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 0;
+  max-width: 960px;
+  width: 100%;
+  margin: 3rem auto;
+  padding: 0 1.5rem;
+  align-items: start;
+}
+
+/* ── Summary sidebar ── */
+.summary {
+  background: var(--black-2);
+  border: 0.5px solid var(--gold-border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  margin-right: 1.5rem;
+}
+
+.summaryLabel {
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--gold); display: block; margin-bottom: 1.25rem;
+}
+
+.planName {
+  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--text-secondary); margin-bottom: 0.5rem;
+}
+
+.planPrice {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 38px; color: var(--text-primary); line-height: 1;
+  margin-bottom: 4px;
+}
+.planPrice span {
+  font-size: 13px; font-family: 'Outfit', sans-serif;
+  color: var(--text-secondary);
+}
+
+.planTokens {
+  font-size: 12px; color: var(--gold); letter-spacing: 0.5px;
+  margin-bottom: 1.25rem; padding-bottom: 1.25rem;
+  border-bottom: 0.5px solid var(--gold-border);
+}
+
+.features {
+  list-style: none;
+  display: flex; flex-direction: column; gap: 0.625rem;
+  margin-bottom: 1.5rem;
+}
+.features li {
+  font-size: 12px; color: var(--text-secondary);
+  display: flex; gap: 8px; align-items: flex-start; line-height: 1.5;
+}
+.features li::before {
+  content: '—'; color: var(--gold); flex-shrink: 0;
+  font-size: 11px; margin-top: 1px;
+}
+
+.securityNote {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--text-muted); letter-spacing: 0.3px;
+}
+.securityNote svg { color: var(--gold); flex-shrink: 0; }
+
+/* ── Form ── */
+.formCard {
+  background: var(--black-2);
+  border: 0.5px solid var(--gold-border);
+  border-radius: var(--radius-lg);
+  padding: 2rem 2.25rem;
+}
+
+.formTitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px; font-weight: 400; color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+.formSub {
+  font-size: 13px; color: var(--text-secondary);
+  margin-bottom: 1.75rem; line-height: 1.6;
+}
+
+.fg {
+  display: flex; flex-direction: column; gap: 5px; margin-bottom: 1.1rem;
+}
+.fg label {
+  font-size: 11px; letter-spacing: 0.5px; color: var(--text-secondary);
+  text-transform: uppercase;
+}
+.fg input {
+  background: var(--black-3); border: 0.5px solid var(--gold-border);
+  border-radius: var(--radius); padding: 10px 14px;
+  font-size: 14px; color: var(--text-primary); outline: none;
+  transition: border-color 0.15s; width: 100%;
+}
+.fg input:focus { border-color: var(--gold); box-shadow: var(--shadow-gold); }
+.fg input.hasError { border-color: var(--error); }
+.fg input::placeholder { color: var(--text-muted); }
+
+.cardRow {
+  position: relative;
+  display: flex; align-items: center;
+}
+.cardRow input { padding-right: 50px; }
+.cardIcons {
+  position: absolute; right: 12px;
+  display: flex; align-items: center;
+  pointer-events: none;
+}
+
+.row2 {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+}
+
+.submitBtn {
+  width: 100%; margin-top: 0.75rem;
+  padding: 13px;
+  background: var(--gold); color: var(--black); border: none;
+  border-radius: var(--radius); font-size: 14px; font-weight: 500;
+  letter-spacing: 0.4px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: background 0.15s;
+}
+.submitBtn:hover:not(:disabled) { background: var(--gold-light); }
+.submitBtn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+.loadingText {
+  display: flex; align-items: center; gap: 10px;
+}
+.spinner {
+  width: 16px; height: 16px;
+  border: 2px solid rgba(0,0,0,0.3);
+  border-top-color: var(--black);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Success ── */
+.successWrap {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  padding: 3rem 1.5rem;
+}
+.successCard {
+  background: var(--black-2);
+  border: 0.5px solid var(--gold-border);
+  border-radius: var(--radius-lg);
+  padding: 3rem 2.5rem;
+  text-align: center;
+  max-width: 440px; width: 100%;
+}
+.successIcon {
+  width: 64px; height: 64px; margin: 0 auto 1.5rem;
+  background: var(--gold-bg); border: 1px solid var(--gold-border);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  color: var(--gold);
+}
+.successCard h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px; font-weight: 400;
+  color: var(--text-primary); margin-bottom: 0.75rem;
+}
+.successCard p {
+  font-size: 14px; color: var(--text-secondary);
+  line-height: 1.7; margin-bottom: 2rem;
+}
+.btnGold {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 28px; background: var(--gold); color: var(--black);
+  border: none; border-radius: var(--radius); font-size: 14px;
+  font-weight: 500; cursor: pointer; transition: background 0.15s;
+}
+.btnGold:hover { background: var(--gold-light); }
+
+/* ── Responsive ── */
+@media (max-width: 760px) {
+  .body {
+    grid-template-columns: 1fr;
+    margin: 1.5rem auto;
+  }
+  .summary { margin-right: 0; margin-bottom: 1.25rem; }
+  .header { padding: 0 1rem; }
+  .formCard { padding: 1.5rem; }
+}

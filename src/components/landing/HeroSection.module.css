@@ -1,0 +1,115 @@
+.hero {
+  position: relative; min-height: 100vh;
+  display: flex; align-items: center;
+  overflow: hidden; padding-top: 68px;
+}
+.bg { position: absolute; inset: 0; z-index: 0; }
+.bg img { width: 100%; height: 100%; object-fit: cover; opacity: 0.15; filter: grayscale(30%); }
+.overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(10,10,10,0.97) 40%, rgba(10,10,10,0.55));
+}
+.overlayBottom {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 200px;
+  background: linear-gradient(to top, var(--black), transparent);
+}
+
+.content {
+  position: relative; z-index: 1;
+  padding: 4rem 2rem;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 5rem;
+  align-items: center;
+}
+
+.contentLeft { display: flex; flex-direction: column; }
+
+.contentRight {
+  display: flex; flex-direction: column; gap: 1.25rem;
+  align-self: center;
+}
+
+.pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-bottom: 1.5rem; padding: 5px 14px;
+  border: 0.5px solid var(--gold-border); border-radius: 20px;
+  font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold);
+  align-self: flex-start;
+}
+.pillDot { width: 6px; height: 6px; background: var(--gold); border-radius: 50%; flex-shrink: 0; }
+
+.headline {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(44px, 6.5vw, 78px);
+  font-weight: 400; line-height: 1.08; margin-bottom: 1.5rem; color: var(--text-primary);
+}
+.italic { font-style: italic; color: var(--gold); }
+
+.desc {
+  font-size: 15px; color: var(--text-secondary);
+  line-height: 1.85; max-width: 520px; margin-bottom: 2.25rem;
+}
+
+.heroBtns { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 2.5rem; }
+
+.btnPrimary {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 13px 28px; background: var(--gold); color: var(--black); border: none;
+  border-radius: var(--radius); font-size: 14px; font-weight: 500; letter-spacing: 0.4px;
+  transition: background 0.15s, transform 0.15s; cursor: pointer;
+}
+.btnPrimary:hover { background: var(--gold-light); }
+.btnPrimary:hover svg { transform: translateX(3px); }
+.btnPrimary svg { transition: transform 0.15s; }
+
+.btnSecondary {
+  display: inline-flex; align-items: center;
+  padding: 12px 28px; background: transparent;
+  border: 0.5px solid var(--gold-border); color: var(--text-secondary);
+  border-radius: var(--radius); font-size: 14px; letter-spacing: 0.4px;
+  transition: all 0.15s; cursor: pointer;
+}
+.btnSecondary:hover { border-color: var(--gold); color: var(--gold); }
+
+.trustBar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.trustItem {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px; color: var(--text-muted); letter-spacing: 0.4px;
+}
+.trustItem svg { color: var(--gold); flex-shrink: 0; }
+.trustDot { width: 3px; height: 3px; background: var(--text-faint); border-radius: 50%; }
+
+.statBox {
+  background: rgba(18,16,10,0.82); border: 0.5px solid var(--gold-border);
+  border-left: 2px solid var(--gold);
+  border-radius: var(--radius-lg); padding: 18px 24px; text-align: right;
+  backdrop-filter: blur(10px); transition: border-color 0.15s;
+}
+.statBox:hover { border-color: var(--gold); }
+.statNum { font-family: 'Cormorant Garamond', serif; font-size: 40px; color: var(--gold); line-height: 1; }
+.statLabel { font-size: 11px; color: var(--text-secondary); margin-top: 4px; letter-spacing: 0.3px; }
+
+.scrollHint {
+  position: absolute; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+  z-index: 1; color: var(--text-muted); cursor: pointer;
+  animation: bounceY 2s ease-in-out infinite;
+}
+@keyframes bounceY {
+  0%,100% { transform: translateX(-50%) translateY(0); }
+  50%     { transform: translateX(-50%) translateY(7px); }
+}
+
+@media (max-width: 960px) {
+  .content { grid-template-columns: 1fr; gap: 2.5rem; }
+  .contentRight { flex-direction: row; flex-wrap: wrap; gap: 1rem; }
+  .statBox { text-align: left; padding: 14px 20px; flex: 1; min-width: 120px; }
+  .statNum { font-size: 30px; }
+}
+@media (max-width: 640px) {
+  .content { padding: 2rem 1.25rem; }
+  .scrollHint { display: none; }
+  .statBox { padding: 10px 14px; }
+  .statNum { font-size: 24px; }
+}
