@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { chatService, getApiBaseUrl, paymentService } from '@/services/api'
+import { chatService, getApiBaseUrl, refreshAccessToken } from '@/services/api'
 import { useChatStore } from '@/store/chatStore'
 import { useAuthStore } from '@/store/authStore'
+import { usePaymentStore } from '@/store/paymentStore'
 
 const BACKOFF_MS = [1000, 2000, 5000, 10000, 30000]
 
@@ -44,6 +45,43 @@ export function useChat() {
   const timerRef = useRef(null)
   const sendingTextRef = useRef(null)
   const messagesRequestRef = useRef(new Map())
+  const receiptRequestRef = useRef(new Map())
+
+  const confirmUnreadAssistantReceipts = useCallback(async (sessionId, messages) => {
+    const unreadAssistantMessages = messages.filter((message) =>
+      message.role === 'ASSISTANT' &&
+      message.id &&
+      message.id !== 'welcome' &&
+      message.receiptStatus &&
+      message.receiptStatus !== 'READ'
+    )
+
+    if (!unreadAssistantMessages.length) return
+
+    const results = await Promise.allSettled(unreadAssistantMessages.map((message) => {
+      const existingRequest = receiptRequestRef.current.get(message.id)
+      if (existingRequest) return existingRequest
+
+      const request = chatService.confirmReceipt(message.id)
+        .then(() => {
+          useChatStore.getState().upsertMessage(sessionId, {
+            ...message,
+            receiptStatus: 'READ',
+            readAt: new Date().toISOString(),
+          })
+        })
+        .catch((e) => {
+          receiptRequestRef.current.delete(message.id)
+          throw e
+        })
+
+      receiptRequestRef.current.set(message.id, request)
+      return request
+    }))
+
+    const failed = results.find((result) => result.status === 'rejected')
+    if (failed) throw failed.reason
+  }, [])
 
   const reconcileMessages = useCallback(async (sessionId) => {
     if (!sessionId) return []
@@ -55,6 +93,7 @@ export function useChat() {
       .then(({ data }) => {
         const messages = Array.isArray(data) ? data : []
         store.setMessages(sessionId, messages)
+        confirmUnreadAssistantReceipts(sessionId, messages).catch(() => {})
 
         const lastUserIndex = messages.map((message) => message.role).lastIndexOf('USER')
         const hasTerminalMessage = messages
@@ -69,7 +108,7 @@ export function useChat() {
 
     messagesRequestRef.current.set(sessionId, request)
     return request
-  }, [store])
+  }, [confirmUnreadAssistantReceipts, store])
 
   const loadSessions = useCallback(async () => {
     try {
@@ -112,15 +151,18 @@ export function useChat() {
     if (currentSessionId) return currentSessionId
 
     const { data } = await chatService.createSession()
-    const session = {
-      ...data,
-      name: titleFromText(initialText),
-    }
-    store.addSession(session)
-    store.setActiveSession(data.id)
-    store.moveMessages('new', data.id)
-    return data.id
-  }, [store])
+      const session = {
+        ...data,
+        title: titleFromText(initialText),
+      }
+      store.addSession(session)
+      store.setActiveSession(data.id)
+      store.moveMessages('new', data.id)
+      chatService.updateSession(data.id, { title: session.title })
+        .then(({ data: updatedSession }) => store.upsertSession(updatedSession))
+        .catch(() => {})
+      return data.id
+    }, [store])
 
   const sendMessage = useCallback(async (text) => {
     const trimmed = text.trim()
@@ -144,13 +186,17 @@ export function useChat() {
       }
       store.addMessage(sessionId, userMsg)
       store.setLoading(true)
+      await confirmUnreadAssistantReceipts(
+        sessionId,
+        useChatStore.getState().messages[sessionId] || []
+      )
 
       const { data } = await chatService.sendMessage({ message: trimmed, sessionId })
       store.replaceMessage(sessionId, tempId, {
         id: data.userMessageId,
         state: 'processing',
       })
-      paymentService.getSubscription().catch(() => {})
+      usePaymentStore.getState().loadSubscription().catch(() => {})
     } catch (e) {
       const status = e.response?.status
 
@@ -165,7 +211,7 @@ export function useChat() {
 
       if (status === 403) {
         store.setError(e.response?.data?.message || 'No tienes tokens disponibles o la sesion no esta activa.')
-        paymentService.getSubscription().catch(() => {})
+        usePaymentStore.getState().loadSubscription().catch(() => {})
         return
       }
 
@@ -180,7 +226,7 @@ export function useChat() {
     } finally {
       sendingTextRef.current = null
     }
-  }, [ensureSession, loadMessages, store])
+  }, [confirmUnreadAssistantReceipts, ensureSession, loadMessages, store])
 
   const rateMessage = useCallback(async (messageId, rating) => {
     const sessionId = useChatStore.getState().activeSessionId
@@ -194,13 +240,26 @@ export function useChat() {
     }
   }, [loadMessages, store])
 
-  const deleteSession = useCallback((sessionId) => {
-    store.removeSession(sessionId)
-    if (useChatStore.getState().activeSessionId === sessionId) startNewChat()
+  const deleteSession = useCallback(async (sessionId) => {
+    try {
+      await chatService.deleteSession(sessionId)
+      store.removeSession(sessionId)
+      if (useChatStore.getState().activeSessionId === sessionId) startNewChat()
+    } catch (e) {
+      store.setError(e.response?.data?.message || 'No se pudo eliminar la consulta.')
+    }
   }, [startNewChat, store])
 
-  const renameSession = useCallback((sessionId, name) => {
-    store.updateSessionName(sessionId, name)
+  const renameSession = useCallback(async (sessionId, title) => {
+    const previous = useChatStore.getState().sessions.find((s) => s.id === sessionId)
+    store.updateSessionTitle(sessionId, title)
+    try {
+      const { data } = await chatService.updateSession(sessionId, { title })
+      store.upsertSession(data)
+    } catch (e) {
+      if (previous) store.upsertSession(previous)
+      store.setError(e.response?.data?.message || 'No se pudo renombrar la consulta.')
+    }
   }, [store])
 
   useEffect(() => {
@@ -224,15 +283,29 @@ export function useChat() {
 
       try {
         await loadMessages(sessionId, { force: true })
-        const response = await fetch(apiStreamUrl(`/chat/subscribe/${sessionId}`), {
-          headers: { Authorization: `Bearer ${accessToken}` },
+        let token = useAuthStore.getState().accessToken
+        let response = await fetch(apiStreamUrl(`/chat/subscribe/${sessionId}`), {
+          headers: { Authorization: `Bearer ${token}` },
           signal: controller.signal,
         })
 
         if (response.status === 401) {
-          logout()
-          navigate('/')
-          return
+          try {
+            token = await refreshAccessToken()
+            response = await fetch(apiStreamUrl(`/chat/subscribe/${sessionId}`), {
+              headers: { Authorization: `Bearer ${token}` },
+              signal: controller.signal,
+            })
+          } catch (e) {
+            logout()
+            navigate('/')
+            return
+          }
+          if (response.status === 401) {
+            logout()
+            navigate('/')
+            return
+          }
         }
         if (response.status === 403 || response.status === 404) {
           store.setActiveSession(null)
@@ -261,7 +334,7 @@ export function useChat() {
               await loadMessages(sessionId, { force: true })
               if (event.type === 'assistant_error') {
                 store.setLoading(false)
-                paymentService.getSubscription().catch(() => {})
+                usePaymentStore.getState().loadSubscription().catch(() => {})
               }
             }
           }

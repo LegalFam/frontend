@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import LandingPage from '@/pages/LandingPage'
 import ChatPage from '@/pages/ChatPage'
 import PaymentPage from '@/pages/PaymentPage'
+import BillingReturnPage from '@/pages/BillingReturnPage'
 import ProtectedRoute from '@/components/auth/ProtectedRoute'
 
 export default function App() {
@@ -21,6 +22,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <PaymentPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/billing/:result"
+        element={
+          <ProtectedRoute>
+            <BillingReturnPage />
           </ProtectedRoute>
         }
       />

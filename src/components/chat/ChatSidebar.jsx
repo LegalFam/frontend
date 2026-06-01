@@ -18,7 +18,7 @@ export default function ChatSidebar({ open, sessions, activeSessionId, onSelectS
   const startEdit = (e, session) => {
     e.stopPropagation()
     setEditingId(session.id)
-    setEditValue(session.name || '')
+    setEditValue(session.title || session.name || '')
   }
 
   const saveEdit = (sessionId) => {
@@ -95,7 +95,7 @@ export default function ChatSidebar({ open, sessions, activeSessionId, onSelectS
                 autoFocus
               />
             ) : (
-              <span className={styles.name}>{s.name || formatDate(s.createdAt)}</span>
+              <span className={styles.name}>{s.title || s.name || formatDate(s.createdAt)}</span>
             )}
 
             <div className={styles.actions}>

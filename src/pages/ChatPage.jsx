@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useChat }        from '@/hooks/useChat'
 import { useAuth }        from '@/hooks/useAuth'
+import { usePaymentStore } from '@/store/paymentStore'
 import ChatSidebar        from '@/components/chat/ChatSidebar'
 import ChatMessage        from '@/components/chat/ChatMessage'
 import ChatInput          from '@/components/chat/ChatInput'
@@ -12,6 +13,7 @@ export default function ChatPage() {
   const { signout } = useAuth()
   const isMobile = () => window.innerWidth <= 768
   const [sidebarOpen, setSidebarOpen] = useState(() => !isMobile())
+  const { subscription, refreshBilling } = usePaymentStore()
 
   const {
     sessions, activeSessionId, messages, loading, connectionState, error,
@@ -23,6 +25,7 @@ export default function ChatPage() {
 
   useEffect(() => {
     loadSessions().then(() => startNewChat())
+    refreshBilling().catch(() => {})
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -37,8 +40,11 @@ export default function ChatPage() {
   const activeKey      = activeSessionId || 'new'
   const activeMessages = messages[activeKey] || []
   const sessionTitle   = activeSessionId
-    ? sessions.find((s) => s.id === activeSessionId)?.name || 'Consulta'
+    ? sessions.find((s) => s.id === activeSessionId)?.title || sessions.find((s) => s.id === activeSessionId)?.name || 'Consulta'
     : 'Nueva consulta'
+  const tokenLabel = subscription
+    ? `${subscription.planCode} · ${subscription.remainingTokens}/${subscription.monthlyTokenLimit} tokens`
+    : null
 
   return (
     <div className={styles.app}>
@@ -57,6 +63,7 @@ export default function ChatPage() {
         </div>
 
         <span className={styles.topbarTitle}>{sessionTitle}</span>
+        {tokenLabel && <span className={styles.tokenBadge}>{tokenLabel}</span>}
 
         <button className="icon-btn" onClick={signout} title="Cerrar sesión" style={{ marginLeft: 'auto' }}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">

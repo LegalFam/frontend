@@ -120,6 +120,10 @@
   margin-top: auto;
 }
 .btnGold:hover { background: var(--gold-light); }
+.btnGold:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
 
 .btnGhost {
   width: 100%;
@@ -134,6 +138,10 @@
   margin-top: auto;
 }
 .btnGhost:hover { border-color: var(--gold); color: var(--gold); }
+.btnGhost:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
 
 .note {
   text-align: center;

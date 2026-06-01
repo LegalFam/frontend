@@ -17,10 +17,19 @@ export const useChatStore = create((set, get) => ({
         : [session, ...state.sessions],
     })),
 
-  updateSessionName: (sessionId, name) =>
+  upsertSession: (session) =>
+    set((state) => {
+      const index = state.sessions.findIndex((s) => s.id === session.id)
+      const next = index === -1
+        ? [session, ...state.sessions]
+        : state.sessions.map((s, i) => (i === index ? { ...s, ...session } : s))
+      return { sessions: next }
+    }),
+
+  updateSessionTitle: (sessionId, title) =>
     set((state) => ({
       sessions: state.sessions.map((s) =>
-        s.id === sessionId ? { ...s, name } : s
+        s.id === sessionId ? { ...s, title } : s
       ),
     })),
 

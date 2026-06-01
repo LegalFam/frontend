@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { useAuthStore } from '@/store/authStore'
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1'
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1'
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -23,6 +23,35 @@ const processQueue = (error, token = null) => {
     else request.resolve(token)
   })
   failedQueue = []
+}
+
+export const refreshAccessToken = async () => {
+  if (isRefreshing) {
+    return new Promise((resolve, reject) => {
+      failedQueue.push({ resolve, reject })
+    })
+  }
+
+  const refreshToken = useAuthStore.getState().refreshToken
+  if (!refreshToken) {
+    useAuthStore.getState().logout()
+    throw new Error('Refresh token is missing')
+  }
+
+  isRefreshing = true
+  try {
+    const { data } = await axios.post(`${BASE_URL}/auth/refresh`, { refreshToken })
+    useAuthStore.getState().setTokens(data.accessToken, data.refreshToken)
+    if (data.user) useAuthStore.getState().setUser(data.user)
+    processQueue(null, data.accessToken)
+    return data.accessToken
+  } catch (err) {
+    processQueue(err, null)
+    useAuthStore.getState().logout()
+    throw err
+  } finally {
+    isRefreshing = false
+  }
 }
 
 api.interceptors.response.use(
@@ -49,26 +78,12 @@ api.interceptors.response.use(
     }
 
     original._retry = true
-    isRefreshing = true
-
-    const refreshToken = useAuthStore.getState().refreshToken
-    if (!refreshToken) {
-      useAuthStore.getState().logout()
-      return Promise.reject(error)
-    }
-
     try {
-      const { data } = await axios.post(`${BASE_URL}/auth/refresh`, { refreshToken })
-      useAuthStore.getState().setTokens(data.accessToken, data.refreshToken)
-      processQueue(null, data.accessToken)
-      original.headers.Authorization = `Bearer ${data.accessToken}`
+      const token = await refreshAccessToken()
+      original.headers.Authorization = `Bearer ${token}`
       return api(original)
     } catch (err) {
-      processQueue(err, null)
-      useAuthStore.getState().logout()
       return Promise.reject(err)
-    } finally {
-      isRefreshing = false
     }
   }
 )
@@ -83,8 +98,11 @@ export const chatService = {
   sendMessage: (payload) => api.post('/chat/send', payload),
   getSessions: () => api.get('/chat/sessions'),
   getMessages: (sessionId) => api.get(`/chat/sessions/${sessionId}/messages`),
+  updateSession: (sessionId, payload) => api.patch(`/chat/sessions/${sessionId}`, payload),
+  deleteSession: (sessionId) => api.delete(`/chat/sessions/${sessionId}`),
   rateMessage: (messageId, rating) =>
     api.patch(`/chat/messages/${messageId}/rating`, { rating }),
+  confirmReceipt: (messageId) => api.patch(`/chat/messages/${messageId}/receipt`),
 }
 
 export const paymentService = {

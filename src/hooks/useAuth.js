@@ -20,7 +20,7 @@ export function useAuth() {
         name,
         phone,
       })
-      login(data, { name, email, phone })
+      login(data, data.user || { name, email, phone })
       navigate('/chat')
       return { success: true }
     } catch (e) {
@@ -40,7 +40,7 @@ export function useAuth() {
     setError(null)
     try {
       const { data } = await authService.login({ email, password })
-      login(data, { name: email.split('@')[0], email })
+      login(data, data.user || { name: email.split('@')[0], email })
       navigate('/chat')
       return { success: true }
     } catch (e) {
