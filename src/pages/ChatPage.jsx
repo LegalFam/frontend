@@ -14,7 +14,7 @@ export default function ChatPage() {
   const [sidebarOpen, setSidebarOpen] = useState(() => !isMobile())
 
   const {
-    sessions, activeSessionId, messages, loading,
+    sessions, activeSessionId, messages, loading, connectionState, error,
     loadSessions, selectSession, startNewChat,
     sendMessage, rateMessage, deleteSession, renameSession,
   } = useChat()
@@ -85,6 +85,11 @@ export default function ChatPage() {
         />
 
         <div className={styles.main}>
+          {(error || connectionState === 'reconnecting') && (
+            <div className={styles.notice}>
+              {error || 'Reconectando con el chat...'}
+            </div>
+          )}
           <div className={styles.messages}>
             <div className={styles.messagesInner}>
               {activeMessages.map((msg) => (

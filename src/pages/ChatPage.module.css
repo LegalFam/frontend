@@ -26,6 +26,18 @@
 }
 .body  { display: flex; flex: 1; overflow: hidden; position: relative; }
 .main  { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+.notice {
+  margin: 12px auto 0;
+  max-width: 760px;
+  width: calc(100% - 2rem);
+  border: 0.5px solid var(--gold-border);
+  border-radius: 6px;
+  background: var(--gold-bg);
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.4;
+  padding: 9px 12px;
+}
 
 /* Backdrop for mobile sidebar */
 .backdrop {

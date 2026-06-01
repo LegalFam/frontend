@@ -13,18 +13,14 @@ export function useAuth() {
     setLoading(true)
     setError(null)
     try {
-      // TODO: conectar con backend
-      // const { data } = await authService.signup({
-      //   email,
-      //   password,
-      //   name: `${nombre} ${apellido}`.trim(),
-      //   phone,
-      // })
-      // login(data, { name: `${nombre} ${apellido}`.trim(), email })
-
-      // Respuesta simulada mientras no hay backend
-      const mockData = { accessToken: 'mock-access-token', refreshToken: 'mock-refresh-token' }
-      login(mockData, { name: `${nombre} ${apellido}`.trim(), email })
+      const name = `${nombre} ${apellido}`.trim()
+      const { data } = await authService.signup({
+        email,
+        password,
+        name,
+        phone,
+      })
+      login(data, { name, email, phone })
       navigate('/chat')
       return { success: true }
     } catch (e) {
@@ -43,13 +39,8 @@ export function useAuth() {
     setLoading(true)
     setError(null)
     try {
-      // TODO: conectar con backend
-      // const { data } = await authService.login({ email, password })
-      // login(data, { name: email.split('@')[0], email })
-
-      // Respuesta simulada mientras no hay backend
-      const mockData = { accessToken: 'mock-access-token', refreshToken: 'mock-refresh-token' }
-      login(mockData, { name: email.split('@')[0], email })
+      const { data } = await authService.login({ email, password })
+      login(data, { name: email.split('@')[0], email })
       navigate('/chat')
       return { success: true }
     } catch (e) {

@@ -2,7 +2,9 @@ import { useState } from 'react'
 import styles from './ChatMessage.module.css'
 
 export default function ChatMessage({ message, onRate }) {
-  const isBot  = message.role === 'ASSISTANT'
+  const isBot = message.role === 'ASSISTANT'
+  const isSystem = message.role === 'SYSTEM'
+  const isUser = message.role === 'USER'
   const [rated, setRated] = useState(message.rating || 0)
   const [hover, setHover] = useState(0)
 
@@ -13,34 +15,39 @@ export default function ChatMessage({ message, onRate }) {
   }
 
   return (
-    <div className={`${styles.wrap} ${isBot ? styles.bot : styles.user}`}>
-      <span className={styles.label}>{isBot ? 'LegalFam' : 'Tú'}</span>
+    <div className={`${styles.wrap} ${isUser ? styles.user : styles.bot} ${isSystem ? styles.system : ''}`}>
+      <span className={styles.label}>{isUser ? 'Tu' : isSystem ? 'Sistema' : 'LegalFam'}</span>
 
       <div className={styles.bubble}>
-        {isBot ? (
+        {isBot || isSystem ? (
           <span dangerouslySetInnerHTML={{ __html: message.content }} />
         ) : (
           message.content
         )}
       </div>
 
-      {/* Citations */}
+      {message.state === 'sending' && <span className={styles.status}>Enviando...</span>}
+      {message.state === 'processing' && <span className={styles.status}>Procesando...</span>}
+      {message.state === 'unknown_delivery' && (
+        <span className={styles.status}>Verificando entrega...</span>
+      )}
+
       {isBot && message.citations?.length > 0 && (
         <div className={styles.citations}>
-          {message.citations.map((c, i) => (
-            <div key={i} className={styles.citation}>
+          {message.citations.map((citation, index) => (
+            <div key={index} className={styles.citation}>
               <div className={styles.citationTitle}>
-                {c.sourceTitle || 'Fuente legal'}
+                {citation.sourceTitle || 'Fuente legal'}
               </div>
-              <div className={styles.citationSnippet}>{c.sourceSnippet}</div>
-              {c.sourceUrl && (
+              <div className={styles.citationSnippet}>{citation.sourceSnippet}</div>
+              {citation.sourceUrl && (
                 <a
-                  href={c.sourceUrl}
+                  href={citation.sourceUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={styles.citationLink}
                 >
-                  Ver fuente →
+                  Ver fuente
                 </a>
               )}
             </div>
@@ -48,7 +55,6 @@ export default function ChatMessage({ message, onRate }) {
         </div>
       )}
 
-      {/* Star rating — only for real bot messages */}
       {isBot &&
         message.id &&
         !message.id.startsWith('tmp_') &&

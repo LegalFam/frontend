@@ -26,9 +26,19 @@
   border: 0.5px solid var(--gold-border);
   color: var(--text-primary);
 }
+.system .bubble {
+  border-color: rgba(238, 128, 128, 0.45);
+  color: #ffd2d2;
+}
 .user .bubble {
   background: var(--gold);
   color: var(--black);
+}
+.status {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  padding: 0 4px;
 }
 
 /* Citations */

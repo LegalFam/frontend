@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { paymentService } from '@/services/api'
 import logoImg from '@/assets/logo.png'
 import styles from './PaymentPage.module.css'
 
@@ -71,12 +72,19 @@ export default function PaymentPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!validate()) return
     setLoading(true)
-    // TODO: conectar con pasarela de pagos del backend
-    await new Promise((r) => setTimeout(r, 1800))
-    setLoading(false)
-    setSuccess(true)
+    setErrs({})
+    try {
+      const planCode = plan === 'basico' ? 'BASIC' : 'PREMIUM'
+      const successUrl = `${window.location.origin}/chat`
+      const { data } = await paymentService.createCheckoutSession({ planCode, successUrl })
+      window.location.assign(data.url)
+    } catch (err) {
+      setErrs({
+        form: err.response?.data?.message || 'No se pudo iniciar el checkout. Intenta nuevamente.',
+      })
+      setLoading(false)
+    }
   }
 
   if (success) {
@@ -150,6 +158,7 @@ export default function PaymentPage() {
           <p className={styles.formSub}>Ingresa la información de tu tarjeta para completar la suscripción.</p>
 
           <form onSubmit={handleSubmit} noValidate>
+            {errs.form && <div className="api-err">{errs.form}</div>}
             <div className={styles.fg}>
               <label htmlFor="py-name">Nombre en la tarjeta</label>
               <input
