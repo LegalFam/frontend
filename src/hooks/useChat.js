@@ -13,7 +13,7 @@ const titleFromText = (text) =>
 const welcomeMessage = (name) => ({
   id: 'welcome',
   role: 'ASSISTANT',
-  content: `Hola, <strong>${name || 'Usuario'}</strong>. Bienvenido/a a <strong>LegalFam</strong>.<br/><br/>Estoy aqui para orientarte en temas de <strong>Derecho de Familia</strong> peruano: alimentos, tenencia, filiacion y medidas de proteccion.<br/><br/>Sobre que situacion legal deseas consultar hoy?`,
+  content: `Hola, **${name || 'Usuario'}**. Bienvenido/a a **LegalFam**.\n\nEstoy aqui para orientarte en temas de **Derecho de Familia** peruano: alimentos, tenencia, filiacion y medidas de proteccion.\n\nSobre que situacion legal deseas consultar hoy?`,
   citations: [],
   createdAt: new Date().toISOString(),
 })

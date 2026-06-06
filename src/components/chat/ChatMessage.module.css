@@ -34,6 +34,83 @@
   background: var(--gold);
   color: var(--black);
 }
+.bubble p {
+  margin: 0 0 0.65rem;
+}
+.bubble p:last-child {
+  margin-bottom: 0;
+}
+.bubble h1,
+.bubble h2,
+.bubble h3,
+.bubble h4 {
+  margin: 0.7rem 0 0.35rem;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  font-weight: 650;
+  letter-spacing: 0;
+}
+.bubble h1:first-child,
+.bubble h2:first-child,
+.bubble h3:first-child,
+.bubble h4:first-child {
+  margin-top: 0;
+}
+.bubble ul,
+.bubble ol {
+  margin: 0.4rem 0 0.7rem;
+  padding-left: 1.25rem;
+}
+.bubble li {
+  margin: 0.15rem 0;
+}
+.bubble blockquote {
+  margin: 0.65rem 0;
+  padding: 0.4rem 0 0.4rem 0.75rem;
+  border-left: 2px solid var(--gold-border);
+  color: var(--text-secondary);
+}
+.bubble code {
+  padding: 0.08rem 0.25rem;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 0.92em;
+}
+.bubble pre {
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 0.65rem 0;
+  padding: 0.65rem;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.22);
+}
+.bubble pre code {
+  padding: 0;
+  background: transparent;
+}
+.bubble a {
+  color: var(--gold);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.bubble table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.65rem 0;
+  font-size: 0.92em;
+}
+.bubble th,
+.bubble td {
+  border: 1px solid var(--gold-border);
+  padding: 0.35rem 0.45rem;
+  text-align: left;
+  vertical-align: top;
+}
+.bubble hr {
+  border: 0;
+  border-top: 1px solid var(--gold-border);
+  margin: 0.75rem 0;
+}
 .status {
   font-size: 10px;
   color: var(--text-muted);
@@ -48,6 +125,41 @@
   flex-direction: column;
   gap: 0.4rem;
   width: 100%;
+}
+.sourcesToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  width: fit-content;
+  min-height: 30px;
+  padding: 0.35rem 0.6rem;
+  border: 0.5px solid var(--gold-border);
+  border-radius: 6px;
+  background: var(--gold-bg);
+  color: var(--gold);
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+}
+.sourcesToggle:hover {
+  border-color: var(--gold);
+}
+.sourcesCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: rgba(212, 175, 55, 0.16);
+  color: var(--text-primary);
+  font-size: 10px;
+}
+.sourcesPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
 }
 .citation {
   background: var(--gold-bg);
