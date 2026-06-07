@@ -1,7 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
+import { useNavigate }    from 'react-router-dom'
 import { useChat }        from '@/hooks/useChat'
 import { useAuth }        from '@/hooks/useAuth'
 import { usePaymentStore } from '@/store/paymentStore'
+import {
+  STATIC_PLANS,
+  formatPlanName,
+  formatPlanPrice,
+  formatPlanPeriod,
+  formatPlanTokens,
+  planSlug,
+} from '@/utils/plans'
 import ChatSidebar        from '@/components/chat/ChatSidebar'
 import ChatMessage        from '@/components/chat/ChatMessage'
 import ChatInput          from '@/components/chat/ChatInput'
@@ -11,9 +20,11 @@ import styles             from './ChatPage.module.css'
 
 export default function ChatPage() {
   const { signout } = useAuth()
+  const navigate = useNavigate()
   const isMobile = () => window.innerWidth <= 768
   const [sidebarOpen, setSidebarOpen] = useState(() => !isMobile())
-  const { subscription, refreshBilling } = usePaymentStore()
+  const [billingOpen, setBillingOpen] = useState(false)
+  const { plans, subscription, refreshBilling } = usePaymentStore()
 
   const {
     sessions, activeSessionId, messages, loading, connectionState, error,
@@ -45,6 +56,18 @@ export default function ChatPage() {
   const tokenLabel = subscription
     ? `${subscription.planCode} · ${subscription.remainingTokens}/${subscription.monthlyTokenLimit} tokens`
     : null
+  const availablePlans = plans.length ? plans : STATIC_PLANS
+  const currentPlan = availablePlans.find((plan) => plan.code === subscription?.planCode)
+  const tokenLimit = subscription?.monthlyTokenLimit || currentPlan?.monthlyTokenLimit || 0
+  const remainingTokens = subscription?.remainingTokens ?? 0
+  const usedTokens = Math.max(tokenLimit - remainingTokens, 0)
+  const tokenPercent = tokenLimit ? Math.max(0, Math.min(100, (remainingTokens / tokenLimit) * 100)) : 0
+
+  const switchPlan = (plan) => {
+    setBillingOpen(false)
+    if (plan.code === subscription?.planCode) return
+    navigate(`/pago/${planSlug(plan)}`)
+  }
 
   return (
     <div className={styles.app}>
@@ -63,7 +86,16 @@ export default function ChatPage() {
         </div>
 
         <span className={styles.topbarTitle}>{sessionTitle}</span>
-        {tokenLabel && <span className={styles.tokenBadge}>{tokenLabel}</span>}
+        {tokenLabel && (
+          <button
+            type="button"
+            className={styles.tokenBadge}
+            onClick={() => setBillingOpen(true)}
+            title="Ver plan y tokens"
+          >
+            {tokenLabel}
+          </button>
+        )}
 
         <button className="icon-btn" onClick={signout} title="Cerrar sesión" style={{ marginLeft: 'auto' }}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
@@ -109,6 +141,72 @@ export default function ChatPage() {
           <ChatInput onSend={sendMessage} disabled={loading} />
         </div>
       </div>
+
+      {billingOpen && subscription && (
+        <div className={styles.modalLayer} role="presentation" onMouseDown={() => setBillingOpen(false)}>
+          <section
+            className={styles.billingDialog}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="billing-title"
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <div className={styles.dialogHeader}>
+              <div>
+                <p className={styles.dialogEyebrow}>Suscripcion</p>
+                <h2 id="billing-title">Plan y tokens</h2>
+              </div>
+              <button className="icon-btn" onClick={() => setBillingOpen(false)} aria-label="Cerrar">
+                <svg viewBox="0 0 24 24">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+
+            <div className={styles.billingSummary}>
+              <div>
+                <span>Plan actual</span>
+                <strong>{formatPlanName(currentPlan) || subscription.planCode}</strong>
+              </div>
+              <div>
+                <span>Tokens disponibles</span>
+                <strong>{remainingTokens}/{tokenLimit}</strong>
+              </div>
+            </div>
+
+            <div className={styles.tokenMeterBlock}>
+              <div className={styles.tokenMeterLabels}>
+                <span>{usedTokens} usados</span>
+                <span>{remainingTokens} restantes</span>
+              </div>
+              <div className={styles.tokenMeter} aria-hidden="true">
+                <span style={{ width: `${tokenPercent}%` }} />
+              </div>
+            </div>
+
+            <div className={styles.planGrid}>
+              {availablePlans.map((plan) => {
+                const isCurrent = plan.code === subscription.planCode
+                return (
+                  <button
+                    type="button"
+                    key={plan.code}
+                    className={`${styles.planOption} ${isCurrent ? styles.currentPlan : ''}`}
+                    onClick={() => switchPlan(plan)}
+                    disabled={isCurrent}
+                  >
+                    <span>{formatPlanName(plan)}</span>
+                    <strong>{formatPlanPrice(plan)} {formatPlanPeriod(plan)}</strong>
+                    <small>{formatPlanTokens(plan)}</small>
+                    <em>{isCurrent ? 'Plan activo' : 'Cambiar plan'}</em>
+                  </button>
+                )
+              })}
+            </div>
+          </section>
+        </div>
+      )}
     </div>
   )
 }

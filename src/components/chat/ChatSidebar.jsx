@@ -9,6 +9,7 @@ export default function ChatSidebar({ open, sessions, activeSessionId, onSelectS
   const { avatarUrl, setAvatar } = useAuthStore()
   const [editingId,  setEditingId]  = useState(null)
   const [editValue,  setEditValue]  = useState('')
+  const [deleteTarget, setDeleteTarget] = useState(null)
   const fileInputRef = useRef(null)
 
   const initials = user?.name
@@ -52,6 +53,17 @@ export default function ChatSidebar({ open, sessions, activeSessionId, onSelectS
   const handleNewChat = () => {
     onNewChat()
     onClose?.()
+  }
+
+  const askDeleteSession = (e, session) => {
+    e.stopPropagation()
+    setDeleteTarget(session)
+  }
+
+  const confirmDeleteSession = () => {
+    if (!deleteTarget) return
+    onDeleteSession(deleteTarget.id)
+    setDeleteTarget(null)
   }
 
   return (
@@ -105,7 +117,7 @@ export default function ChatSidebar({ open, sessions, activeSessionId, onSelectS
                   <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                 </svg>
               </button>
-              <button className={styles.actionBtn} onClick={(e) => { e.stopPropagation(); onDeleteSession(s.id) }} title="Eliminar">
+              <button className={styles.actionBtn} onClick={(e) => askDeleteSession(e, s)} title="Eliminar">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <polyline points="3 6 5 6 21 6"/>
                   <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
@@ -153,6 +165,31 @@ export default function ChatSidebar({ open, sessions, activeSessionId, onSelectS
           </svg>
         </button>
       </div>
+
+      {deleteTarget && (
+        <div className={styles.confirmLayer} role="presentation" onMouseDown={() => setDeleteTarget(null)}>
+          <section
+            className={styles.confirmDialog}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-session-title"
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <h2 id="delete-session-title">Eliminar consulta</h2>
+            <p>
+              Se eliminara "{deleteTarget.title || deleteTarget.name || formatDate(deleteTarget.createdAt)}" del historial.
+            </p>
+            <div className={styles.confirmActions}>
+              <button className={styles.cancelBtn} onClick={() => setDeleteTarget(null)}>
+                Cancelar
+              </button>
+              <button className={styles.deleteBtn} onClick={confirmDeleteSession}>
+                Eliminar
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </aside>
   )
 }

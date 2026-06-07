@@ -127,6 +127,45 @@
 .avatarOverlay svg { width: 13px; height: 13px; color: #fff; }
 .avatarBtn:hover .avatarOverlay { opacity: 1; }
 
+.confirmLayer {
+  position: fixed; inset: 0; z-index: 220;
+  display: flex; align-items: center; justify-content: center;
+  padding: 1rem; background: rgba(0,0,0,0.68);
+  backdrop-filter: blur(3px);
+}
+.confirmDialog {
+  width: min(360px, 100%);
+  background: var(--black-2); border: 0.5px solid var(--gold-border);
+  border-radius: var(--radius); padding: 1rem;
+  box-shadow: 0 18px 60px rgba(0,0,0,0.45);
+}
+.confirmDialog h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px; font-weight: 400; color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+.confirmDialog p {
+  color: var(--text-secondary); font-size: 13px; line-height: 1.5;
+  margin-bottom: 1rem;
+}
+.confirmActions {
+  display: flex; justify-content: flex-end; gap: 0.5rem;
+}
+.cancelBtn, .deleteBtn {
+  border-radius: var(--radius); padding: 7px 14px;
+  font-size: 12px; letter-spacing: 0.3px;
+}
+.cancelBtn {
+  background: transparent; border: 0.5px solid var(--gold-border);
+  color: var(--text-secondary);
+}
+.cancelBtn:hover { border-color: var(--gold); color: var(--gold); }
+.deleteBtn {
+  border: 0.5px solid var(--error-border);
+  background: var(--error-bg); color: #F5A5A5;
+}
+.deleteBtn:hover { border-color: var(--error); color: #FFD0D0; }
+
 @media (max-width: 768px) {
   .sidebar {
     position: fixed; top: 0; bottom: 0; left: 0; z-index: 100;
