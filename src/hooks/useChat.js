@@ -34,6 +34,11 @@ const parseSseChunk = (chunk) => {
   return event
 }
 
+const isCanceledRequest = (error) =>
+  error?.name === 'CanceledError' ||
+  error?.code === 'ERR_CANCELED' ||
+  error?.name === 'AbortError'
+
 export function useChat() {
   const navigate = useNavigate()
   const store = useChatStore()
@@ -45,6 +50,7 @@ export function useChat() {
   const timerRef = useRef(null)
   const sendingTextRef = useRef(null)
   const messagesRequestRef = useRef(new Map())
+  const messagesAbortRef = useRef(null)
   const receiptRequestRef = useRef(new Map())
 
   const confirmUnreadAssistantReceipts = useCallback(async (sessionId, messages) => {
@@ -83,15 +89,18 @@ export function useChat() {
     if (failed) throw failed.reason
   }, [])
 
-  const reconcileMessages = useCallback(async (sessionId) => {
+  const reconcileMessages = useCallback(async (sessionId, { signal } = {}) => {
     if (!sessionId) return []
     if (messagesRequestRef.current.has(sessionId)) {
       return messagesRequestRef.current.get(sessionId)
     }
 
-    const request = chatService.getMessages(sessionId)
+    const request = chatService.getMessages(sessionId, { signal })
       .then(({ data }) => {
         const messages = Array.isArray(data) ? data : []
+        if (signal?.aborted || useChatStore.getState().activeSessionId !== sessionId) {
+          return messages
+        }
         store.setMessages(sessionId, messages)
         confirmUnreadAssistantReceipts(sessionId, messages).catch(() => {})
 
@@ -123,15 +132,28 @@ export function useChat() {
   const loadMessages = useCallback(async (sessionId, { force = false } = {}) => {
     if (!sessionId) return
     if (!force && useChatStore.getState().messages[sessionId]) return
+    if (messagesAbortRef.current) {
+      messagesAbortRef.current.controller.abort()
+      messagesRequestRef.current.delete(messagesAbortRef.current.sessionId)
+    }
+
+    const controller = new AbortController()
+    messagesAbortRef.current = { sessionId, controller }
+
     try {
-      await reconcileMessages(sessionId)
+      await reconcileMessages(sessionId, { signal: controller.signal })
     } catch (e) {
+      if (isCanceledRequest(e)) return
       if (e.response?.status === 403 || e.response?.status === 404) {
         store.setActiveSession(null)
         navigate('/chat')
         return
       }
       store.setError(e.response?.data?.message || 'No se pudieron cargar los mensajes.')
+    } finally {
+      if (messagesAbortRef.current?.controller === controller) {
+        messagesAbortRef.current = null
+      }
     }
   }, [navigate, reconcileMessages, store])
 

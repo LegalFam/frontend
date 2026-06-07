@@ -97,7 +97,7 @@ export const chatService = {
   createSession: () => api.post('/chat/sessions'),
   sendMessage: (payload) => api.post('/chat/send', payload),
   getSessions: () => api.get('/chat/sessions'),
-  getMessages: (sessionId) => api.get(`/chat/sessions/${sessionId}/messages`),
+  getMessages: (sessionId, config = {}) => api.get(`/chat/sessions/${sessionId}/messages`, config),
   updateSession: (sessionId, payload) => api.patch(`/chat/sessions/${sessionId}`, payload),
   deleteSession: (sessionId) => api.delete(`/chat/sessions/${sessionId}`),
   rateMessage: (messageId, rating) =>
