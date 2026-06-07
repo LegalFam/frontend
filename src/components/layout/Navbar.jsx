@@ -2,10 +2,16 @@ import { useState, useEffect } from 'react'
 import logoImg from '@/assets/logo.png'
 import styles from './Navbar.module.css'
 
-export default function Navbar({ onLoginClick, onRegisterClick }) {
+export default function Navbar({
+  isAuthenticated,
+  onLoginClick,
+  onRegisterClick,
+  onChatClick,
+  onSignoutClick,
+}) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [active,   setActive]   = useState('')
+  const [active, setActive] = useState('')
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
@@ -20,11 +26,11 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
   }
 
   const links = [
-    { id: 'sobre',      label: 'Sobre nosotros' },
-    { id: 'como',       label: 'Cómo funciona'  },
-    { id: 'precios',    label: 'Precios'         },
-    { id: 'seguridad',  label: 'Seguridad'       },
-    { id: 'privacidad', label: 'Privacidad'      },
+    { id: 'sobre', label: 'Sobre nosotros' },
+    { id: 'como', label: 'Como funciona' },
+    { id: 'precios', label: 'Precios' },
+    { id: 'seguridad', label: 'Seguridad' },
+    { id: 'privacidad', label: 'Privacidad' },
   ]
 
   return (
@@ -37,23 +43,36 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
 
         <div className={`${styles.links} ${menuOpen ? styles.open : ''}`}>
           {links.map(({ id, label }) => (
-            <a key={id}
+            <a
+              key={id}
               className={`${styles.link} ${active === id ? styles.linkActive : ''}`}
-              onClick={() => scrollTo(id)}>
+              onClick={() => scrollTo(id)}
+            >
               {label}
             </a>
           ))}
         </div>
 
         <div className={styles.btns}>
-          <button className="btn-ghost" onClick={onLoginClick}>Iniciar sesión</button>
-          <button className="btn-gold"  onClick={onRegisterClick}>Registrarse</button>
+          {isAuthenticated ? (
+            <>
+              <button className="btn-gold" onClick={onChatClick}>Ir al chat</button>
+              <button className={styles.signoutBtn} onClick={onSignoutClick}>Cerrar sesion</button>
+            </>
+          ) : (
+            <>
+              <button className="btn-ghost" onClick={onLoginClick}>Iniciar sesion</button>
+              <button className="btn-gold" onClick={onRegisterClick}>Registrarse</button>
+            </>
+          )}
         </div>
 
         <button
           className={`${styles.hamburger} ${menuOpen ? styles.open : ''}`}
           onClick={() => setMenuOpen((p) => !p)}
-          aria-label="Menú" aria-expanded={menuOpen}>
+          aria-label="Menu"
+          aria-expanded={menuOpen}
+        >
           <span /><span /><span />
         </button>
       </nav>

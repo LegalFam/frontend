@@ -33,6 +33,12 @@
 .link:hover { color: var(--gold); }
 .link.linkActive { color: var(--gold); border-bottom-color: var(--gold); }
 .btns { display: flex; gap: 10px; align-items: center; }
+.signoutBtn {
+  background: transparent; border: none; color: var(--text-muted);
+  font-size: 12px; padding: 7px 4px;
+  transition: color var(--t-fast);
+}
+.signoutBtn:hover { color: var(--text-secondary); }
 .hamburger {
   display: none; flex-direction: column; gap: 5px;
   background: none; border: none; padding: 5px; cursor: pointer;
