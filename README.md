@@ -35,7 +35,7 @@ npm install
 
 ## Desarrollo
 
-Asegúrate de tener el backend corriendo en `http://localhost:8080`.
+Asegúrate de tener el backend corriendo en `http://localhost:8080` o la URL que hayas configurado.
 
 ```bash
 npm run dev
@@ -47,6 +47,15 @@ Abre [http://localhost:3000](http://localhost:3000)
 
 ```bash
 npm run build
+```
+
+## Despliegue en GCP
+
+Para desplegar el frontend en Firebase Hosting con CI/CD desde GitHub Actions,
+usa la guía:
+
+```text
+GCP_FIREBASE_HOSTING_CICD.md
 ```
 
 ## Subir a GitHub
@@ -69,17 +78,12 @@ git branch -M main
 git push -u origin main
 ```
 
-## Variables de entorno (opcional)
+## Variables de entorno
 
-Si el backend corre en otra URL, crea un `.env.local`:
+Modifica el archivo `.env` en la raíz del proyecto para configurar la URL base de tu API:
 
 ```
-VITE_API_URL=http://localhost:8080
-```
-
-Y actualiza `src/services/api.js`:
-```js
-const BASE_URL = import.meta.env.VITE_API_URL + '/api/v1'
+VITE_API_BASE_URL=http://localhost:8080
 ```
 
 ## Endpoints integrados
