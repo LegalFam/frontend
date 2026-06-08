@@ -7,20 +7,17 @@ export const useAuthStore = create(
       accessToken:  null,
       refreshToken: null,
       user:         null,
-      avatarUrl:    null,
 
       setTokens: (accessToken, refreshToken) =>
         set({ accessToken, refreshToken }),
 
       setUser: (user) => set({ user }),
 
-      setAvatar: (avatarUrl) => set({ avatarUrl }),
-
       login: (tokens, user) =>
         set({ accessToken: tokens.accessToken, refreshToken: tokens.refreshToken, user }),
 
       logout: () =>
-        set({ accessToken: null, refreshToken: null, user: null, avatarUrl: null }),
+        set({ accessToken: null, refreshToken: null, user: null }),
     }),
     {
       name: 'legalfam-auth',
@@ -28,7 +25,6 @@ export const useAuthStore = create(
         accessToken:  state.accessToken,
         refreshToken: state.refreshToken,
         user:         state.user,
-        avatarUrl:    state.avatarUrl,
       }),
     }
   )
