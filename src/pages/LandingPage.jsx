@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar           from '@/components/layout/Navbar'
 import HeroSection      from '@/components/landing/HeroSection'
@@ -11,11 +11,19 @@ import PrivacidadSection from '@/components/landing/PrivacidadSection'
 import LoginModal       from '@/components/auth/LoginModal'
 import RegisterModal    from '@/components/auth/RegisterModal'
 import { useAuth }      from '@/hooks/useAuth'
+import { usePaymentStore } from '@/store/paymentStore'
 
 export default function LandingPage() {
   const navigate = useNavigate()
   const { isAuthenticated, signout } = useAuth()
+  const { subscription, refreshBilling } = usePaymentStore()
   const [modal, setModal] = useState(null) // 'login' | 'register' | null
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      refreshBilling().catch(() => {})
+    }
+  }, [isAuthenticated, refreshBilling])
 
   const scrollComo = () =>
     document.getElementById('como')?.scrollIntoView({ behavior: 'smooth' })
@@ -25,19 +33,24 @@ export default function LandingPage() {
       <Navbar
         isAuthenticated={isAuthenticated}
         onLoginClick={()    => setModal('login')}
-        onRegisterClick={() => setModal('register')}
+        onRegisterClick={() => isAuthenticated ? navigate('/chat') : setModal('register')}
         onChatClick={() => navigate('/chat')}
         onSignoutClick={signout}
       />
 
       <main>
         <HeroSection
-          onRegisterClick={() => setModal('register')}
+          isAuthenticated={isAuthenticated}
+          onPrimaryClick={() => isAuthenticated ? navigate('/chat') : setModal('register')}
           onScrollComo={scrollComo}
         />
         <SobreSection />
         <ComoSection />
-        <PreciosSection onRegisterClick={() => setModal('register')} />
+        <PreciosSection
+          isAuthenticated={isAuthenticated}
+          currentPlanCode={subscription?.planCode}
+          onRegisterClick={() => setModal('register')}
+        />
         <BannerSection />
         <SeguridadSection />
         <PrivacidadSection />
@@ -45,13 +58,13 @@ export default function LandingPage() {
 
       <Footer />
 
-      {modal === 'login' && (
+      {!isAuthenticated && modal === 'login' && (
         <LoginModal
           onClose={()             => setModal(null)}
           onSwitchToRegister={() => setModal('register')}
         />
       )}
-      {modal === 'register' && (
+      {!isAuthenticated && modal === 'register' && (
         <RegisterModal
           onClose={()          => setModal(null)}
           onSwitchToLogin={() => setModal('login')}

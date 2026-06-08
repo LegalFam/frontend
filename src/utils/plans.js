@@ -68,6 +68,24 @@ export const PLANS_BY_SLUG = STATIC_PLANS.reduce(
   {}
 )
 
+export const STATIC_PLANS_BY_CODE = STATIC_PLANS.reduce(
+  (acc, plan) => ({ ...acc, [plan.code]: plan }),
+  {}
+)
+
+export const mergePlanWithStatic = (plan) => {
+  if (!plan) return null
+  const staticPlan = STATIC_PLANS_BY_CODE[plan.code] || {}
+  return {
+    ...staticPlan,
+    ...plan,
+    slug: staticPlan.slug || plan.slug || planSlug(plan),
+    featured: staticPlan.featured || false,
+    buttonLabel: staticPlan.buttonLabel || 'Suscribirse',
+    features: staticPlan.features || [],
+  }
+}
+
 export const formatPlanName = (plan) => plan?.displayName || plan?.code || 'Plan'
 
 export const formatPlanPrice = (plan) => {

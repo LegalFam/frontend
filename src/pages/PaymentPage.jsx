@@ -8,6 +8,7 @@ import {
   formatPlanPeriod,
   formatPlanPrice,
   formatPlanTokens,
+  mergePlanWithStatic,
 } from '@/utils/plans'
 import logoImg from '@/assets/logo-transparent.png'
 import styles from './PaymentPage.module.css'
@@ -21,7 +22,7 @@ export default function PaymentPage() {
   const planData = useMemo(() => {
     const fallback = PLANS_BY_SLUG[plan]
     if (!fallback || !plans.length) return fallback
-    return plans.find((item) => item.code === fallback.code) || fallback
+    return mergePlanWithStatic(plans.find((item) => item.code === fallback.code) || fallback)
   }, [plan, plans])
 
   useEffect(() => {
@@ -75,7 +76,7 @@ export default function PaymentPage() {
           </p>
           <p className={styles.planTokens}>{formatPlanTokens(planData)}</p>
           <ul className={styles.features}>
-            {planData.features.map((feature) => (
+            {(planData.features || []).map((feature) => (
               <li key={feature}>{feature}</li>
             ))}
           </ul>

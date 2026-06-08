@@ -7,7 +7,7 @@ const stats = [
   { num: '100%', label: 'Gratuito al inicio' },
 ]
 
-export default function HeroSection({ onRegisterClick, onScrollComo }) {
+export default function HeroSection({ isAuthenticated, onPrimaryClick, onScrollComo }) {
   const [loaded, setLoaded] = useState(false)
   useEffect(() => { const t = setTimeout(() => setLoaded(true), 60); return () => clearTimeout(t) }, [])
 
@@ -39,8 +39,8 @@ export default function HeroSection({ onRegisterClick, onScrollComo }) {
           </p>
 
           <div className={`${styles.heroBtns} ${loaded ? 'anim-fade-up delay-3' : ''}`}>
-            <button className={styles.btnPrimary} onClick={onRegisterClick}>
-              Comenzar gratis
+            <button className={styles.btnPrimary} onClick={onPrimaryClick}>
+              {isAuthenticated ? 'Ir al chat' : 'Comenzar gratis'}
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="15" height="15">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
               </svg>

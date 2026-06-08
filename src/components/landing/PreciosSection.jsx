@@ -9,14 +9,19 @@ import {
 } from '@/utils/plans'
 import styles from './PreciosSection.module.css'
 
-export default function PreciosSection({ onRegisterClick }) {
+export default function PreciosSection({ isAuthenticated, currentPlanCode, onRegisterClick }) {
   const navigate = useNavigate()
 
   const handlePlanClick = (plan) => {
-    if (plan.code === 'FREE') {
+    if (!isAuthenticated) {
       onRegisterClick()
       return
     }
+    if (plan.code === 'FREE') {
+      navigate('/chat')
+      return
+    }
+    if (plan.code === currentPlanCode) return
     navigate(`/pago/${planSlug(plan)}`)
   }
 
@@ -33,6 +38,14 @@ export default function PreciosSection({ onRegisterClick }) {
 
         <div className={styles.grid}>
           {STATIC_PLANS.map((plan) => {
+            const isCurrent = isAuthenticated && plan.code === currentPlanCode
+            const buttonLabel = !isAuthenticated
+              ? plan.buttonLabel
+              : isCurrent
+                ? 'Plan actual'
+                : plan.code === 'FREE'
+                  ? 'Ir al chat'
+                  : 'Cambiar plan'
             return (
               <div
                 key={plan.code}
@@ -54,8 +67,9 @@ export default function PreciosSection({ onRegisterClick }) {
                 <button
                   className={plan.featured ? styles.btnGold : styles.btnGhost}
                   onClick={() => handlePlanClick(plan)}
+                  disabled={isCurrent}
                 >
-                  {plan.buttonLabel}
+                  {buttonLabel}
                 </button>
               </div>
             )
