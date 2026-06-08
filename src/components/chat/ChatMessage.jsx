@@ -58,8 +58,7 @@ export default function ChatMessage({ message, onRate }) {
   const [ratingPending, setRatingPending] = useState(false)
   const [hover, setHover] = useState(0)
   const [sourcesOpen, setSourcesOpen] = useState(false)
-  const clarifyingQuestions = Array.isArray(message.clarifyingQuestions) ? message.clarifyingQuestions : []
-  const preliminaryActions = Array.isArray(message.preliminaryActions) ? message.preliminaryActions : []
+  const nextSteps = Array.isArray(message.nextSteps) ? message.nextSteps : []
   const lowConfidence = message.confidenceStatus === 'LOW'
 
   const handleRate = async (stars) => {
@@ -105,24 +104,17 @@ export default function ChatMessage({ message, onRate }) {
       {message.state === 'processing' && <span className={styles.status}>Procesando...</span>}
       {message.state === 'unknown_delivery' && <span className={styles.status}>Verificando entrega...</span>}
 
-      {isBot && (lowConfidence || message.confidenceReason) && (
+      {isBot && lowConfidence && (
         <div className={styles.safetyNote}>
-          <strong>{lowConfidence ? 'Evidencia limitada' : 'Nota de alcance'}</strong>
-          {message.confidenceReason && <span>{message.confidenceReason}</span>}
+          <strong>Informacion de alcance limitado</strong>
+          <span>Esta orientacion es general y puede no cubrir todos los detalles de tu caso. Para decisiones importantes, consulta con un abogado o una entidad competente.</span>
         </div>
       )}
 
-      {isBot && preliminaryActions.length > 0 && (
+      {isBot && nextSteps.length > 0 && (
         <div className={styles.guidanceBlock}>
-          <span className={styles.blockTitle}>Opciones preliminares</span>
-          <ul>{preliminaryActions.map((item, index) => <li key={index}>{item}</li>)}</ul>
-        </div>
-      )}
-
-      {isBot && clarifyingQuestions.length > 0 && (
-        <div className={styles.guidanceBlock}>
-          <span className={styles.blockTitle}>Datos generales utiles</span>
-          <ul>{clarifyingQuestions.map((item, index) => <li key={index}>{item}</li>)}</ul>
+          <span className={styles.blockTitle}>Siguientes pasos</span>
+          <ul>{nextSteps.map((item, index) => <li key={index}>{item}</li>)}</ul>
         </div>
       )}
 

@@ -202,6 +202,11 @@
   font-size: 12px;
   line-height: 1.45;
 }
+.safetyNote {
+  border-color: rgba(238, 128, 128, 0.55);
+  background: rgba(238, 128, 128, 0.09);
+  color: #ffd2d2;
+}
 .safetyNote strong,
 .blockTitle {
   display: block;
@@ -210,6 +215,9 @@
   letter-spacing: 1px;
   text-transform: uppercase;
   margin-bottom: 0.25rem;
+}
+.safetyNote strong {
+  color: #ffb4b4;
 }
 .guidanceBlock ul {
   margin: 0;
