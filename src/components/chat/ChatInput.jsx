@@ -1,8 +1,11 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import styles from './ChatInput.module.css'
+
+const personalDataPattern = /(\b[\w.%+-]+@[\w.-]+\.[A-Za-z]{2,}\b)|((?:\+?51\s*)?(?:9\d{2}|0?1|[2-8]\d)(?:[\s.-]*\d){6,8})|(\b\d{8}\b)|(\b(?:av\.?|avenida|jr\.?|jiron|calle|pasaje|mz\.?|manzana|lote)\b)/i
 
 export default function ChatInput({ onSend, disabled }) {
   const ref = useRef(null)
+  const [privacyError, setPrivacyError] = useState(null)
 
   const autoResize = () => {
     const el = ref.current
@@ -21,6 +24,11 @@ export default function ChatInput({ onSend, disabled }) {
   const submit = () => {
     const text = ref.current?.value.trim()
     if (!text || disabled) return
+    if (personalDataPattern.test(text)) {
+      setPrivacyError('Evita enviar DNI, telefono, correo o direccion. Describe la situacion de forma general.')
+      return
+    }
+    setPrivacyError(null)
     onSend(text)
     ref.current.value = ''
     ref.current.style.height = 'auto'
@@ -50,8 +58,9 @@ export default function ChatInput({ onSend, disabled }) {
           </svg>
         </button>
       </div>
+      {privacyError && <p className={styles.privacyError}>{privacyError}</p>}
       <p className={styles.note}>
-        LegalFam brinda orientación informativa, no reemplaza el asesoramiento de un abogado titulado.
+        LegalFam brinda orientacion informativa. No incluyas datos personales innecesarios.
       </p>
     </div>
   )

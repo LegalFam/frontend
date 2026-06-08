@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { paymentService } from '@/services/api'
 import { usePaymentStore } from '@/store/paymentStore'
@@ -15,16 +15,25 @@ import styles from './PaymentPage.module.css'
 export default function PaymentPage() {
   const { plan } = useParams()
   const navigate = useNavigate()
-  const { refreshBilling } = usePaymentStore()
+  const { plans, loadPlans, refreshBilling } = usePaymentStore()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-  const planData = PLANS_BY_SLUG[plan]
+  const planData = useMemo(() => {
+    const fallback = PLANS_BY_SLUG[plan]
+    if (!fallback || !plans.length) return fallback
+    return plans.find((item) => item.code === fallback.code) || fallback
+  }, [plan, plans])
+
+  useEffect(() => {
+    loadPlans().catch(() => {})
+  }, [loadPlans])
 
   const handleCheckout = async () => {
     if (!planData || planData.code === 'FREE') return
     setLoading(true)
     setError(null)
     try {
+      await refreshBilling().catch(() => {})
       const successUrl = `${window.location.origin}/billing/success`
       const cancelUrl = `${window.location.origin}/billing/cancel`
       const { data } = await paymentService.createCheckoutSession({

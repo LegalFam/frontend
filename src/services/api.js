@@ -100,8 +100,8 @@ export const chatService = {
   getMessages: (sessionId, config = {}) => api.get(`/chat/sessions/${sessionId}/messages`, config),
   updateSession: (sessionId, payload) => api.patch(`/chat/sessions/${sessionId}`, payload),
   deleteSession: (sessionId) => api.delete(`/chat/sessions/${sessionId}`),
-  rateMessage: (messageId, rating) =>
-    api.patch(`/chat/messages/${messageId}/rating`, { rating }),
+  rateMessage: (messageId, rating, comment = '') =>
+    api.patch(`/chat/messages/${messageId}/rating`, { rating, comment }),
   confirmReceipt: (messageId) => api.patch(`/chat/messages/${messageId}/receipt`),
 }
 

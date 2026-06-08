@@ -59,3 +59,12 @@
   margin-right: auto;
   letter-spacing: 0.3px;
 }
+
+.privacyError {
+  font-size: 11px;
+  color: #ffb4b4;
+  text-align: center;
+  margin: 0.5rem auto 0;
+  max-width: 800px;
+  line-height: 1.4;
+}

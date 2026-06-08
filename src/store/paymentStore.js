@@ -59,4 +59,20 @@ export const usePaymentStore = create((set) => ({
 
     set({ loading: false })
   },
+
+  cancelSubscription: async () => {
+    set({ loading: true, error: null })
+    try {
+      await paymentService.cancelSubscription()
+      const { data } = await paymentService.getSubscription()
+      set({ subscription: data, loading: false })
+      return data
+    } catch (e) {
+      set({
+        loading: false,
+        error: e.response?.data?.message || 'No se pudo cancelar la suscripcion.',
+      })
+      throw e
+    }
+  },
 }))

@@ -250,15 +250,16 @@ export function useChat() {
     }
   }, [confirmUnreadAssistantReceipts, ensureSession, loadMessages, store])
 
-  const rateMessage = useCallback(async (messageId, rating) => {
+  const rateMessage = useCallback(async (messageId, rating, comment = '') => {
     const sessionId = useChatStore.getState().activeSessionId
     if (!sessionId || !messageId) return
-    store.updateMessageRating(sessionId, messageId, rating)
+    store.updateMessageRating(sessionId, messageId, rating, comment)
     try {
-      await chatService.rateMessage(messageId, rating)
+      await chatService.rateMessage(messageId, rating, comment)
     } catch (e) {
       await loadMessages(sessionId, { force: true })
       store.setError(e.response?.data?.message || 'No se pudo guardar la calificacion.')
+      throw e
     }
   }, [loadMessages, store])
 

@@ -24,7 +24,7 @@ export default function ChatPage() {
   const isMobile = () => window.innerWidth <= 768
   const [sidebarOpen, setSidebarOpen] = useState(() => !isMobile())
   const [billingOpen, setBillingOpen] = useState(false)
-  const { plans, subscription, refreshBilling } = usePaymentStore()
+  const { plans, subscription, refreshBilling, cancelSubscription, loading: billingLoading } = usePaymentStore()
 
   const {
     sessions, activeSessionId, messages, loading, connectionState, error,
@@ -67,6 +67,10 @@ export default function ChatPage() {
     setBillingOpen(false)
     if (plan.code === subscription?.planCode) return
     navigate(`/pago/${planSlug(plan)}`)
+  }
+
+  const handleCancelSubscription = async () => {
+    await cancelSubscription().catch(() => {})
   }
 
   return (
@@ -204,6 +208,16 @@ export default function ChatPage() {
                 )
               })}
             </div>
+            {subscription.provider === 'MERCADO_PAGO' && (
+              <button
+                type="button"
+                className={styles.cancelSubscriptionBtn}
+                onClick={handleCancelSubscription}
+                disabled={billingLoading}
+              >
+                {billingLoading ? 'Cancelando...' : 'Cancelar suscripcion'}
+              </button>
+            )}
           </section>
         </div>
       )}

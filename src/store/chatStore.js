@@ -83,12 +83,12 @@ export const useChatStore = create((set, get) => ({
       },
     })),
 
-  updateMessageRating: (sessionId, messageId, rating) =>
+  updateMessageRating: (sessionId, messageId, rating, feedbackComment = '') =>
     set((state) => ({
       messages: {
         ...state.messages,
         [sessionId]: (state.messages[sessionId] || []).map((m) =>
-          m.id === messageId ? { ...m, rating } : m
+          m.id === messageId ? { ...m, rating, feedbackComment, feedbackSubmittedAt: new Date().toISOString() } : m
         ),
       },
     })),
