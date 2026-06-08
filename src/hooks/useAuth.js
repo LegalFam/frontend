@@ -3,6 +3,20 @@ import { useNavigate } from 'react-router-dom'
 import { authService } from '@/services/api'
 import { useAuthStore } from '@/store/authStore'
 
+const PENDING_AUTH_REDIRECT_KEY = 'legalfam-pending-auth-redirect'
+
+export const setPendingAuthRedirect = (path) => {
+  if (typeof window === 'undefined' || !path?.startsWith('/')) return
+  window.sessionStorage.setItem(PENDING_AUTH_REDIRECT_KEY, path)
+}
+
+const consumePendingAuthRedirect = () => {
+  if (typeof window === 'undefined') return null
+  const path = window.sessionStorage.getItem(PENDING_AUTH_REDIRECT_KEY)
+  window.sessionStorage.removeItem(PENDING_AUTH_REDIRECT_KEY)
+  return path?.startsWith('/') ? path : null
+}
+
 export function useAuth() {
   const navigate = useNavigate()
   const { login, logout, user, accessToken } = useAuthStore()
@@ -21,7 +35,7 @@ export function useAuth() {
         phone,
       })
       login(data, data.user || { name, email, phone })
-      navigate('/chat')
+      navigate(consumePendingAuthRedirect() || '/chat')
       return { success: true }
     } catch (e) {
       const status = e.response?.status
@@ -41,7 +55,7 @@ export function useAuth() {
     try {
       const { data } = await authService.login({ email, password })
       login(data, data.user || { name: email.split('@')[0], email })
-      navigate('/chat')
+      navigate(consumePendingAuthRedirect() || '/chat')
       return { success: true }
     } catch (e) {
       const msg = e.response?.status === 401

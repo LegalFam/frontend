@@ -7,6 +7,7 @@ import {
   formatPlanTokens,
   planSlug,
 } from '@/utils/plans'
+import { setPendingAuthRedirect } from '@/hooks/useAuth'
 import styles from './PreciosSection.module.css'
 
 export default function PreciosSection({ isAuthenticated, currentPlanCode, onRegisterClick }) {
@@ -14,6 +15,9 @@ export default function PreciosSection({ isAuthenticated, currentPlanCode, onReg
 
   const handlePlanClick = (plan) => {
     if (!isAuthenticated) {
+      if (plan.code !== 'FREE') {
+        setPendingAuthRedirect(`/pago/${planSlug(plan)}`)
+      }
       onRegisterClick()
       return
     }
