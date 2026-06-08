@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import logoImg from '@/assets/logo.png'
+import logoImg from '@/assets/logo-transparent.png'
 import { useAuth } from '@/hooks/useAuth'
 import styles from './ChatSidebar.module.css'
 

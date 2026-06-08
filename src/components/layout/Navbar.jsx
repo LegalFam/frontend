@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import logoImg from '@/assets/logo.png'
+import logoImg from '@/assets/logo-transparent.png'
 import styles from './Navbar.module.css'
 
 export default function Navbar({

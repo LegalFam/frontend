@@ -1,4 +1,4 @@
-import logoImg from '@/assets/logo.png'
+import logoImg from '@/assets/logo-transparent.png'
 import styles from './BannerSection.module.css'
 
 const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })

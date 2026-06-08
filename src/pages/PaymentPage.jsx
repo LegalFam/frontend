@@ -9,7 +9,7 @@ import {
   formatPlanPrice,
   formatPlanTokens,
 } from '@/utils/plans'
-import logoImg from '@/assets/logo.png'
+import logoImg from '@/assets/logo-transparent.png'
 import styles from './PaymentPage.module.css'
 
 export default function PaymentPage() {

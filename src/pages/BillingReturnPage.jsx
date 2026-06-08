@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { usePaymentStore } from '@/store/paymentStore'
-import logoImg from '@/assets/logo.png'
+import logoImg from '@/assets/logo-transparent.png'
 import styles from './PaymentPage.module.css'
 
 export default function BillingReturnPage() {

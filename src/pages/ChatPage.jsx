@@ -15,7 +15,7 @@ import ChatSidebar        from '@/components/chat/ChatSidebar'
 import ChatMessage        from '@/components/chat/ChatMessage'
 import ChatInput          from '@/components/chat/ChatInput'
 import TypingIndicator    from '@/components/chat/TypingIndicator'
-import logoImg            from '@/assets/logo.png'
+import logoImg            from '@/assets/logo-transparent.png'
 import styles             from './ChatPage.module.css'
 
 export default function ChatPage() {
