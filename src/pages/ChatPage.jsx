@@ -29,7 +29,7 @@ export default function ChatPage() {
   const {
     sessions, activeSessionId, messages, loading, connectionState, error,
     loadSessions, selectSession, startNewChat,
-    sendMessage, rateMessage, deleteSession, renameSession,
+    sendMessage, retryMessage, rateMessage, deleteSession, renameSession,
   } = useChat()
 
   const messagesEndRef = useRef(null)
@@ -50,6 +50,7 @@ export default function ChatPage() {
 
   const activeKey      = activeSessionId || 'new'
   const activeMessages = messages[activeKey] || []
+  const showConnectionNotice = Boolean(error || (activeSessionId && connectionState === 'reconnecting'))
   const sessionTitle   = activeSessionId
     ? sessions.find((s) => s.id === activeSessionId)?.title || sessions.find((s) => s.id === activeSessionId)?.name || 'Consulta'
     : 'Nueva consulta'
@@ -128,16 +129,33 @@ export default function ChatPage() {
         />
 
         <div className={styles.main}>
-          {(error || connectionState === 'reconnecting') && (
+          {showConnectionNotice && (
             <div className={styles.notice}>
               {error || 'Reconectando con el chat...'}
             </div>
           )}
           <div className={styles.messages}>
             <div className={styles.messagesInner}>
-              {activeMessages.map((msg) => (
-                <ChatMessage key={msg.id} message={msg} onRate={rateMessage} />
-              ))}
+              {activeMessages.map((msg, index) => {
+                const isLastMessage = index === activeMessages.length - 1
+                const isErrorMessage = msg.isError || msg.role === 'SYSTEM'
+                const previousUserMessage = activeMessages
+                  .slice(0, index)
+                  .reverse()
+                  .find((item) => item.role === 'USER')
+                const retryText = isLastMessage && isErrorMessage
+                  ? msg.retryText || previousUserMessage?.content
+                  : null
+                return (
+                  <ChatMessage
+                    key={msg.id}
+                    message={msg}
+                    onRate={rateMessage}
+                    onRetry={retryMessage}
+                    retryText={retryText}
+                  />
+                )
+              })}
               {loading && <TypingIndicator />}
               <div ref={messagesEndRef} />
             </div>

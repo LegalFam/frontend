@@ -4,6 +4,7 @@ import { chatService, getApiBaseUrl, refreshAccessToken } from '@/services/api'
 import { useChatStore } from '@/store/chatStore'
 import { useAuthStore } from '@/store/authStore'
 import { usePaymentStore } from '@/store/paymentStore'
+import { normalizeApiError } from '@/utils/apiError'
 
 const BACKOFF_MS = [1000, 2000, 5000, 10000, 30000]
 
@@ -38,6 +39,19 @@ const isCanceledRequest = (error) =>
   error?.name === 'CanceledError' ||
   error?.code === 'ERR_CANCELED' ||
   error?.name === 'AbortError'
+
+const preserveOptimisticMessages = (sessionId, serverMessages) => {
+  const current = useChatStore.getState().messages[sessionId] || []
+  const serverIds = new Set(serverMessages.map((message) => message.id).filter(Boolean))
+  const optimistic = current.filter((message) =>
+    message.id?.startsWith('tmp_') ||
+    message.state === 'sending' ||
+    message.state === 'processing' ||
+    message.state === 'unknown_delivery'
+  ).filter((message) => !serverIds.has(message.id))
+
+  return optimistic.length ? [...serverMessages, ...optimistic] : serverMessages
+}
 
 export function useChat() {
   const navigate = useNavigate()
@@ -101,15 +115,16 @@ export function useChat() {
         if (signal?.aborted || useChatStore.getState().activeSessionId !== sessionId) {
           return messages
         }
-        store.setMessages(sessionId, messages)
-        confirmUnreadAssistantReceipts(sessionId, messages).catch(() => {})
+        const nextMessages = preserveOptimisticMessages(sessionId, messages)
+        store.setMessages(sessionId, nextMessages)
+        confirmUnreadAssistantReceipts(sessionId, nextMessages).catch(() => {})
 
-        const lastUserIndex = messages.map((message) => message.role).lastIndexOf('USER')
-        const hasTerminalMessage = messages
+        const lastUserIndex = nextMessages.map((message) => message.role).lastIndexOf('USER')
+        const hasTerminalMessage = nextMessages
           .slice(lastUserIndex + 1)
           .some((message) => message.role === 'ASSISTANT' || message.role === 'SYSTEM')
         if (hasTerminalMessage) store.setLoading(false)
-        return messages
+        return nextMessages
       })
       .finally(() => {
         messagesRequestRef.current.delete(sessionId)
@@ -124,7 +139,7 @@ export function useChat() {
       const { data } = await chatService.getSessions()
       store.setSessions(Array.isArray(data) ? data : [])
     } catch (e) {
-      store.setError(e.response?.data?.message || 'No se pudieron cargar las sesiones.')
+      store.setError(normalizeApiError(e, 'No se pudieron cargar las sesiones.').message)
       if (e.response?.status === 401) navigate('/')
     }
   }, [navigate, store])
@@ -149,7 +164,7 @@ export function useChat() {
         navigate('/chat')
         return
       }
-      store.setError(e.response?.data?.message || 'No se pudieron cargar los mensajes.')
+      store.setError(normalizeApiError(e, 'No se pudieron cargar los mensajes.').message)
     } finally {
       if (messagesAbortRef.current?.controller === controller) {
         messagesAbortRef.current = null
@@ -158,6 +173,8 @@ export function useChat() {
   }, [navigate, reconcileMessages, store])
 
   const selectSession = useCallback(async (sessionId) => {
+    store.setError(null)
+    store.setConnectionState('idle')
     store.setActiveSession(sessionId)
   }, [store])
 
@@ -165,6 +182,7 @@ export function useChat() {
     store.setActiveSession(null)
     store.setLoading(false)
     store.setError(null)
+    store.setConnectionState('idle')
     store.setMessages('new', [welcomeMessage(user?.name?.split(' ')[0])])
   }, [store, user])
 
@@ -220,11 +238,12 @@ export function useChat() {
       })
       usePaymentStore.getState().loadSubscription().catch(() => {})
     } catch (e) {
-      const status = e.response?.status
+      const normalizedError = normalizeApiError(e, 'No se pudo enviar tu consulta. Intenta nuevamente.')
+      const status = normalizedError.status
 
       if (!status) {
         store.replaceMessage(sessionId || 'new', tempId, { state: 'unknown_delivery' })
-        store.setError('Conexion interrumpida. Estamos verificando el estado de la conversacion.')
+        store.setError(normalizedError.message)
         if (sessionId) await loadMessages(sessionId, { force: true })
         return
       }
@@ -232,7 +251,7 @@ export function useChat() {
       store.setLoading(false)
 
       if (status === 403) {
-        store.setError(e.response?.data?.message || 'No tienes tokens disponibles o la sesion no esta activa.')
+        store.setError(normalizedError.message)
         usePaymentStore.getState().loadSubscription().catch(() => {})
         return
       }
@@ -240,10 +259,12 @@ export function useChat() {
       store.addMessage(sessionId || 'new', {
         id: `err_${Date.now()}`,
         role: 'SYSTEM',
-        content: e.response?.data?.message || 'No se pudo enviar tu consulta. Intenta nuevamente.',
+        content: normalizedError.message,
         citations: [],
         createdAt: new Date().toISOString(),
         isError: true,
+        retryText: normalizedError.retryable ? trimmed : null,
+        retryAttempted: false,
       })
     } finally {
       sendingTextRef.current = null
@@ -258,7 +279,7 @@ export function useChat() {
       await chatService.rateMessage(messageId, rating, comment)
     } catch (e) {
       await loadMessages(sessionId, { force: true })
-      store.setError(e.response?.data?.message || 'No se pudo guardar la calificacion.')
+      store.setError(normalizeApiError(e, 'No se pudo guardar la calificacion.').message)
       throw e
     }
   }, [loadMessages, store])
@@ -269,7 +290,7 @@ export function useChat() {
       store.removeSession(sessionId)
       if (useChatStore.getState().activeSessionId === sessionId) startNewChat()
     } catch (e) {
-      store.setError(e.response?.data?.message || 'No se pudo eliminar la consulta.')
+      store.setError(normalizeApiError(e, 'No se pudo eliminar la consulta.').message)
     }
   }, [startNewChat, store])
 
@@ -281,9 +302,18 @@ export function useChat() {
       store.upsertSession(data)
     } catch (e) {
       if (previous) store.upsertSession(previous)
-      store.setError(e.response?.data?.message || 'No se pudo renombrar la consulta.')
+      store.setError(normalizeApiError(e, 'No se pudo renombrar la consulta.').message)
     }
   }, [store])
+
+  const retryMessage = useCallback(async (text, errorMessageId) => {
+    const sessionId = useChatStore.getState().activeSessionId
+    if (!sessionId || !text) return
+    if (errorMessageId) {
+      store.replaceMessage(sessionId, errorMessageId, { retryAttempted: true })
+    }
+    await sendMessage(text)
+  }, [sendMessage, store])
 
   useEffect(() => {
     const sessionId = store.activeSessionId
@@ -394,6 +424,7 @@ export function useChat() {
     selectSession,
     startNewChat,
     sendMessage,
+    retryMessage,
     rateMessage,
     deleteSession,
     renameSession,

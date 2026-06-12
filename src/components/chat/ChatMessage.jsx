@@ -40,7 +40,7 @@ const normalizeSourceUrl = (value) => {
   }
 }
 
-export default function ChatMessage({ message, onRate }) {
+export default function ChatMessage({ message, onRate, onRetry, retryText }) {
   const isBot = message.role === 'ASSISTANT'
   const isSystem = message.role === 'SYSTEM'
   const isUser = message.role === 'USER'
@@ -60,6 +60,7 @@ export default function ChatMessage({ message, onRate }) {
   const [sourcesOpen, setSourcesOpen] = useState(false)
   const nextSteps = Array.isArray(message.nextSteps) ? message.nextSteps : []
   const lowConfidence = message.confidenceStatus === 'LOW'
+  const canRetry = isSystem && retryText && !message.retryAttempted
 
   const handleRate = async (stars) => {
     if (!message.id || message.id.startsWith('tmp_') || message.id === 'welcome') return
@@ -103,6 +104,16 @@ export default function ChatMessage({ message, onRate }) {
       {message.state === 'sending' && <span className={styles.status}>Enviando...</span>}
       {message.state === 'processing' && <span className={styles.status}>Procesando...</span>}
       {message.state === 'unknown_delivery' && <span className={styles.status}>Verificando entrega...</span>}
+
+      {canRetry && (
+        <button
+          type="button"
+          className={styles.retryBtn}
+          onClick={() => onRetry?.(retryText, message.id)}
+        >
+          Reintentar consulta
+        </button>
+      )}
 
       {isBot && lowConfidence && (
         <div className={styles.safetyNote}>
