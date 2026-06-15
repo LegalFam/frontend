@@ -59,8 +59,23 @@ export default function ChatMessage({ message, onRate, onRetry, retryText }) {
   const [hover, setHover] = useState(0)
   const [sourcesOpen, setSourcesOpen] = useState(false)
   const nextSteps = Array.isArray(message.nextSteps) ? message.nextSteps : []
+  const citationSupportStatus = ['GOOD', 'WEAK', 'NONE'].includes(message.citationSupportStatus)
+    ? message.citationSupportStatus
+    : null
   const lowConfidence = message.confidenceStatus === 'LOW'
+  const showLowConfidenceFallback = lowConfidence && !citationSupportStatus
   const canRetry = isSystem && retryText && !message.retryAttempted
+  const citationNotice = citationSupportStatus === 'WEAK'
+    ? {
+        title: 'Fuentes de apoyo limitadas',
+        text: 'Estas fuentes pueden orientar, pero no respaldan de forma directa todos los puntos de la respuesta.',
+      }
+    : citationSupportStatus === 'NONE'
+      ? {
+          title: 'Sin fuentes recuperadas',
+          text: 'Esta orientación es general y debe verificarse con una fuente oficial o asesoría especializada antes de tomar decisiones.',
+        }
+      : null
 
   const handleRate = async (stars) => {
     if (!message.id || message.id.startsWith('tmp_') || message.id === 'welcome') return
@@ -115,7 +130,14 @@ export default function ChatMessage({ message, onRate, onRetry, retryText }) {
         </button>
       )}
 
-      {isBot && lowConfidence && (
+      {isBot && citationNotice && (
+        <div className={styles.citationNotice}>
+          <strong>{citationNotice.title}</strong>
+          <span>{citationNotice.text}</span>
+        </div>
+      )}
+
+      {isBot && showLowConfidenceFallback && (
         <div className={styles.safetyNote}>
           <strong>Información de alcance limitado</strong>
           <span>Esta orientación es general y puede no cubrir todos los detalles de tu caso. Para decisiones importantes, consulta con un abogado o una entidad competente.</span>

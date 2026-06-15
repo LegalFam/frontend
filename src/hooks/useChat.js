@@ -59,6 +59,7 @@ const sseEventToMessage = (event) => {
       confidenceReason: data.confidenceReason,
       nextSteps: data.nextSteps,
       specialistSupportRecommended: data.specialistSupportRecommended,
+      citationSupportStatus: data.citationSupportStatus,
       receiptStatus: data.receiptStatus,
     }
   }

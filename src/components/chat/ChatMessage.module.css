@@ -205,6 +205,7 @@
 .citationLink:hover { opacity: 1; }
 
 .safetyNote,
+.citationNotice,
 .guidanceBlock {
   width: 100%;
   margin-top: 0.625rem;
@@ -221,7 +222,12 @@
   background: rgba(238, 128, 128, 0.09);
   color: #ffd2d2;
 }
+.citationNotice {
+  border-color: rgba(212, 175, 55, 0.45);
+  background: rgba(212, 175, 55, 0.08);
+}
 .safetyNote strong,
+.citationNotice strong,
 .blockTitle {
   display: block;
   color: var(--gold);
