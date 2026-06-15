@@ -27,7 +27,7 @@ export default function Navbar({
 
   const links = [
     { id: 'sobre', label: 'Sobre nosotros' },
-    { id: 'como', label: 'Como funciona' },
+    { id: 'como', label: 'Cómo funciona' },
     { id: 'precios', label: 'Precios' },
     { id: 'seguridad', label: 'Seguridad' },
     { id: 'privacidad', label: 'Privacidad' },
@@ -57,11 +57,11 @@ export default function Navbar({
           {isAuthenticated ? (
             <>
               <button className="btn-gold" onClick={onChatClick}>Ir al chat</button>
-              <button className={styles.signoutBtn} onClick={onSignoutClick}>Cerrar sesion</button>
+              <button className={styles.signoutBtn} onClick={onSignoutClick}>Cerrar sesión</button>
             </>
           ) : (
             <>
-              <button className="btn-ghost" onClick={onLoginClick}>Iniciar sesion</button>
+              <button className="btn-ghost" onClick={onLoginClick}>Iniciar sesión</button>
               <button className="btn-gold" onClick={onRegisterClick}>Registrarse</button>
             </>
           )}
@@ -70,7 +70,7 @@ export default function Navbar({
         <button
           className={`${styles.hamburger} ${menuOpen ? styles.open : ''}`}
           onClick={() => setMenuOpen((p) => !p)}
-          aria-label="Menu"
+          aria-label="Menú"
           aria-expanded={menuOpen}
         >
           <span /><span /><span />

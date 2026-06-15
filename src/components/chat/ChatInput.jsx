@@ -25,7 +25,7 @@ export default function ChatInput({ onSend, disabled }) {
     const text = ref.current?.value.trim()
     if (!text || disabled) return
     if (personalDataPattern.test(text)) {
-      setPrivacyError('Evita enviar DNI, telefono, correo o direccion. Describe la situacion de forma general.')
+      setPrivacyError('Evita enviar DNI, teléfono, correo o dirección. Describe la situación de forma general.')
       return
     }
     setPrivacyError(null)
@@ -60,7 +60,7 @@ export default function ChatInput({ onSend, disabled }) {
       </div>
       {privacyError && <p className={styles.privacyError}>{privacyError}</p>}
       <p className={styles.note}>
-        LegalFam brinda orientacion informativa. No incluyas datos personales innecesarios.
+        LegalFam brinda orientación informativa. No incluyas datos personales innecesarios.
       </p>
     </div>
   )

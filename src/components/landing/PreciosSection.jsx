@@ -36,7 +36,7 @@ export default function PreciosSection({ isAuthenticated, currentPlanCode, onReg
           <span className="section-eyebrow">Planes</span>
           <h2 className="section-title">Elige tu plan</h2>
           <p className="section-sub">
-            Comienza sin costo y escala segun tus necesidades de orientacion legal.
+            Comienza sin costo y escala según tus necesidades de orientación legal.
           </p>
         </div>
 
@@ -56,7 +56,7 @@ export default function PreciosSection({ isAuthenticated, currentPlanCode, onReg
                 className={`${styles.card} ${plan.featured ? styles.featured : ''}`}
               >
                 {plan.featured && (
-                  <span className={styles.featuredTag}>Mas popular</span>
+                  <span className={styles.featuredTag}>Más popular</span>
                 )}
                 <p className={styles.planName}>{formatPlanName(plan)}</p>
                 <p className={styles.planPrice}>
@@ -81,7 +81,7 @@ export default function PreciosSection({ isAuthenticated, currentPlanCode, onReg
         </div>
 
         <p className={styles.note}>
-          Los precios incluyen IGV. Puedes cancelar tu suscripcion en cualquier momento.
+          Los precios incluyen IGV. Puedes cancelar tu suscripción en cualquier momento.
         </p>
       </div>
     </section>

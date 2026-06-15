@@ -21,16 +21,16 @@ export const STATIC_PLANS = [
     featured: false,
     buttonLabel: 'Empezar gratis',
     features: [
-      '1 sesion de asesoria legal',
+      '1 sesión de asesoría legal',
       'Respuestas en lenguaje simple',
-      'Temas: alimentos, tenencia y filiacion',
+      'Temas: alimentos, tenencia y filiación',
       'Sin tarjeta requerida',
     ],
   },
   {
     code: 'BASIC',
     slug: PLAN_SLUGS.BASIC,
-    displayName: 'Plan Basico',
+    displayName: 'Plan Básico',
     monthlyPriceCents: 1499,
     currency: 'pen',
     billingInterval: 'month',
@@ -38,10 +38,10 @@ export const STATIC_PLANS = [
     featured: true,
     buttonLabel: 'Suscribirse',
     features: [
-      'Consultas dentro del limite mensual',
+      'Consultas dentro del límite mensual',
       'Historial completo de conversaciones',
       'Fuentes legales citadas',
-      'Calificacion de respuestas',
+      'Calificación de respuestas',
     ],
   },
   {
@@ -55,8 +55,8 @@ export const STATIC_PLANS = [
     featured: false,
     buttonLabel: 'Suscribirse',
     features: [
-      'Mayor limite mensual de consultas',
-      'Respuestas mas detalladas',
+      'Mayor límite mensual de consultas',
+      'Respuestas más detalladas',
       'Prioridad operativa',
       'Soporte prioritario',
     ],

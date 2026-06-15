@@ -113,7 +113,7 @@ export default function ChatPage() {
   return (
     <div className={styles.app}>
       <header className={styles.topbar}>
-        <button className="icon-btn" onClick={() => setSidebarOpen((p) => !p)} aria-label="Toggle sidebar">
+        <button className="icon-btn" onClick={() => setSidebarOpen((p) => !p)} aria-label="Abrir o cerrar historial">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
             <line x1="3" y1="6"  x2="21" y2="6"  />
             <line x1="3" y1="12" x2="21" y2="12" />
@@ -222,7 +222,7 @@ export default function ChatPage() {
           >
             <div className={styles.dialogHeader}>
               <div>
-                <p className={styles.dialogEyebrow}>Suscripcion</p>
+                <p className={styles.dialogEyebrow}>Suscripción</p>
                 <h2 id="billing-title">Plan y tokens</h2>
               </div>
               <button className="icon-btn" onClick={() => setBillingOpen(false)} aria-label="Cerrar">
@@ -280,7 +280,7 @@ export default function ChatPage() {
                 onClick={handleCancelSubscription}
                 disabled={billingLoading}
               >
-                {billingLoading ? 'Cancelando...' : 'Cancelar suscripcion'}
+                {billingLoading ? 'Cancelando...' : 'Cancelar suscripción'}
               </button>
             )}
           </section>

@@ -1,4 +1,4 @@
-const DEFAULT_MESSAGE = 'No se pudo completar la accion. Intenta nuevamente.'
+const DEFAULT_MESSAGE = 'No se pudo completar la acción. Intenta nuevamente.'
 
 const RETRYABLE_STATUS = new Set([408, 502, 503, 504])
 const RETRYABLE_CODES = new Set([
@@ -23,13 +23,13 @@ const normalizeServerMessage = (message) => {
 
   const lower = trimmed.toLowerCase()
   if (lower === 'an unexpected error occurred') {
-    return 'Ocurrio un problema inesperado. Intenta nuevamente.'
+    return 'Ocurrió un problema inesperado. Intenta nuevamente.'
   }
   if (lower === 'access is forbidden') {
-    return 'No tienes permisos para realizar esta accion.'
+    return 'No tienes permisos para realizar esta acción.'
   }
   if (lower === 'malformed request body') {
-    return 'La solicitud no tiene un formato valido.'
+    return 'La solicitud no tiene un formato válido.'
   }
 
   return trimmed
@@ -46,20 +46,20 @@ export const normalizeApiError = (error, fallbackMessage = DEFAULT_MESSAGE) => {
     return {
       status,
       code: 'NETWORK_ERROR',
-      message: 'Conexion interrumpida. Estamos verificando el estado de la conversacion.',
+      message: 'Conexión interrumpida. Estamos verificando el estado de la conversación.',
       retryable: true,
     }
   }
 
   if (status === 401) {
-    return { status, code, message: 'Tu sesion expiro. Inicia sesion nuevamente.', retryable: false }
+    return { status, code, message: 'Tu sesión expiró. Inicia sesión nuevamente.', retryable: false }
   }
 
   if (status === 403) {
     return {
       status,
       code,
-      message: serverMessage || 'No tienes tokens disponibles o la sesion no esta activa.',
+      message: serverMessage || 'No tienes tokens disponibles o la sesión no está activa.',
       retryable: false,
     }
   }

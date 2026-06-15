@@ -14,7 +14,7 @@ const titleFromText = (text) =>
 const welcomeMessage = (name) => ({
   id: 'welcome',
   role: 'ASSISTANT',
-  content: `Hola, **${name || 'Usuario'}**. Bienvenido/a a **LegalFam**.\n\nEstoy aqui para orientarte en temas de **Derecho de Familia** peruano: alimentos, tenencia, filiacion y medidas de proteccion.\n\nSobre que situacion legal deseas consultar hoy?`,
+  content: `Hola, **${name || 'Usuario'}**. Bienvenido/a a **LegalFam**.\n\nEstoy aquí para orientarte en temas de **Derecho de Familia** peruano: alimentos, tenencia, filiación y medidas de protección.\n\n¿Sobre qué situación legal deseas consultar hoy?`,
   citations: [],
   createdAt: new Date().toISOString(),
 })
@@ -376,7 +376,7 @@ export function useChat() {
       await chatService.rateMessage(messageId, rating, comment)
     } catch (e) {
       await loadMessages(sessionId, { force: true })
-      store.setError(normalizeApiError(e, 'No se pudo guardar la calificacion.').message)
+      store.setError(normalizeApiError(e, 'No se pudo guardar la calificación.').message)
       throw e
     }
   }, [loadMessages, store])

@@ -117,8 +117,8 @@ export default function ChatMessage({ message, onRate, onRetry, retryText }) {
 
       {isBot && lowConfidence && (
         <div className={styles.safetyNote}>
-          <strong>Informacion de alcance limitado</strong>
-          <span>Esta orientacion es general y puede no cubrir todos los detalles de tu caso. Para decisiones importantes, consulta con un abogado o una entidad competente.</span>
+          <strong>Información de alcance limitado</strong>
+          <span>Esta orientación es general y puede no cubrir todos los detalles de tu caso. Para decisiones importantes, consulta con un abogado o una entidad competente.</span>
         </div>
       )}
 

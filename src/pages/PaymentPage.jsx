@@ -92,7 +92,7 @@ export default function PaymentPage() {
         <div className={styles.formCard}>
           <h2 className={styles.formTitle}>Checkout externo</h2>
           <p className={styles.formSub}>
-            LegalFam no captura datos de tarjeta. Te enviaremos a Mercado Pago para completar la suscripcion y volveras aqui al terminar.
+            LegalFam no captura datos de tarjeta. Te enviaremos a Mercado Pago para completar la suscripción y volverás aquí al terminar.
           </p>
 
           {error && <div className="api-err">{error}</div>}
@@ -100,7 +100,7 @@ export default function PaymentPage() {
           <div className={styles.checkoutBox}>
             <p className={styles.checkoutTitle}>{formatPlanName(planData)}</p>
             <p className={styles.checkoutText}>
-              Al continuar, Mercado Pago gestionara el pago recurrente. Al volver, actualizaremos tu plan y tokens.
+              Al continuar, Mercado Pago gestionará el pago recurrente. Al volver, actualizaremos tu plan y tokens.
             </p>
           </div>
 

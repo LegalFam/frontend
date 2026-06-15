@@ -37,7 +37,7 @@ export default function BillingReturnPage() {
               {canceled ? <path d="M18 6 6 18M6 6l12 12"/> : <polyline points="20 6 9 17 4 12"/>}
             </svg>
           </div>
-          <h2>{canceled ? 'Checkout cancelado' : 'Estamos verificando tu suscripcion'}</h2>
+          <h2>{canceled ? 'Checkout cancelado' : 'Estamos verificando tu suscripción'}</h2>
           <p>
             {loading
               ? 'Actualizando tu plan y tokens...'

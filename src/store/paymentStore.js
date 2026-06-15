@@ -32,7 +32,7 @@ export const usePaymentStore = create((set) => ({
       set({ subscription: data })
       return data
     } catch (e) {
-      set({ error: e.response?.data?.message || 'No se pudo cargar la suscripcion.' })
+      set({ error: e.response?.data?.message || 'No se pudo cargar la suscripción.' })
       throw e
     }
   },
@@ -53,7 +53,7 @@ export const usePaymentStore = create((set) => ({
 
     if (plansResult.status === 'rejected' && subscriptionResult.status === 'rejected') {
       const e = subscriptionResult.reason
-      set({ loading: false, error: e.response?.data?.message || 'No se pudo actualizar la facturacion.' })
+      set({ loading: false, error: e.response?.data?.message || 'No se pudo actualizar la facturación.' })
       throw e
     }
 
@@ -70,7 +70,7 @@ export const usePaymentStore = create((set) => ({
     } catch (e) {
       set({
         loading: false,
-        error: e.response?.data?.message || 'No se pudo cancelar la suscripcion.',
+        error: e.response?.data?.message || 'No se pudo cancelar la suscripción.',
       })
       throw e
     }

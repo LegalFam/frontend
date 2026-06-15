@@ -89,7 +89,7 @@ export default function ChatSidebar({
           <p className={styles.emptyMsg}>Cargando historial...</p>
         )}
         {!loadingSessions && sessions.length === 0 && (
-          <p className={styles.emptyMsg}>No hay consultas aun.<br/>Haz tu primera pregunta.</p>
+          <p className={styles.emptyMsg}>No hay consultas aún.<br/>Haz tu primera pregunta.</p>
         )}
         {sessions.map((s) => (
           <div
@@ -150,7 +150,7 @@ export default function ChatSidebar({
           <span className={styles.userName}>{user?.name || 'Usuario'}</span>
           <span className={styles.userEmail}>{user?.email || ''}</span>
         </div>
-        <button className={styles.logoutBtn} onClick={signout} title="Cerrar sesion">
+        <button className={styles.logoutBtn} onClick={signout} title="Cerrar sesión">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
             <polyline points="16 17 21 12 16 7"/>
@@ -170,7 +170,7 @@ export default function ChatSidebar({
           >
             <h2 id="delete-session-title">Eliminar consulta</h2>
             <p>
-              Se eliminara "{deleteTarget.title || deleteTarget.name || formatDate(deleteTarget.createdAt)}" del historial.
+              Se eliminará "{deleteTarget.title || deleteTarget.name || formatDate(deleteTarget.createdAt)}" del historial.
             </p>
             <div className={styles.confirmActions}>
               <button className={styles.cancelBtn} onClick={() => setDeleteTarget(null)}>
