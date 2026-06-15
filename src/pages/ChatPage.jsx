@@ -27,12 +27,21 @@ export default function ChatPage() {
   const { plans, subscription, refreshBilling, cancelSubscription, loading: billingLoading } = usePaymentStore()
 
   const {
-    sessions, activeSessionId, messages, loading, connectionState, error,
-    loadSessions, selectSession, startNewChat,
+    sessions, sessionsNextCursor, sessionsLoading, sessionsLoadingMore,
+    activeSessionId, messages, messagesNextCursors, messagesLoadingMore,
+    loading, connectionState, error,
+    loadSessions, loadMoreSessions, loadMoreMessages, selectSession, startNewChat,
     sendMessage, retryMessage, rateMessage, deleteSession, renameSession,
   } = useChat()
 
+  const messagesContainerRef = useRef(null)
   const messagesEndRef = useRef(null)
+  const loadingOlderMessagesRef = useRef(false)
+
+  const activeKey      = activeSessionId || 'new'
+  const activeMessages = messages[activeKey] || []
+  const hasMoreMessages = Boolean(activeSessionId && messagesNextCursors[activeSessionId])
+  const messagesLoadingMoreForActive = Boolean(activeSessionId && messagesLoadingMore[activeSessionId])
 
   useEffect(() => {
     loadSessions().then(() => startNewChat())
@@ -41,15 +50,14 @@ export default function ChatPage() {
   }, [])
 
   useEffect(() => {
+    if (loadingOlderMessagesRef.current) return
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages, loading])
+  }, [activeSessionId, activeMessages.length, loading])
 
   const closeSidebarOnMobile = () => {
     if (isMobile()) setSidebarOpen(false)
   }
 
-  const activeKey      = activeSessionId || 'new'
-  const activeMessages = messages[activeKey] || []
   const showConnectionNotice = Boolean(error || (activeSessionId && connectionState === 'reconnecting'))
   const sessionTitle   = activeSessionId
     ? sessions.find((s) => s.id === activeSessionId)?.title || sessions.find((s) => s.id === activeSessionId)?.name || 'Consulta'
@@ -72,6 +80,34 @@ export default function ChatPage() {
 
   const handleCancelSubscription = async () => {
     await cancelSubscription().catch(() => {})
+  }
+
+  const handleMessagesScroll = async () => {
+    const container = messagesContainerRef.current
+    if (
+      !container ||
+      !activeSessionId ||
+      !hasMoreMessages ||
+      messagesLoadingMoreForActive ||
+      loadingOlderMessagesRef.current ||
+      container.scrollTop > 48
+    ) {
+      return
+    }
+
+    loadingOlderMessagesRef.current = true
+    const previousScrollHeight = container.scrollHeight
+    const previousScrollTop = container.scrollTop
+
+    try {
+      await loadMoreMessages(activeSessionId)
+      window.requestAnimationFrame(() => {
+        container.scrollTop = container.scrollHeight - previousScrollHeight + previousScrollTop
+        loadingOlderMessagesRef.current = false
+      })
+    } catch {
+      loadingOlderMessagesRef.current = false
+    }
   }
 
   return (
@@ -120,8 +156,12 @@ export default function ChatPage() {
         <ChatSidebar
           open={sidebarOpen}
           sessions={sessions}
+          hasMoreSessions={Boolean(sessionsNextCursor)}
+          loadingSessions={sessionsLoading}
+          loadingMoreSessions={sessionsLoadingMore}
           activeSessionId={activeSessionId}
           onSelectSession={selectSession}
+          onLoadMoreSessions={loadMoreSessions}
           onNewChat={startNewChat}
           onRenameSession={renameSession}
           onDeleteSession={deleteSession}
@@ -134,8 +174,15 @@ export default function ChatPage() {
               {error || 'Reconectando con el chat...'}
             </div>
           )}
-          <div className={styles.messages}>
+          <div
+            className={styles.messages}
+            ref={messagesContainerRef}
+            onScroll={handleMessagesScroll}
+          >
             <div className={styles.messagesInner}>
+              {messagesLoadingMoreForActive && (
+                <div className={styles.historyLoader}>Cargando mensajes anteriores...</div>
+              )}
               {activeMessages.map((msg, index) => {
                 const isLastMessage = index === activeMessages.length - 1
                 const isErrorMessage = msg.isError || msg.role === 'SYSTEM'

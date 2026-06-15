@@ -64,6 +64,17 @@
   max-width: 760px; width: 100%; margin: 0 auto;
   display: flex; flex-direction: column; gap: 1.25rem;
 }
+.historyLoader {
+  align-self: center;
+  min-height: 30px;
+  padding: 7px 12px;
+  border: 0.5px solid var(--gold-border);
+  border-radius: var(--radius);
+  background: var(--black-2);
+  color: var(--text-secondary);
+  font-size: 12px;
+  letter-spacing: 0.3px;
+}
 .modalLayer {
   position: fixed; inset: 0; z-index: 200;
   display: flex; align-items: center; justify-content: center;

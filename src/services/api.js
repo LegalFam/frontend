@@ -2,6 +2,8 @@ import axios from 'axios'
 import { useAuthStore } from '@/store/authStore'
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL
+const CHAT_SESSIONS_PAGE_SIZE = 20
+const CHAT_MESSAGES_PAGE_SIZE = 10
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -96,8 +98,14 @@ export const authService = {
 export const chatService = {
   createSession: () => api.post('/chat/sessions'),
   sendMessage: (payload) => api.post('/chat/send', payload),
-  getSessions: () => api.get('/chat/sessions'),
-  getMessages: (sessionId, config = {}) => api.get(`/chat/sessions/${sessionId}/messages`, config),
+  getSessions: (config = {}) => {
+    const { params, ...rest } = config
+    return api.get('/chat/sessions', { ...rest, params: { size: CHAT_SESSIONS_PAGE_SIZE, ...params } })
+  },
+  getMessages: (sessionId, config = {}) => {
+    const { params, ...rest } = config
+    return api.get(`/chat/sessions/${sessionId}/messages`, { ...rest, params: { size: CHAT_MESSAGES_PAGE_SIZE, ...params } })
+  },
   updateSession: (sessionId, payload) => api.patch(`/chat/sessions/${sessionId}`, payload),
   deleteSession: (sessionId) => api.delete(`/chat/sessions/${sessionId}`),
   rateMessage: (messageId, rating, comment = '') =>

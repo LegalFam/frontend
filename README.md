@@ -83,17 +83,30 @@ git push -u origin main
 Modifica el archivo `.env` en la raíz del proyecto para configurar la URL base de tu API:
 
 ```
-VITE_API_BASE_URL=http://localhost:8080
+VITE_API_BASE_URL=http://localhost:8080/api/v1
 ```
 
+Incluye el prefijo completo que expone el backend. Si el prefijo cambia, solo actualiza esta variable de entorno.
+
 ## Endpoints integrados
+
+Las rutas son relativas a `/api/v1`.
 
 | Método | Ruta | Uso |
 |--------|------|-----|
 | POST | `/auth/signup` | Registro |
 | POST | `/auth/login` | Login |
 | POST | `/auth/refresh` | Refresh token automático |
-| POST | `/chat` | Enviar mensaje |
+| GET | `/payments/plans` | Listar planes |
+| GET | `/payments/subscription` | Suscripción y tokens |
+| POST | `/payments/checkout-sessions` | Crear checkout |
+| POST | `/payments/subscription/cancel` | Cancelar suscripción |
+| POST | `/chat/sessions` | Crear sesión |
 | GET | `/chat/sessions` | Listar sesiones |
+| PATCH | `/chat/sessions/:id` | Renombrar sesión |
+| DELETE | `/chat/sessions/:id` | Eliminar sesión |
 | GET | `/chat/sessions/:id/messages` | Mensajes de una sesión |
+| GET | `/chat/subscribe/:id` | Eventos SSE del chat |
+| POST | `/chat/send` | Enviar mensaje |
 | PATCH | `/chat/messages/:id/rating` | Calificar respuesta |
+| PATCH | `/chat/messages/:id/receipt` | Confirmar lectura |

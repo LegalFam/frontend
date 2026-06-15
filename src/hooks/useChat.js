@@ -35,10 +35,61 @@ const parseSseChunk = (chunk) => {
   return event
 }
 
+const parseSseData = (data) => {
+  if (!data || data === 'connected' || data === 'ping') return null
+  try {
+    return JSON.parse(data)
+  } catch {
+    return null
+  }
+}
+
+const sseEventToMessage = (event) => {
+  const data = parseSseData(event.data)
+  if (!data?.messageId) return null
+
+  if (event.type === 'assistant_message') {
+    return {
+      id: data.messageId,
+      role: 'ASSISTANT',
+      content: data.message || '',
+      citations: data.citations || [],
+      createdAt: data.createdAt || new Date().toISOString(),
+      confidenceStatus: data.confidenceStatus,
+      confidenceReason: data.confidenceReason,
+      nextSteps: data.nextSteps,
+      specialistSupportRecommended: data.specialistSupportRecommended,
+      receiptStatus: data.receiptStatus,
+    }
+  }
+
+  if (event.type === 'assistant_error') {
+    return {
+      id: data.messageId,
+      role: 'SYSTEM',
+      content: data.errorMessage || 'No se pudo generar la respuesta.',
+      citations: [],
+      createdAt: data.createdAt || new Date().toISOString(),
+      isError: true,
+    }
+  }
+
+  return null
+}
+
 const isCanceledRequest = (error) =>
   error?.name === 'CanceledError' ||
   error?.code === 'ERR_CANCELED' ||
   error?.name === 'AbortError'
+
+const cursorContent = (data) => {
+  if (Array.isArray(data)) return data
+  if (Array.isArray(data?.content)) return data.content
+  return []
+}
+
+const cursorNext = (data) =>
+  data && typeof data === 'object' && !Array.isArray(data) ? data.nextCursor || null : null
 
 const preserveOptimisticMessages = (sessionId, serverMessages) => {
   const current = useChatStore.getState().messages[sessionId] || []
@@ -111,19 +162,28 @@ export function useChat() {
 
     const request = chatService.getMessages(sessionId, { signal })
       .then(({ data }) => {
-        const messages = Array.isArray(data) ? data : []
+        const messages = cursorContent(data)
         if (signal?.aborted || useChatStore.getState().activeSessionId !== sessionId) {
           return messages
         }
         const nextMessages = preserveOptimisticMessages(sessionId, messages)
-        store.setMessages(sessionId, nextMessages)
+        const hasLoadedMessages = Boolean(useChatStore.getState().messages[sessionId]?.length)
+        store.setMessagesPage(
+          sessionId,
+          nextMessages,
+          cursorNext(data),
+          hasLoadedMessages ? 'merge' : 'replace'
+        )
         confirmUnreadAssistantReceipts(sessionId, nextMessages).catch(() => {})
 
         const lastUserIndex = nextMessages.map((message) => message.role).lastIndexOf('USER')
         const hasTerminalMessage = nextMessages
           .slice(lastUserIndex + 1)
           .some((message) => message.role === 'ASSISTANT' || message.role === 'SYSTEM')
-        if (hasTerminalMessage) store.setLoading(false)
+        if (hasTerminalMessage) {
+          store.clearPendingUserMessageStates(sessionId)
+          store.setLoading(false)
+        }
         return nextMessages
       })
       .finally(() => {
@@ -135,14 +195,32 @@ export function useChat() {
   }, [confirmUnreadAssistantReceipts, store])
 
   const loadSessions = useCallback(async () => {
+    store.setSessionsLoading(true)
     try {
       const { data } = await chatService.getSessions()
-      store.setSessions(Array.isArray(data) ? data : [])
+      store.setSessionsPage(cursorContent(data), cursorNext(data))
     } catch (e) {
       store.setError(normalizeApiError(e, 'No se pudieron cargar las sesiones.').message)
       if (e.response?.status === 401) navigate('/')
+    } finally {
+      store.setSessionsLoading(false)
     }
   }, [navigate, store])
+
+  const loadMoreSessions = useCallback(async () => {
+    const cursor = useChatStore.getState().sessionsNextCursor
+    if (!cursor || useChatStore.getState().sessionsLoadingMore) return
+
+    store.setSessionsLoadingMore(true)
+    try {
+      const { data } = await chatService.getSessions({ params: { cursor } })
+      store.setSessionsPage(cursorContent(data), cursorNext(data), true)
+    } catch (e) {
+      store.setError(normalizeApiError(e, 'No se pudieron cargar más sesiones.').message)
+    } finally {
+      store.setSessionsLoadingMore(false)
+    }
+  }, [store])
 
   const loadMessages = useCallback(async (sessionId, { force = false } = {}) => {
     if (!sessionId) return
@@ -171,6 +249,25 @@ export function useChat() {
       }
     }
   }, [navigate, reconcileMessages, store])
+
+  const loadMoreMessages = useCallback(async (sessionId = useChatStore.getState().activeSessionId) => {
+    if (!sessionId) return
+    const state = useChatStore.getState()
+    const cursor = state.messagesNextCursors[sessionId]
+    if (!cursor || state.messagesLoadingMore[sessionId]) return
+
+    store.setMessagesLoadingMore(sessionId, true)
+    try {
+      const { data } = await chatService.getMessages(sessionId, { params: { cursor } })
+      const messages = cursorContent(data)
+      store.setMessagesPage(sessionId, messages, cursorNext(data), 'prepend')
+      confirmUnreadAssistantReceipts(sessionId, messages).catch(() => {})
+    } catch (e) {
+      store.setError(normalizeApiError(e, 'No se pudieron cargar más mensajes.').message)
+    } finally {
+      store.setMessagesLoadingMore(sessionId, false)
+    }
+  }, [confirmUnreadAssistantReceipts, store])
 
   const selectSession = useCallback(async (sessionId) => {
     store.setError(null)
@@ -384,7 +481,15 @@ export function useChat() {
           for (const chunk of chunks) {
             const event = parseSseChunk(chunk)
             if (event.type === 'assistant_message' || event.type === 'assistant_error') {
-              await loadMessages(sessionId, { force: true })
+              const message = sseEventToMessage(event)
+              if (message) {
+                store.upsertMessage(sessionId, message)
+                store.clearPendingUserMessageStates(sessionId)
+                store.setLoading(false)
+                if (message.role === 'ASSISTANT') {
+                  confirmUnreadAssistantReceipts(sessionId, [message]).catch(() => {})
+                }
+              }
               if (event.type === 'assistant_error') {
                 store.setLoading(false)
                 usePaymentStore.getState().loadSubscription().catch(() => {})
@@ -415,12 +520,19 @@ export function useChat() {
 
   return {
     sessions:        store.sessions,
+    sessionsNextCursor: store.sessionsNextCursor,
+    sessionsLoading: store.sessionsLoading,
+    sessionsLoadingMore: store.sessionsLoadingMore,
     activeSessionId: store.activeSessionId,
     messages:        store.messages,
+    messagesNextCursors: store.messagesNextCursors,
+    messagesLoadingMore: store.messagesLoadingMore,
     loading:         store.loading,
     connectionState: store.connectionState,
     error:           store.error,
     loadSessions,
+    loadMoreSessions,
+    loadMoreMessages,
     selectSession,
     startNewChat,
     sendMessage,

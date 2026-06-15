@@ -3,10 +3,23 @@ import logoImg from '@/assets/logo-transparent.png'
 import { useAuth } from '@/hooks/useAuth'
 import styles from './ChatSidebar.module.css'
 
-export default function ChatSidebar({ open, sessions, activeSessionId, onSelectSession, onNewChat, onRenameSession, onDeleteSession, onClose }) {
+export default function ChatSidebar({
+  open,
+  sessions,
+  activeSessionId,
+  hasMoreSessions,
+  loadingSessions,
+  loadingMoreSessions,
+  onSelectSession,
+  onLoadMoreSessions,
+  onNewChat,
+  onRenameSession,
+  onDeleteSession,
+  onClose,
+}) {
   const { user, signout } = useAuth()
-  const [editingId,  setEditingId]  = useState(null)
-  const [editValue,  setEditValue]  = useState('')
+  const [editingId, setEditingId] = useState(null)
+  const [editValue, setEditValue] = useState('')
   const [deleteTarget, setDeleteTarget] = useState(null)
 
   const initials = user?.name
@@ -25,7 +38,7 @@ export default function ChatSidebar({ open, sessions, activeSessionId, onSelectS
   }
 
   const handleKeyDown = (e, sessionId) => {
-    if (e.key === 'Enter')  saveEdit(sessionId)
+    if (e.key === 'Enter') saveEdit(sessionId)
     if (e.key === 'Escape') setEditingId(null)
   }
 
@@ -57,7 +70,6 @@ export default function ChatSidebar({ open, sessions, activeSessionId, onSelectS
 
   return (
     <aside className={`${styles.sidebar} ${!open ? styles.closed : ''}`}>
-      {/* Logo header */}
       <div className={styles.sidebarLogo}>
         <img src={logoImg} alt="LegalFam" className={styles.sidebarLogoImg} />
         <span className={styles.sidebarLogoText}>LEGALFAM</span>
@@ -73,14 +85,18 @@ export default function ChatSidebar({ open, sessions, activeSessionId, onSelectS
       <div className={styles.listLabel}>Historial</div>
 
       <div className={styles.list}>
-        {sessions.length === 0 && (
-          <p className={styles.emptyMsg}>No hay consultas aún.<br/>¡Haz tu primera pregunta!</p>
+        {loadingSessions && sessions.length === 0 && (
+          <p className={styles.emptyMsg}>Cargando historial...</p>
+        )}
+        {!loadingSessions && sessions.length === 0 && (
+          <p className={styles.emptyMsg}>No hay consultas aun.<br/>Haz tu primera pregunta.</p>
         )}
         {sessions.map((s) => (
-          <div key={s.id}
+          <div
+            key={s.id}
             className={`${styles.item} ${s.id === activeSessionId ? styles.active : ''}`}
-            onClick={() => handleSelectSession(s.id)}>
-
+            onClick={() => handleSelectSession(s.id)}
+          >
             <svg className={styles.itemIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
             </svg>
@@ -116,6 +132,16 @@ export default function ChatSidebar({ open, sessions, activeSessionId, onSelectS
             </div>
           </div>
         ))}
+        {hasMoreSessions && (
+          <button
+            type="button"
+            className={styles.loadMoreBtn}
+            onClick={onLoadMoreSessions}
+            disabled={loadingMoreSessions}
+          >
+            {loadingMoreSessions ? 'Cargando...' : 'Cargar más'}
+          </button>
+        )}
       </div>
 
       <div className={styles.userRow}>
@@ -124,7 +150,7 @@ export default function ChatSidebar({ open, sessions, activeSessionId, onSelectS
           <span className={styles.userName}>{user?.name || 'Usuario'}</span>
           <span className={styles.userEmail}>{user?.email || ''}</span>
         </div>
-        <button className={styles.logoutBtn} onClick={signout} title="Cerrar sesión">
+        <button className={styles.logoutBtn} onClick={signout} title="Cerrar sesion">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
             <polyline points="16 17 21 12 16 7"/>
