@@ -3,7 +3,7 @@ import styles from './ChatInput.module.css'
 
 const personalDataPattern = /(\b[\w.%+-]+@[\w.-]+\.[A-Za-z]{2,}\b)|((?:\+?51\s*)?(?:9\d{2}|0?1|[2-8]\d)(?:[\s.-]*\d){6,8})|(\b\d{8}\b)|(\b(?:av\.?|avenida|jr\.?|jiron|calle|pasaje|mz\.?|manzana|lote)\b)/i
 
-export default function ChatInput({ onSend, disabled }) {
+export default function ChatInput({ onSend, disabled, disabledReason }) {
   const ref = useRef(null)
   const [privacyError, setPrivacyError] = useState(null)
 
@@ -36,11 +36,16 @@ export default function ChatInput({ onSend, disabled }) {
 
   return (
     <div className={styles.area}>
+      {disabledReason && (
+        <div className={styles.status} role="status">
+          {disabledReason}
+        </div>
+      )}
       <div className={styles.wrap}>
         <textarea
           ref={ref}
           rows={1}
-          placeholder="Escribe tu consulta legal..."
+          placeholder={disabled ? 'Espera la respuesta anterior para enviar otra consulta...' : 'Escribe tu consulta legal...'}
           onKeyDown={handleKey}
           onInput={autoResize}
           disabled={disabled}
@@ -60,7 +65,7 @@ export default function ChatInput({ onSend, disabled }) {
       </div>
       {privacyError && <p className={styles.privacyError}>{privacyError}</p>}
       <p className={styles.note}>
-        LegalFam brinda orientación informativa. No incluyas datos personales innecesarios.
+        Los tokens se descuentan cuando la respuesta queda lista. No incluyas datos personales innecesarios.
       </p>
     </div>
   )

@@ -43,6 +43,7 @@ export const useChatStore = create((set) => ({
   messagesNextCursors: {},
   messagesLoadingMore: {},
   loading: false,
+  processingStatus: { processing: false },
   connectionState: 'idle',
   error: null,
 
@@ -206,6 +207,9 @@ export const useChatStore = create((set) => ({
     })),
 
   setLoading: (loading) => set({ loading }),
+  setProcessingStatus: (processingStatus) => set({
+    processingStatus: processingStatus || { processing: false },
+  }),
   setConnectionState: (connectionState) => set({ connectionState }),
   setError: (error) => set({ error }),
 }))

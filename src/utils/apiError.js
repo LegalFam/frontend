@@ -10,6 +10,10 @@ const RETRYABLE_CODES = new Set([
   'AGENT_VALIDATION_FAILED',
 ])
 
+const ERROR_MESSAGES_BY_CODE = {
+  message_processing_pending: 'Ya hay una consulta en proceso. Espera a que termine antes de enviar otra.',
+}
+
 const readDetail = (data) => {
   if (!data || typeof data !== 'object') return {}
   if (data.detail && typeof data.detail === 'object') return data.detail
@@ -66,10 +70,11 @@ export const normalizeApiError = (error, fallbackMessage = DEFAULT_MESSAGE) => {
 
   if (status === 400 || status === 409 || status === 422) {
     const isAgentFailure = code && RETRYABLE_CODES.has(code)
+    const clientMessage = ERROR_MESSAGES_BY_CODE[code]
     return {
       status,
       code,
-      message: serverMessage || fallbackMessage,
+      message: clientMessage || serverMessage || fallbackMessage,
       retryable: isAgentFailure,
     }
   }

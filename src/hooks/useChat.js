@@ -119,6 +119,17 @@ export function useChat() {
   const messagesAbortRef = useRef(null)
   const receiptRequestRef = useRef(new Map())
 
+  const loadProcessingStatus = useCallback(async () => {
+    try {
+      const { data } = await chatService.getProcessingStatus()
+      useChatStore.getState().setProcessingStatus(data)
+      return data
+    } catch (e) {
+      if (e.response?.status === 401) return null
+      throw e
+    }
+  }, [])
+
   const confirmUnreadAssistantReceipts = useCallback(async (sessionId, messages) => {
     const unreadAssistantMessages = messages.filter((message) =>
       message.role === 'ASSISTANT' &&
@@ -183,7 +194,9 @@ export function useChat() {
           .some((message) => message.role === 'ASSISTANT' || message.role === 'SYSTEM')
         if (hasTerminalMessage) {
           store.clearPendingUserMessageStates(sessionId)
+          store.setProcessingStatus({ processing: false })
           store.setLoading(false)
+          usePaymentStore.getState().loadSubscription().catch(() => {})
         }
         return nextMessages
       })
@@ -313,6 +326,11 @@ export function useChat() {
     let sessionId = useChatStore.getState().activeSessionId
 
     try {
+      const processingStatus = await loadProcessingStatus().catch(() => useChatStore.getState().processingStatus)
+      if (processingStatus?.processing) {
+        store.setError('Ya hay una consulta en proceso. Espera a que termine antes de enviar otra.')
+        return
+      }
       sessionId = await ensureSession(trimmed)
       const userMsg = {
         id: tempId,
@@ -334,7 +352,12 @@ export function useChat() {
         id: data.userMessageId,
         state: 'processing',
       })
-      usePaymentStore.getState().loadSubscription().catch(() => {})
+      store.setProcessingStatus({
+        processing: true,
+        chatSessionId: sessionId,
+        userMessageId: data.userMessageId,
+        status: data.status,
+      })
     } catch (e) {
       const normalizedError = normalizeApiError(e, 'No se pudo enviar tu consulta. Intenta nuevamente.')
       const status = normalizedError.status
@@ -347,6 +370,12 @@ export function useChat() {
       }
 
       store.setLoading(false)
+
+      if (status === 409) {
+        loadProcessingStatus().catch(() => {})
+        store.setError(normalizedError.message)
+        return
+      }
 
       if (status === 403) {
         store.setError(normalizedError.message)
@@ -367,7 +396,7 @@ export function useChat() {
     } finally {
       sendingTextRef.current = null
     }
-  }, [confirmUnreadAssistantReceipts, ensureSession, loadMessages, store])
+  }, [confirmUnreadAssistantReceipts, ensureSession, loadMessages, loadProcessingStatus, store])
 
   const rateMessage = useCallback(async (messageId, rating, comment = '') => {
     const sessionId = useChatStore.getState().activeSessionId
@@ -486,12 +515,15 @@ export function useChat() {
               if (message) {
                 store.upsertMessage(sessionId, message)
                 store.clearPendingUserMessageStates(sessionId)
+                store.setProcessingStatus({ processing: false })
                 store.setLoading(false)
                 if (message.role === 'ASSISTANT') {
                   confirmUnreadAssistantReceipts(sessionId, [message]).catch(() => {})
+                  usePaymentStore.getState().loadSubscription().catch(() => {})
                 }
               }
               if (event.type === 'assistant_error') {
+                store.setProcessingStatus({ processing: false })
                 store.setLoading(false)
                 usePaymentStore.getState().loadSubscription().catch(() => {})
               }
@@ -519,6 +551,28 @@ export function useChat() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessToken, store.activeSessionId])
 
+  useEffect(() => {
+    if (!accessToken) {
+      useChatStore.getState().setProcessingStatus({ processing: false })
+      return undefined
+    }
+
+    loadProcessingStatus().catch(() => {})
+
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === 'visible') {
+        loadProcessingStatus().catch(() => {})
+      }
+    }
+    window.addEventListener('focus', loadProcessingStatus)
+    document.addEventListener('visibilitychange', refreshWhenVisible)
+
+    return () => {
+      window.removeEventListener('focus', loadProcessingStatus)
+      document.removeEventListener('visibilitychange', refreshWhenVisible)
+    }
+  }, [accessToken, loadProcessingStatus])
+
   return {
     sessions:        store.sessions,
     sessionsNextCursor: store.sessionsNextCursor,
@@ -529,11 +583,13 @@ export function useChat() {
     messagesNextCursors: store.messagesNextCursors,
     messagesLoadingMore: store.messagesLoadingMore,
     loading:         store.loading,
+    processingStatus: store.processingStatus,
     connectionState: store.connectionState,
     error:           store.error,
     loadSessions,
     loadMoreSessions,
     loadMoreMessages,
+    loadProcessingStatus,
     selectSession,
     startNewChat,
     sendMessage,

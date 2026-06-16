@@ -98,6 +98,7 @@ export const authService = {
 export const chatService = {
   createSession: () => api.post('/chat/sessions'),
   sendMessage: (payload) => api.post('/chat/send', payload),
+  getProcessingStatus: () => api.get('/chat/processing-status'),
   getSessions: (config = {}) => {
     const { params, ...rest } = config
     return api.get('/chat/sessions', { ...rest, params: { size: CHAT_SESSIONS_PAGE_SIZE, ...params } })

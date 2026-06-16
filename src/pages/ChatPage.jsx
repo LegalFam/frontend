@@ -29,7 +29,7 @@ export default function ChatPage() {
   const {
     sessions, sessionsNextCursor, sessionsLoading, sessionsLoadingMore,
     activeSessionId, messages, messagesNextCursors, messagesLoadingMore,
-    loading, connectionState, error,
+    loading, processingStatus, connectionState, error,
     loadSessions, loadMoreSessions, loadMoreMessages, selectSession, startNewChat,
     sendMessage, retryMessage, rateMessage, deleteSession, renameSession,
   } = useChat()
@@ -40,6 +40,9 @@ export default function ChatPage() {
 
   const activeKey      = activeSessionId || 'new'
   const activeMessages = messages[activeKey] || []
+  const activeSessionProcessing = processingStatus?.processing &&
+    processingStatus.chatSessionId &&
+    processingStatus.chatSessionId === activeSessionId
   const hasMoreMessages = Boolean(activeSessionId && messagesNextCursors[activeSessionId])
   const messagesLoadingMoreForActive = Boolean(activeSessionId && messagesLoadingMore[activeSessionId])
 
@@ -71,6 +74,12 @@ export default function ChatPage() {
   const remainingTokens = subscription?.remainingTokens ?? 0
   const usedTokens = Math.max(tokenLimit - remainingTokens, 0)
   const tokenPercent = tokenLimit ? Math.max(0, Math.min(100, (remainingTokens / tokenLimit) * 100)) : 0
+  const inputDisabled = Boolean(loading || processingStatus?.processing)
+  const inputDisabledReason = inputDisabled
+    ? activeSessionProcessing
+      ? 'Estamos preparando la respuesta de esta consulta. Cuando termine, se actualizaran tus tokens y podras enviar otra.'
+      : 'Hay otra consulta en proceso. Puedes revisar tus sesiones, pero espera a que termine para enviar una nueva.'
+    : null
 
   const switchPlan = (plan) => {
     setBillingOpen(false)
@@ -203,11 +212,15 @@ export default function ChatPage() {
                   />
                 )
               })}
-              {loading && <TypingIndicator />}
+              {(loading || activeSessionProcessing) && <TypingIndicator />}
               <div ref={messagesEndRef} />
             </div>
           </div>
-          <ChatInput onSend={sendMessage} disabled={loading} />
+          <ChatInput
+            onSend={sendMessage}
+            disabled={inputDisabled}
+            disabledReason={inputDisabledReason}
+          />
         </div>
       </div>
 
