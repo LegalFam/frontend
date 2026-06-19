@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { authService } from '@/services/api'
 import { useAuthStore } from '@/store/authStore'
+import { normalizeApiError } from '@/utils/apiError'
 
 const PENDING_AUTH_REDIRECT_KEY = 'legalfam-pending-auth-redirect'
 
@@ -21,7 +22,7 @@ export function useAuth() {
   const navigate = useNavigate()
   const { login, logout, user, accessToken } = useAuthStore()
   const [loading, setLoading] = useState(false)
-  const [error, setError]     = useState(null)
+  const [error, setError] = useState(null)
 
   const signup = async ({ nombre, apellido, email, phone, password }) => {
     setLoading(true)
@@ -38,10 +39,7 @@ export function useAuth() {
       navigate(consumePendingAuthRedirect() || '/chat')
       return { success: true }
     } catch (e) {
-      const status = e.response?.status
-      const msg = status === 409
-        ? 'Este correo ya está registrado.'
-        : e.response?.data?.message || 'Error al crear cuenta.'
+      const msg = normalizeApiError(e, 'Error al crear cuenta.').message
       setError(msg)
       return { success: false, message: msg }
     } finally {
@@ -58,9 +56,7 @@ export function useAuth() {
       navigate(consumePendingAuthRedirect() || '/chat')
       return { success: true }
     } catch (e) {
-      const msg = e.response?.status === 401
-        ? 'Correo o contraseña incorrectos.'
-        : e.response?.data?.message || 'Error al iniciar sesión.'
+      const msg = normalizeApiError(e, 'Error al iniciar sesión.').message
       setError(msg)
       return { success: false, message: msg }
     } finally {

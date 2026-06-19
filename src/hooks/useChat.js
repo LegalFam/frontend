@@ -4,7 +4,7 @@ import { chatService, getApiBaseUrl, refreshAccessToken } from '@/services/api'
 import { useChatStore } from '@/store/chatStore'
 import { useAuthStore } from '@/store/authStore'
 import { usePaymentStore } from '@/store/paymentStore'
-import { normalizeApiError } from '@/utils/apiError'
+import { normalizeApiError, normalizeAssistantErrorMessage } from '@/utils/apiError'
 
 const BACKOFF_MS = [1000, 2000, 5000, 10000, 30000]
 
@@ -65,10 +65,12 @@ const sseEventToMessage = (event) => {
   }
 
   if (event.type === 'assistant_error') {
+    const errorCode = data.errorCode || data.code
     return {
       id: data.messageId,
       role: 'SYSTEM',
-      content: data.errorMessage || 'No se pudo generar la respuesta.',
+      content: normalizeAssistantErrorMessage(errorCode, data.errorMessage),
+      errorCode,
       citations: [],
       createdAt: data.createdAt || new Date().toISOString(),
       isError: true,
@@ -84,9 +86,20 @@ const isCanceledRequest = (error) =>
   error?.name === 'AbortError'
 
 const cursorContent = (data) => {
-  if (Array.isArray(data)) return data
-  if (Array.isArray(data?.content)) return data.content
+  if (Array.isArray(data)) return data.map(normalizeChatMessage)
+  if (Array.isArray(data?.content)) return data.content.map(normalizeChatMessage)
   return []
+}
+
+const normalizeChatMessage = (message) => {
+  if (!message || typeof message !== 'object') return message
+  if (message.role !== 'SYSTEM' && !message.errorCode) return message
+
+  return {
+    ...message,
+    content: normalizeAssistantErrorMessage(message.errorCode, message.content),
+    isError: message.isError || message.role === 'SYSTEM',
+  }
 }
 
 const cursorNext = (data) =>

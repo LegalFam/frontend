@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { paymentService } from '@/services/api'
+import { normalizeApiError } from '@/utils/apiError'
 
 export const usePaymentStore = create((set) => ({
   plans: [],
@@ -20,7 +21,7 @@ export const usePaymentStore = create((set) => ({
     } catch (e) {
       set({
         loading: false,
-        error: e.response?.data?.message || 'No se pudieron cargar los planes.',
+        error: normalizeApiError(e, 'No se pudieron cargar los planes.').message,
       })
       throw e
     }
@@ -32,7 +33,7 @@ export const usePaymentStore = create((set) => ({
       set({ subscription: data })
       return data
     } catch (e) {
-      set({ error: e.response?.data?.message || 'No se pudo cargar la suscripción.' })
+      set({ error: normalizeApiError(e, 'No se pudo cargar la suscripción.').message })
       throw e
     }
   },
@@ -53,7 +54,7 @@ export const usePaymentStore = create((set) => ({
 
     if (plansResult.status === 'rejected' && subscriptionResult.status === 'rejected') {
       const e = subscriptionResult.reason
-      set({ loading: false, error: e.response?.data?.message || 'No se pudo actualizar la facturación.' })
+      set({ loading: false, error: normalizeApiError(e, 'No se pudo actualizar la facturación.').message })
       throw e
     }
 
@@ -70,7 +71,7 @@ export const usePaymentStore = create((set) => ({
     } catch (e) {
       set({
         loading: false,
-        error: e.response?.data?.message || 'No se pudo cancelar la suscripción.',
+        error: normalizeApiError(e, 'No se pudo cancelar la suscripción.').message,
       })
       throw e
     }

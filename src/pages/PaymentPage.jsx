@@ -10,6 +10,7 @@ import {
   formatPlanTokens,
   mergePlanWithStatic,
 } from '@/utils/plans'
+import { normalizeApiError } from '@/utils/apiError'
 import logoImg from '@/assets/logo-transparent.png'
 import styles from './PaymentPage.module.css'
 
@@ -44,7 +45,7 @@ export default function PaymentPage() {
       })
       window.location.assign(data.url)
     } catch (err) {
-      setError(err.response?.data?.message || 'No se pudo iniciar el checkout. Intenta nuevamente.')
+      setError(normalizeApiError(err, 'No se pudo iniciar el checkout. Intenta nuevamente.').message)
       setLoading(false)
     }
   }
