@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import logoImg from '@/assets/logo-transparent.png'
 import { useAuth } from '@/hooks/useAuth'
 import styles from './ChatSidebar.module.css'
 
@@ -70,11 +69,6 @@ export default function ChatSidebar({
 
   return (
     <aside className={`${styles.sidebar} ${!open ? styles.closed : ''}`}>
-      <div className={styles.sidebarLogo}>
-        <img src={logoImg} alt="LegalFam" className={styles.sidebarLogoImg} />
-        <span className={styles.sidebarLogoText}>LEGALFAM</span>
-      </div>
-
       <button className={styles.newBtn} onClick={handleNewChat}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M12 5v14M5 12h14"/>

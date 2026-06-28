@@ -77,7 +77,7 @@ export default function ChatPage() {
   const inputDisabled = Boolean(loading || processingStatus?.processing)
   const inputDisabledReason = inputDisabled
     ? activeSessionProcessing
-      ? 'Estamos preparando la respuesta de esta consulta. Cuando termine, se actualizaran tus tokens y podras enviar otra.'
+      ? 'Estamos preparando la respuesta de esta consulta. Cuando termine, se actualizarán tus tokens y podrás enviar otra.'
       : 'Hay otra consulta en proceso. Puedes revisar tus sesiones, pero espera a que termine para enviar una nueva.'
     : null
 

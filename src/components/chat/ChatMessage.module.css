@@ -206,6 +206,7 @@
 
 .safetyNote,
 .citationNotice,
+.specialistNotice,
 .guidanceBlock {
   width: 100%;
   margin-top: 0.625rem;
@@ -226,8 +227,16 @@
   border-color: rgba(212, 175, 55, 0.45);
   background: rgba(212, 175, 55, 0.08);
 }
+.specialistNotice {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  border-color: rgba(238, 128, 128, 0.5);
+  background: rgba(238, 128, 128, 0.1);
+  color: #ffd2d2;
+}
 .safetyNote strong,
 .citationNotice strong,
+.specialistNotice strong,
 .blockTitle {
   display: block;
   color: var(--gold);
@@ -237,6 +246,9 @@
   margin-bottom: 0.25rem;
 }
 .safetyNote strong {
+  color: #ffb4b4;
+}
+.specialistNotice strong {
   color: #ffb4b4;
 }
 .guidanceBlock ul {

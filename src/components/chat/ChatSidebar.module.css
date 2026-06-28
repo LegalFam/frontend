@@ -6,22 +6,8 @@
 }
 .sidebar.closed { width: 0; opacity: 0; }
 
-.sidebarLogo {
-  display: flex; align-items: center; gap: 10px;
-  padding: 1rem 1rem 0.75rem;
-  border-bottom: 0.5px solid var(--gold-border); flex-shrink: 0;
-}
-.sidebarLogoImg {
-  width: 32px; height: 32px; object-fit: contain;
-  filter: drop-shadow(0 0 5px rgba(201,168,76,0.3));
-}
-.sidebarLogoText {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 16px; color: var(--gold); letter-spacing: 2px;
-}
-
 .newBtn {
-  margin: 0.75rem; padding: 9px 12px;
+  margin: 0.875rem 0.75rem 0.75rem; padding: 9px 12px;
   background: var(--gold-bg); border: 0.5px solid var(--gold-border);
   border-radius: var(--radius); font-size: 12px; color: var(--gold);
   display: flex; align-items: center; gap: 7px; justify-content: center;

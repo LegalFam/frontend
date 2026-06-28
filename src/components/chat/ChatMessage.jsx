@@ -96,6 +96,15 @@ export default function ChatMessage({ message, onRate, onRetry, retryText }) {
     <div className={`${styles.wrap} ${isUser ? styles.user : styles.bot} ${isSystem ? styles.system : ''}`}>
       <span className={styles.label}>{isUser ? 'Tu' : isSystem ? 'Sistema' : 'LegalFam'}</span>
 
+      {isBot && message.specialistSupportRecommended === true && (
+        <div className={styles.specialistNotice} role="note">
+          <strong>Apoyo especializado recomendado</strong>
+          <span>
+            Por el tipo de situación, considera acudir a una entidad especializada como CEM, PNP o DEMUNA, según corresponda, para recibir orientación y protección directa.
+          </span>
+        </div>
+      )}
+
       <div className={styles.bubble}>
         {isBot || isSystem ? (
           <ReactMarkdown

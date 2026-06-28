@@ -36,11 +36,6 @@ export default function ChatInput({ onSend, disabled, disabledReason }) {
 
   return (
     <div className={styles.area}>
-      {disabledReason && (
-        <div className={styles.status} role="status">
-          {disabledReason}
-        </div>
-      )}
       <div className={styles.wrap}>
         <textarea
           ref={ref}
@@ -51,17 +46,32 @@ export default function ChatInput({ onSend, disabled, disabledReason }) {
           disabled={disabled}
           className={styles.textarea}
         />
-        <button
-          className={styles.sendBtn}
-          onClick={submit}
-          disabled={disabled}
-          aria-label="Enviar"
+        <span
+          className={styles.sendControl}
+          data-tooltip={disabledReason || undefined}
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <line x1="22" y1="2" x2="11" y2="13" />
-            <polygon points="22 2 15 22 11 13 2 9 22 2" />
-          </svg>
-        </button>
+          <button
+            className={styles.sendBtn}
+            onClick={submit}
+            disabled={disabled}
+            aria-label={disabled ? 'Respuesta en preparación' : 'Enviar'}
+            aria-describedby={disabledReason ? 'chat-send-status' : undefined}
+          >
+            {disabled ? (
+              <span className={styles.spinner} aria-hidden="true" />
+            ) : (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="22" y1="2" x2="11" y2="13" />
+                <polygon points="22 2 15 22 11 13 2 9 22 2" />
+              </svg>
+            )}
+          </button>
+          {disabledReason && (
+            <span id="chat-send-status" className={styles.tooltip} role="status">
+              {disabledReason}
+            </span>
+          )}
+        </span>
       </div>
       {privacyError && <p className={styles.privacyError}>{privacyError}</p>}
       <p className={styles.note}>

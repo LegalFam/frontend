@@ -13,23 +13,6 @@
   align-items: flex-end;
 }
 
-.status {
-  max-width: 800px;
-  margin: 0 auto 0.625rem;
-  min-height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 0.5px solid var(--gold-border);
-  border-radius: var(--radius);
-  background: var(--gold-bg);
-  color: var(--text-secondary);
-  font-size: 12px;
-  line-height: 1.35;
-  text-align: center;
-  padding: 7px 10px;
-}
-
 .textarea {
   flex: 1;
   padding: 11px 15px;
@@ -50,8 +33,16 @@
 .textarea::placeholder { color: var(--text-muted); }
 .textarea:disabled { opacity: 0.65; cursor: not-allowed; }
 
+.sendControl {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+}
+
 .sendBtn {
-  padding: 11px 14px;
+  width: 43px;
+  min-height: 43px;
+  padding: 0;
   background: var(--gold);
   border: none;
   border-radius: var(--radius-lg);
@@ -63,8 +54,53 @@
   color: var(--black);
 }
 .sendBtn:hover:not(:disabled) { background: var(--gold-light); }
-.sendBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+.sendBtn:disabled {
+  opacity: 0.82;
+  cursor: wait;
+  background: var(--gold-bg);
+  border: 0.5px solid var(--gold-border);
+}
 .sendBtn svg { width: 15px; height: 15px; stroke: var(--black); }
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(212, 175, 55, 0.28);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.tooltip {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 8px);
+  z-index: 5;
+  width: min(320px, calc(100vw - 2rem));
+  padding: 8px 10px;
+  border: 0.5px solid var(--gold-border);
+  border-radius: var(--radius);
+  background: var(--black-3);
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: left;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(4px);
+  transition: opacity var(--t-fast), transform var(--t-fast);
+}
+
+.sendControl:hover .tooltip,
+.sendControl:focus-within .tooltip {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 
 .note {
   font-size: 10px;
