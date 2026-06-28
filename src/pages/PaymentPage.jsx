@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 import { paymentService } from '@/services/api'
 import { usePaymentStore } from '@/store/paymentStore'
 import {
@@ -61,10 +61,10 @@ export default function PaymentPage() {
           </svg>
           Volver
         </button>
-        <div className={styles.logo}>
+        <Link to="/" className={styles.logo} aria-label="Ir al inicio">
           <img src={logoImg} alt="LegalFam" />
           <span>LEGALFAM</span>
-        </div>
+        </Link>
         <div style={{ width: 80 }} />
       </header>
 

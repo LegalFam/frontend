@@ -228,11 +228,18 @@
   background: rgba(212, 175, 55, 0.08);
 }
 .specialistNotice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
   margin-top: 0;
   margin-bottom: 0.5rem;
   border-color: rgba(238, 128, 128, 0.5);
   background: rgba(238, 128, 128, 0.1);
   color: #ffd2d2;
+}
+.specialistText {
+  min-width: 0;
 }
 .safetyNote strong,
 .citationNotice strong,
@@ -250,6 +257,29 @@
 }
 .specialistNotice strong {
   color: #ffb4b4;
+}
+.specialistLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-height: 32px;
+  padding: 0.45rem 0.7rem;
+  border: 0.5px solid rgba(238, 128, 128, 0.55);
+  border-radius: 6px;
+  background: rgba(238, 128, 128, 0.13);
+  color: #ffd2d2;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  transition: background var(--t-fast), border-color var(--t-fast), transform var(--t-fast);
+}
+.specialistLink:hover {
+  border-color: #ffb4b4;
+  background: rgba(238, 128, 128, 0.2);
+}
+.specialistLink:active {
+  transform: scale(0.98);
 }
 .guidanceBlock ul {
   margin: 0;
@@ -322,6 +352,11 @@
 
 @media (max-width: 640px) {
   .wrap { max-width: 92%; }
+  .specialistNotice {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .specialistLink { width: 100%; }
   .feedbackBox { flex-direction: column; }
   .feedbackBox button { min-height: 34px; }
 }

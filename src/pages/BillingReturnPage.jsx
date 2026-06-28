@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { usePaymentStore } from '@/store/paymentStore'
 import logoImg from '@/assets/logo-transparent.png'
 import styles from './PaymentPage.module.css'
@@ -23,10 +23,10 @@ export default function BillingReturnPage() {
           </svg>
           Chat
         </button>
-        <div className={styles.logo}>
+        <Link to="/" className={styles.logo} aria-label="Ir al inicio">
           <img src={logoImg} alt="LegalFam" />
           <span>LEGALFAM</span>
-        </div>
+        </Link>
         <div style={{ width: 80 }} />
       </header>
 

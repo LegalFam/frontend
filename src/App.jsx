@@ -3,6 +3,7 @@ import LandingPage from '@/pages/LandingPage'
 import ChatPage from '@/pages/ChatPage'
 import PaymentPage from '@/pages/PaymentPage'
 import BillingReturnPage from '@/pages/BillingReturnPage'
+import SpecialistAssistancePage from '@/pages/SpecialistAssistancePage'
 import ProtectedRoute from '@/components/auth/ProtectedRoute'
 
 export default function App() {
@@ -17,6 +18,8 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+      <Route path="/contactos-emergencia" element={<SpecialistAssistancePage />} />
+      <Route path="/asistencia-especializada" element={<Navigate to="/contactos-emergencia" replace />} />
       <Route
         path="/pago/:plan"
         element={

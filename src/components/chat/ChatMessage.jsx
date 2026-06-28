@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import styles from './ChatMessage.module.css'
@@ -98,10 +99,15 @@ export default function ChatMessage({ message, onRate, onRetry, retryText }) {
 
       {isBot && message.specialistSupportRecommended === true && (
         <div className={styles.specialistNotice} role="note">
-          <strong>Apoyo especializado recomendado</strong>
-          <span>
-            Por el tipo de situación, considera acudir a una entidad especializada como CEM, PNP o DEMUNA, según corresponda, para recibir orientación y protección directa.
-          </span>
+          <div className={styles.specialistText}>
+            <strong>Apoyo especializado recomendado</strong>
+            <span>
+              Por el tipo de situación, considera acudir a una entidad especializada como CEM, PNP o DEMUNA, según corresponda, para recibir orientación y protección directa.
+            </span>
+          </div>
+          <Link className={styles.specialistLink} to="/contactos-emergencia">
+            Ver contactos de emergencia
+          </Link>
         </div>
       )}
 

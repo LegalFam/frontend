@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import logoImg from '@/assets/logo-transparent.png'
 import styles from './Navbar.module.css'
 
@@ -36,10 +37,10 @@ export default function Navbar({
   return (
     <>
       <nav className={`${styles.nav} ${scrolled ? styles.scrolled : ''}`}>
-        <a href="#" className={styles.logo} aria-label="LegalFam inicio">
+        <Link to="/" className={styles.logo} aria-label="LegalFam inicio">
           <img src={logoImg} alt="LegalFam" className={styles.logoImg} />
           <span className={styles.logoText}>LEGALFAM</span>
-        </a>
+        </Link>
 
         <div className={`${styles.links} ${menuOpen ? styles.open : ''}`}>
           {links.map(({ id, label }) => (

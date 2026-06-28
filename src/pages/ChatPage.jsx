@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useChat }        from '@/hooks/useChat'
 import { useAuth }        from '@/hooks/useAuth'
 import { usePaymentStore } from '@/store/paymentStore'
@@ -140,10 +140,10 @@ export default function ChatPage() {
           </svg>
         </button>
 
-        <div className={styles.topbarLogo}>
+        <Link to="/" className={styles.topbarLogo} aria-label="Ir al inicio">
           <img src={logoImg} alt="LegalFam" className={styles.topbarLogoImg} />
           <span className={styles.topbarLogoText}>LEGALFAM</span>
-        </div>
+        </Link>
 
         <span className={styles.topbarTitle}>{sessionTitle}</span>
         {tokenLabel && (
