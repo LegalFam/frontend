@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate }    from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useChat }        from '@/hooks/useChat'
 import { useAuth }        from '@/hooks/useAuth'
 import { usePaymentStore } from '@/store/paymentStore'
@@ -21,6 +21,7 @@ import styles             from './ChatPage.module.css'
 export default function ChatPage() {
   const { signout } = useAuth()
   const navigate = useNavigate()
+  const { sessionId: routeSessionId } = useParams()
   const isMobile = () => window.innerWidth <= 768
   const [sidebarOpen, setSidebarOpen] = useState(() => !isMobile())
   const [billingOpen, setBillingOpen] = useState(false)
@@ -47,10 +48,19 @@ export default function ChatPage() {
   const messagesLoadingMoreForActive = Boolean(activeSessionId && messagesLoadingMore[activeSessionId])
 
   useEffect(() => {
-    loadSessions().then(() => startNewChat())
+    loadSessions()
     refreshBilling().catch(() => {})
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  useEffect(() => {
+    if (routeSessionId) {
+      selectSession(routeSessionId, { updateRoute: false })
+      return
+    }
+    startNewChat({ updateRoute: false })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [routeSessionId])
 
   useEffect(() => {
     if (loadingOlderMessagesRef.current) return

@@ -10,7 +10,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route
-        path="/chat"
+        path="/chat/:sessionId?"
         element={
           <ProtectedRoute>
             <ChatPage />

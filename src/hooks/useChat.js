@@ -266,7 +266,7 @@ export function useChat() {
       if (isCanceledRequest(e)) return
       if (e.response?.status === 403 || e.response?.status === 404) {
         store.setActiveSession(null)
-        navigate('/chat')
+        navigate('/chat', { replace: true })
         return
       }
       store.setError(normalizeApiError(e, 'No se pudieron cargar los mensajes.').message)
@@ -296,19 +296,25 @@ export function useChat() {
     }
   }, [confirmUnreadAssistantReceipts, store])
 
-  const selectSession = useCallback(async (sessionId) => {
+  const selectSession = useCallback(async (sessionId, { updateRoute = true } = {}) => {
     store.setError(null)
     store.setConnectionState('idle')
     store.setActiveSession(sessionId)
-  }, [store])
+    if (updateRoute && sessionId) {
+      navigate(`/chat/${sessionId}`)
+    }
+  }, [navigate, store])
 
-  const startNewChat = useCallback(() => {
+  const startNewChat = useCallback(({ updateRoute = true } = {}) => {
     store.setActiveSession(null)
     store.setLoading(false)
     store.setError(null)
     store.setConnectionState('idle')
     store.setMessages('new', [welcomeMessage(user?.name?.split(' ')[0])])
-  }, [store, user])
+    if (updateRoute) {
+      navigate('/chat')
+    }
+  }, [navigate, store, user])
 
   const ensureSession = useCallback(async (initialText) => {
     const currentSessionId = useChatStore.getState().activeSessionId
@@ -322,11 +328,12 @@ export function useChat() {
       store.addSession(session)
       store.setActiveSession(data.id)
       store.moveMessages('new', data.id)
+      navigate(`/chat/${data.id}`, { replace: true })
       chatService.updateSession(data.id, { title: session.title })
         .then(({ data: updatedSession }) => store.upsertSession(updatedSession))
         .catch(() => {})
       return data.id
-    }, [store])
+    }, [navigate, store])
 
   const sendMessage = useCallback(async (text) => {
     const trimmed = text.trim()
@@ -339,11 +346,6 @@ export function useChat() {
     let sessionId = useChatStore.getState().activeSessionId
 
     try {
-      const processingStatus = await loadProcessingStatus().catch(() => useChatStore.getState().processingStatus)
-      if (processingStatus?.processing) {
-        store.setError('Ya hay una consulta en proceso. Espera a que termine antes de enviar otra.')
-        return
-      }
       sessionId = await ensureSession(trimmed)
       const userMsg = {
         id: tempId,
@@ -385,12 +387,14 @@ export function useChat() {
       store.setLoading(false)
 
       if (status === 409) {
+        store.removeMessage(sessionId || 'new', tempId)
         loadProcessingStatus().catch(() => {})
         store.setError(normalizedError.message)
         return
       }
 
       if (status === 403) {
+        store.removeMessage(sessionId || 'new', tempId)
         store.setError(normalizedError.message)
         usePaymentStore.getState().loadSubscription().catch(() => {})
         return
@@ -571,20 +575,43 @@ export function useChat() {
     }
 
     loadProcessingStatus().catch(() => {})
+  }, [accessToken, loadProcessingStatus])
 
-    const refreshWhenVisible = () => {
-      if (document.visibilityState === 'visible') {
-        loadProcessingStatus().catch(() => {})
+  useEffect(() => {
+    if (!accessToken) return undefined
+
+    const processing = store.processingStatus
+    const processingSessionId = processing?.chatSessionId
+    const cannotObserveProcessingViaSse =
+      processing?.processing &&
+      processingSessionId &&
+      processingSessionId !== store.activeSessionId
+
+    if (!cannotObserveProcessingViaSse) return undefined
+
+    let disposed = false
+
+    const refreshOffSessionProcessing = async () => {
+      const nextStatus = await loadProcessingStatus().catch(() => null)
+      if (!disposed && nextStatus && !nextStatus.processing) {
+        usePaymentStore.getState().loadSubscription().catch(() => {})
       }
     }
-    window.addEventListener('focus', loadProcessingStatus)
-    document.addEventListener('visibilitychange', refreshWhenVisible)
+
+    refreshOffSessionProcessing()
+    const intervalId = window.setInterval(refreshOffSessionProcessing, 5000)
 
     return () => {
-      window.removeEventListener('focus', loadProcessingStatus)
-      document.removeEventListener('visibilitychange', refreshWhenVisible)
+      disposed = true
+      window.clearInterval(intervalId)
     }
-  }, [accessToken, loadProcessingStatus])
+  }, [
+    accessToken,
+    loadProcessingStatus,
+    store.activeSessionId,
+    store.processingStatus?.chatSessionId,
+    store.processingStatus?.processing,
+  ])
 
   return {
     sessions:        store.sessions,

@@ -183,6 +183,14 @@ export const useChatStore = create((set) => ({
       },
     })),
 
+  removeMessage: (sessionId, messageId) =>
+    set((state) => ({
+      messages: {
+        ...state.messages,
+        [sessionId]: (state.messages[sessionId] || []).filter((message) => message.id !== messageId),
+      },
+    })),
+
   clearPendingUserMessageStates: (sessionId) =>
     set((state) => ({
       messages: {
