@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import styles from './HeroSection.module.css'
 
 const stats = [
-  { num: '+80%', label: 'Precisión validada' },
+  { num: '+90%', label: 'Precisión validada' },
   { num: '24/7', label: 'Disponibilidad'     },
   { num: '100%', label: 'Gratuito al inicio' },
 ]
