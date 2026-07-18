@@ -7,6 +7,7 @@ export default function LoginModal({ onClose, onSwitchToRegister }) {
   const { signin, loading, error } = useAuth()
   const [fields, setFields] = useState({ email: '', password: '' })
   const [errs,   setErrs]   = useState({})
+  const [showPassword, setShowPassword] = useState(false)
 
   const set = (k, v) => setFields((p) => ({ ...p, [k]: v }))
 
@@ -55,14 +56,35 @@ export default function LoginModal({ onClose, onSwitchToRegister }) {
 
           <div className={styles.fg}>
             <label htmlFor="li-pass">Contraseña</label>
-            <input
-              id="li-pass" type="password"
-              placeholder="••••••••"
-              value={fields.password}
-              onChange={(e) => set('password', e.target.value)}
-              className={errs.password ? styles.hasError : ''}
-              autoComplete="current-password"
-            />
+            <div className={styles.passwordWrap}>
+              <input
+                id="li-pass" type={showPassword ? 'text' : 'password'}
+                placeholder="••••••••"
+                value={fields.password}
+                onChange={(e) => set('password', e.target.value)}
+                className={errs.password ? styles.hasError : ''}
+                autoComplete="current-password"
+              />
+              <button
+                type="button"
+                className={styles.passwordToggle}
+                onClick={() => setShowPassword((p) => !p)}
+                aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                tabIndex={-1}
+              >
+                {showPassword ? (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="17" height="17">
+                    <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-10-8-10-8a18.4 18.4 0 0 1 4.22-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                    <line x1="1" y1="1" x2="23" y2="23" />
+                  </svg>
+                ) : (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="17" height="17">
+                    <path d="M1 12s3-8 11-8 11 8 11 8-3 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                )}
+              </button>
+            </div>
             {errs.password && <span className="field-err">{errs.password}</span>}
           </div>
 

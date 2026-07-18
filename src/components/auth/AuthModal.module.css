@@ -66,6 +66,16 @@
 .fg input::placeholder { color: var(--text-muted); }
 .fg input.hasError { border-color: var(--error); }
 
+.passwordWrap { position: relative; }
+.passwordWrap input { padding-right: 38px; }
+.passwordToggle {
+  position: absolute; top: 0; right: 0; bottom: 0;
+  width: 34px; display: flex; align-items: center; justify-content: center;
+  background: none; border: none; color: var(--text-secondary);
+  cursor: pointer; transition: color var(--t-fast);
+}
+.passwordToggle:hover { color: var(--gold); }
+
 .phoneRow { display: flex; gap: 6px; }
 .phonePfx {
   display: flex; align-items: center; gap: 5px;

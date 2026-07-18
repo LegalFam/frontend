@@ -52,6 +52,20 @@ export default function Navbar({
               {label}
             </a>
           ))}
+
+          <div className={styles.mobileBtns}>
+            {isAuthenticated ? (
+              <>
+                <button className={`btn-gold ${styles.mobileAuthBtn}`} onClick={() => { setMenuOpen(false); onChatClick() }}>Ir al chat</button>
+                <button className={`${styles.signoutBtn} ${styles.mobileAuthBtn}`} onClick={() => { setMenuOpen(false); onSignoutClick() }}>Cerrar sesión</button>
+              </>
+            ) : (
+              <>
+                <button className={`btn-ghost ${styles.mobileAuthBtn}`} onClick={() => { setMenuOpen(false); onLoginClick() }}>Iniciar sesión</button>
+                <button className={`btn-gold ${styles.mobileAuthBtn}`} onClick={() => { setMenuOpen(false); onRegisterClick() }}>Registrarse</button>
+              </>
+            )}
+          </div>
         </div>
 
         <div className={styles.btns}>

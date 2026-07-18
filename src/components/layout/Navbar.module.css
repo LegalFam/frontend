@@ -33,6 +33,7 @@
 .link:hover { color: var(--gold); }
 .link.linkActive { color: var(--gold); border-bottom-color: var(--gold); }
 .btns { display: flex; gap: 10px; align-items: center; }
+.mobileBtns { display: none; }
 .signoutBtn {
   background: transparent; border: none; color: var(--text-muted);
   font-size: 12px; padding: 7px 4px;
@@ -67,5 +68,14 @@
   }
   .links.open { display: flex; }
   .hamburger  { display: flex; }
-  .btns .btn-ghost { display: none; }
+  .btns { display: none; }
+  .mobileBtns {
+    display: flex; flex-direction: column; gap: 10px;
+    width: 100%; margin-top: 0.5rem; padding-top: 1rem;
+    border-top: 0.5px solid var(--gold-border);
+  }
+  .mobileAuthBtn {
+    max-width: 220px; width: 100%; align-self: center;
+    justify-content: center; text-align: center;
+  }
 }
