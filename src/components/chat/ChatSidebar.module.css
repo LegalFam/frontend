@@ -22,8 +22,60 @@
   text-transform: uppercase; color: var(--text-muted); flex-shrink: 0;
 }
 
+.glossary {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 0.5rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-top: 0.5px solid var(--gold-border);
+  padding-top: 0.5rem;
+}
+.glossaryItem {
+  display: flex; align-items: center; gap: 7px; width: 100%;
+  padding: 7px 8px; border: none; border-radius: var(--radius);
+  background: none; text-align: left;
+  font-size: 12px; color: var(--text-secondary); line-height: 1.4;
+  transition: background 0.12s, color 0.12s;
+}
+.glossaryItem:hover { background: var(--black-4); }
+.glossaryItemActive { background: var(--black-4); color: var(--gold); }
+.glossaryItemActive .itemIcon { color: var(--gold); }
+
+.searchWrap {
+  position: relative; margin: 0 0.75rem 0.5rem; flex-shrink: 0;
+  display: flex; align-items: center;
+}
+
+.searchInput {
+  width: 100%; padding: 6px 26px 6px 26px;
+  font-size: 12px; color: var(--text-primary);
+  background: var(--black-3); border: 0.5px solid var(--gold-border);
+  border-radius: var(--radius); transition: border-color 0.15s;
+}
+.searchInput:focus { outline: none; border-color: var(--gold); }
+.searchInput::placeholder { color: var(--text-muted); }
+.searchInput::-webkit-search-cancel-button { display: none; }
+
+.searchIcon {
+  position: absolute; left: 8px;
+  width: 12px; height: 12px;
+  color: var(--text-muted); pointer-events: none;
+}
+
+.clearSearchBtn {
+  position: absolute; right: 6px;
+  background: none; border: none; padding: 2px; border-radius: 4px;
+  color: var(--text-muted); display: flex; align-items: center; transition: color 0.12s;
+}
+.clearSearchBtn:hover { color: var(--gold); }
+.clearSearchBtn svg { width: 12px; height: 12px; }
+
 .list {
-  flex: 1;
+  flex: 1 1 0;
+  min-height: 0;
   overflow-y: auto;
   padding: 0 0.5rem 0.5rem;
   display: flex;
@@ -100,6 +152,15 @@
   padding: 0.875rem 1rem; border-top: 0.5px solid var(--gold-border);
   display: flex; align-items: center; gap: 9px; flex-shrink: 0;
 }
+.userLink {
+  display: flex; align-items: center; gap: 9px;
+  flex: 1; min-width: 0;
+  margin: -6px -8px; padding: 6px 8px;
+  border-radius: var(--radius);
+  cursor: pointer; transition: background 0.12s;
+}
+.userLink:hover { background: var(--black-4); }
+.userLink:hover .userName { color: var(--gold); }
 .avatar {
   width: 32px; height: 32px; background: var(--gold-bg);
   border: 1px solid var(--gold-border); border-radius: 50%;
@@ -110,6 +171,7 @@
 .userName {
   font-size: 12px; color: var(--text-primary); font-weight: 500;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  transition: color 0.12s;
 }
 .userEmail {
   font-size: 10px; color: var(--text-muted);

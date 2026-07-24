@@ -25,6 +25,7 @@
   padding-left: 4px; border-left: 0.5px solid var(--gold-border);
 }
 .tokenBadge {
+  display: inline-flex; align-items: center; gap: 6px;
   border: 0.5px solid var(--gold-border);
   border-radius: 999px;
   padding: 5px 10px;
@@ -35,6 +36,38 @@
   transition: background var(--t-fast), border-color var(--t-fast);
 }
 .tokenBadge:hover { background: var(--gold-bg-h); border-color: var(--gold); }
+
+.tokenInfoIcon { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.75; }
+.tokenBadge:hover .tokenInfoIcon { opacity: 1; }
+
+.tokenControl { position: relative; display: flex; align-items: center; flex-shrink: 0; }
+
+.tooltip {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 120;
+  width: min(300px, calc(100vw - 2rem));
+  padding: 8px 10px;
+  border: 0.5px solid var(--gold-border);
+  border-radius: var(--radius);
+  background: var(--black-3);
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 1.5;
+  text-align: left;
+  white-space: normal;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: opacity var(--t-fast), transform var(--t-fast);
+}
+.tokenControl:hover .tooltip,
+.tokenControl:focus-within .tooltip {
+  opacity: 1;
+  transform: translateY(0);
+}
 .body  { display: flex; flex: 1; overflow: hidden; position: relative; }
 .main  { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
 .notice {
@@ -64,6 +97,72 @@
   max-width: 760px; width: 100%; margin: 0 auto;
   display: flex; flex-direction: column; gap: 1.25rem;
 }
+.glossaryView {
+  flex: 1; overflow-y: auto;
+  padding: 2rem 1rem;
+  display: flex; justify-content: center; align-items: flex-start;
+}
+.glossaryCard {
+  max-width: 640px; width: 100%;
+  border: 0.5px solid var(--gold-border);
+  border-radius: var(--radius-lg);
+  background: var(--black-2);
+  padding: 1.75rem;
+}
+.glossaryEyebrow {
+  display: block; color: var(--gold);
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 0.6rem;
+}
+.glossaryCard h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(26px, 4vw, 34px); font-weight: 400; line-height: 1.2;
+  color: var(--text-primary); margin-bottom: 0.85rem;
+}
+.glossaryCard p {
+  font-size: 14px; line-height: 1.85; color: var(--text-secondary);
+}
+.glossaryActions {
+  display: flex; align-items: center; gap: 0.625rem; flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+.glossaryBackBtn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 16px;
+  border: 0.5px solid var(--gold); border-radius: var(--radius);
+  background: var(--gold-bg); color: var(--gold);
+  font-size: 13px; letter-spacing: 0.3px;
+  transition: background var(--t-fast);
+}
+.glossaryBackBtn:hover { background: var(--gold-bg-h); }
+
+.presets { display: flex; flex-direction: column; gap: 9px; }
+.presetsLabel {
+  font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--text-muted);
+}
+.presetsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 8px;
+}
+.presetBtn {
+  display: flex; flex-direction: column; gap: 4px; text-align: left;
+  padding: 11px 13px;
+  border: 0.5px solid var(--gold-border);
+  border-radius: var(--radius);
+  background: var(--black-2);
+  transition: background var(--t-fast), border-color var(--t-fast);
+}
+.presetBtn:hover:not(:disabled) { background: var(--gold-bg); border-color: var(--gold); }
+.presetBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+.presetBtn strong {
+  font-size: 11px; font-weight: 500; color: var(--gold); letter-spacing: 0.3px;
+}
+.presetBtn span {
+  font-size: 12px; color: var(--text-secondary); line-height: 1.5;
+}
+
 .historyLoader {
   align-self: center;
   min-height: 30px;
@@ -126,6 +225,10 @@
 .tokenMeter span {
   display: block; height: 100%; background: var(--gold);
   border-radius: inherit; transition: width var(--t-base);
+}
+.tokenHint {
+  margin-top: 0.625rem;
+  font-size: 11px; line-height: 1.6; color: var(--text-muted);
 }
 .planGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.625rem; }
 .planOption {

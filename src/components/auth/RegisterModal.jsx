@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import logoImg from '@/assets/logo-transparent.png'
 import { useAuth } from '@/hooks/useAuth'
 import styles from './AuthModal.module.css'
@@ -7,6 +8,7 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
   const { signup, loading, error } = useAuth()
   const [fields, setFields] = useState({
     nombre: '', apellido: '', email: '', phone: '', password: '', confirm: '',
+    acceptedTerms: false,
   })
   const [errs, setErrs] = useState({})
 
@@ -25,6 +27,7 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
     if (!fields.phone || fields.phone.length !== 9)       e.phone    = 'Exactamente 9 dígitos.'
     if (!fields.password || fields.password.length < 8)   e.password = 'Mínimo 8 caracteres.'
     if (fields.password !== fields.confirm)               e.confirm  = 'Las contraseñas no coinciden.'
+    if (!fields.acceptedTerms)                            e.acceptedTerms = 'Debes aceptar los términos para continuar.'
     setErrs(e)
     return !Object.keys(e).length
   }
@@ -109,6 +112,27 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
               value={fields.confirm} onChange={(e) => set('confirm', e.target.value)}
               className={errs.confirm ? styles.hasError : ''} autoComplete="new-password" />
             {errs.confirm && <span className="field-err">{errs.confirm}</span>}
+          </div>
+
+          <div className={styles.consent}>
+            <label className={styles.checkboxRow} htmlFor="rg-terms">
+              <input
+                id="rg-terms"
+                type="checkbox"
+                checked={fields.acceptedTerms}
+                onChange={(e) => set('acceptedTerms', e.target.checked)}
+              />
+              <span>
+                Acepto los{' '}
+                <Link to="/terminos" target="_blank" rel="noreferrer">Términos y Condiciones</Link>
+                {' '}y el tratamiento de mis datos personales.
+              </span>
+            </label>
+            {errs.acceptedTerms && <span className="field-err">{errs.acceptedTerms}</span>}
+            <p className={styles.consentNote}>
+              Tus datos se tratan conforme a la Ley N.° 29733. No compartimos ni vendemos tu
+              información personal a terceros, y tus consultas se procesan de forma anonimizada.
+            </p>
           </div>
 
           <button type="submit" className={styles.submitBtn} disabled={loading}>

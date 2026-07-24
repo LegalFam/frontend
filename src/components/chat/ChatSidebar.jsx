@@ -1,6 +1,22 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
+import { LEGAL_GLOSSARY } from './legalGlossary'
 import styles from './ChatSidebar.module.css'
+
+const normalize = (value) =>
+  (value || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+
+const formatDate = (iso) => {
+  if (!iso) return 'Consulta'
+  return new Date(iso).toLocaleDateString('es-PE', { day: '2-digit', month: 'short' })
+}
+
+const sessionLabel = (session) =>
+  session.title || session.name || formatDate(session.createdAt)
 
 export default function ChatSidebar({
   open,
@@ -14,12 +30,21 @@ export default function ChatSidebar({
   onNewChat,
   onRenameSession,
   onDeleteSession,
+  onSelectGlossaryTerm,
+  activeGlossaryTerm,
   onClose,
 }) {
   const { user, signout } = useAuth()
   const [editingId, setEditingId] = useState(null)
   const [editValue, setEditValue] = useState('')
   const [deleteTarget, setDeleteTarget] = useState(null)
+  const [query, setQuery] = useState('')
+
+  const filteredSessions = useMemo(() => {
+    const term = normalize(query).trim()
+    if (!term) return sessions
+    return sessions.filter((s) => normalize(sessionLabel(s)).includes(term))
+  }, [sessions, query])
 
   const initials = user?.name
     ? user.name.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase()
@@ -29,6 +54,10 @@ export default function ChatSidebar({
     e.stopPropagation()
     setEditingId(session.id)
     setEditValue(session.title || session.name || '')
+  }
+
+  const handleSearchKeyDown = (e) => {
+    if (e.key === 'Escape') setQuery('')
   }
 
   const saveEdit = (sessionId) => {
@@ -41,13 +70,13 @@ export default function ChatSidebar({
     if (e.key === 'Escape') setEditingId(null)
   }
 
-  const formatDate = (iso) => {
-    if (!iso) return 'Consulta'
-    return new Date(iso).toLocaleDateString('es-PE', { day: '2-digit', month: 'short' })
-  }
-
   const handleSelectSession = (id) => {
     onSelectSession(id)
+    onClose?.()
+  }
+
+  const handleSelectGlossaryTerm = (entry) => {
+    onSelectGlossaryTerm(entry)
     onClose?.()
   }
 
@@ -78,6 +107,38 @@ export default function ChatSidebar({
 
       <div className={styles.listLabel}>Historial</div>
 
+      {sessions.length > 0 && (
+        <div className={styles.searchWrap}>
+          <svg className={styles.searchIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="11" cy="11" r="7"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input
+            className={styles.searchInput}
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={handleSearchKeyDown}
+            placeholder="Buscar consulta..."
+            aria-label="Buscar en el historial"
+          />
+          {query && (
+            <button
+              type="button"
+              className={styles.clearSearchBtn}
+              onClick={() => setQuery('')}
+              title="Limpiar búsqueda"
+              aria-label="Limpiar búsqueda"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          )}
+        </div>
+      )}
+
       <div className={styles.list}>
         {loadingSessions && sessions.length === 0 && (
           <p className={styles.emptyMsg}>Cargando historial...</p>
@@ -85,7 +146,10 @@ export default function ChatSidebar({
         {!loadingSessions && sessions.length === 0 && (
           <p className={styles.emptyMsg}>No hay consultas aún.<br/>Haz tu primera pregunta.</p>
         )}
-        {sessions.map((s) => (
+        {sessions.length > 0 && filteredSessions.length === 0 && (
+          <p className={styles.emptyMsg}>No se encontraron consultas.</p>
+        )}
+        {filteredSessions.map((s) => (
           <div
             key={s.id}
             className={`${styles.item} ${s.id === activeSessionId ? styles.active : ''}`}
@@ -106,7 +170,7 @@ export default function ChatSidebar({
                 autoFocus
               />
             ) : (
-              <span className={styles.name}>{s.title || s.name || formatDate(s.createdAt)}</span>
+              <span className={styles.name}>{sessionLabel(s)}</span>
             )}
 
             <div className={styles.actions}>
@@ -138,12 +202,38 @@ export default function ChatSidebar({
         )}
       </div>
 
+      <div className={styles.listLabel}>Glosario legal</div>
+
+      <div className={styles.glossary}>
+        {LEGAL_GLOSSARY.map((entry) => (
+          <button
+            key={entry.term}
+            type="button"
+            className={`${styles.glossaryItem} ${activeGlossaryTerm?.term === entry.term ? styles.glossaryItemActive : ''}`}
+            onClick={() => handleSelectGlossaryTerm(entry)}
+          >
+            <svg className={styles.itemIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+            </svg>
+            {entry.term}
+          </button>
+        ))}
+      </div>
+
       <div className={styles.userRow}>
-        <div className={styles.avatar}>{initials}</div>
-        <div className={styles.userInfo}>
-          <span className={styles.userName}>{user?.name || 'Usuario'}</span>
-          <span className={styles.userEmail}>{user?.email || ''}</span>
-        </div>
+        <Link
+          to="/configuracion"
+          className={styles.userLink}
+          onClick={onClose}
+          title="Ir a configuración"
+        >
+          <div className={styles.avatar}>{initials}</div>
+          <div className={styles.userInfo}>
+            <span className={styles.userName}>{user?.name || 'Usuario'}</span>
+            <span className={styles.userEmail}>{user?.email || ''}</span>
+          </div>
+        </Link>
         <button className={styles.logoutBtn} onClick={signout} title="Cerrar sesión">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
@@ -164,7 +254,7 @@ export default function ChatSidebar({
           >
             <h2 id="delete-session-title">Eliminar consulta</h2>
             <p>
-              Se eliminará "{deleteTarget.title || deleteTarget.name || formatDate(deleteTarget.createdAt)}" del historial.
+              Se eliminará "{sessionLabel(deleteTarget)}" del historial.
             </p>
             <div className={styles.confirmActions}>
               <button className={styles.cancelBtn} onClick={() => setDeleteTarget(null)}>

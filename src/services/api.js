@@ -2,7 +2,7 @@ import axios from 'axios'
 import { useAuthStore } from '@/store/authStore'
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL
-const CHAT_SESSIONS_PAGE_SIZE = 20
+const CHAT_SESSIONS_LIMIT = 500
 const CHAT_MESSAGES_PAGE_SIZE = 50
 
 const api = axios.create({
@@ -102,7 +102,7 @@ export const chatService = {
   getProcessingStatus: () => api.get('/chat/processing-status'),
   getSessions: (config = {}) => {
     const { params, ...rest } = config
-    return api.get('/chat/sessions', { ...rest, params: { size: CHAT_SESSIONS_PAGE_SIZE, ...params } })
+    return api.get('/chat/sessions', { ...rest, params: { size: CHAT_SESSIONS_LIMIT, ...params } })
   },
   getMessages: (sessionId, config = {}) => {
     const { params, ...rest } = config
@@ -113,6 +113,12 @@ export const chatService = {
   rateMessage: (messageId, rating, comment = '') =>
     api.patch(`/chat/messages/${messageId}/rating`, { rating, comment }),
   confirmReceipt: (messageId) => api.patch(`/chat/messages/${messageId}/receipt`),
+}
+
+export const userService = {
+  getProfile: () => api.get('/users/me'),
+  updateProfile: (payload) => api.patch('/users/me', payload),
+  updatePassword: (payload) => api.patch('/users/me/password', payload),
 }
 
 export const paymentService = {

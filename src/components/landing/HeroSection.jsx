@@ -4,7 +4,7 @@ import styles from './HeroSection.module.css'
 const stats = [
   { num: '+90%', label: 'Precisión validada' },
   { num: '24/7', label: 'Disponibilidad'     },
-  { num: '100%', label: 'Gratuito al inicio' },
+  { num: '100%', label: 'Gratuito', info: 'Se incluyen compras dentro de la aplicación' },
 ]
 
 export default function HeroSection({ isAuthenticated, onPrimaryClick, onScrollComo }) {
@@ -34,13 +34,13 @@ export default function HeroSection({ isAuthenticated, onPrimaryClick, onScrollC
           </h1>
 
           <p className={`${styles.desc} ${loaded ? 'anim-fade-up delay-2' : ''}`}>
-            Orientación jurídica automatizada, clara y accesible para alimentos,
+            Orientación jurídica en Derecho de Familia automatizada, clara y accesible para alimentos,
             tenencia, filiación y medidas de protección — disponible las 24 horas.
           </p>
 
           <div className={`${styles.heroBtns} ${loaded ? 'anim-fade-up delay-3' : ''}`}>
             <button className={styles.btnPrimary} onClick={onPrimaryClick}>
-              {isAuthenticated ? 'Ir al chat' : 'Comenzar gratis'}
+              {isAuthenticated ? 'Ir al chat' : 'Comenzar'}
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="15" height="15">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
               </svg>
@@ -73,7 +73,26 @@ export default function HeroSection({ isAuthenticated, onPrimaryClick, onScrollC
           {stats.map((s) => (
             <div key={s.num} className={styles.statBox}>
               <div className={styles.statNum}>{s.num}</div>
-              <div className={styles.statLabel}>{s.label}</div>
+              <div className={styles.statLabel}>
+                <span className={styles.statLabelText}>
+                  {s.label}
+                  {s.info && (
+                    <span
+                      className={styles.infoWrap}
+                      tabIndex={0}
+                      role="note"
+                      aria-label={s.info}
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="11" x2="12" y2="16.5"/>
+                        <line x1="12" y1="7.5" x2="12" y2="7.5"/>
+                      </svg>
+                      <span className={styles.tooltip}>{s.info}</span>
+                    </span>
+                  )}
+                </span>
+              </div>
             </div>
           ))}
         </div>

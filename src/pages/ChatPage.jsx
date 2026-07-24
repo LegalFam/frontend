@@ -18,6 +18,15 @@ import TypingIndicator    from '@/components/chat/TypingIndicator'
 import logoImg            from '@/assets/logo-transparent.png'
 import styles             from './ChatPage.module.css'
 
+const TOKEN_COST_HINT = 'Cada consulta descuenta tokens cuando la respuesta queda lista: 1 token para preguntas simples o no relacionadas con Derecho de Familia, y hasta 3 tokens cuando la respuesta se apoya en fuentes legales.'
+
+const CONVERSATION_PRESETS = [
+  { label: 'Alimentos', question: '¿Cómo solicito una pensión de alimentos para mi hijo?' },
+  { label: 'Tenencia', question: '¿Qué necesito para pedir la tenencia de mi hijo?' },
+  { label: 'Filiación', question: '¿Cómo puedo reconocer legalmente a mi hijo o iniciar un proceso de filiación?' },
+  { label: 'Medidas de protección', question: '¿Cómo solicito medidas de protección por violencia familiar?' },
+]
+
 export default function ChatPage() {
   const { signout } = useAuth()
   const navigate = useNavigate()
@@ -25,6 +34,7 @@ export default function ChatPage() {
   const isMobile = () => window.innerWidth <= 768
   const [sidebarOpen, setSidebarOpen] = useState(() => !isMobile())
   const [billingOpen, setBillingOpen] = useState(false)
+  const [glossaryTerm, setGlossaryTerm] = useState(null)
   const { plans, subscription, refreshBilling, cancelSubscription, loading: billingLoading } = usePaymentStore()
 
   const {
@@ -71,10 +81,22 @@ export default function ChatPage() {
     if (isMobile()) setSidebarOpen(false)
   }
 
+  const handleSelectSession = (sessionId) => {
+    setGlossaryTerm(null)
+    selectSession(sessionId)
+  }
+
+  const handleNewChat = () => {
+    setGlossaryTerm(null)
+    startNewChat()
+  }
+
   const showConnectionNotice = Boolean(error || (activeSessionId && connectionState === 'reconnecting'))
-  const sessionTitle   = activeSessionId
-    ? sessions.find((s) => s.id === activeSessionId)?.title || sessions.find((s) => s.id === activeSessionId)?.name || 'Consulta'
-    : 'Nueva consulta'
+  const sessionTitle   = glossaryTerm
+    ? `Glosario · ${glossaryTerm.term}`
+    : activeSessionId
+      ? sessions.find((s) => s.id === activeSessionId)?.title || sessions.find((s) => s.id === activeSessionId)?.name || 'Consulta'
+      : 'Consulta Actual'
   const tokenLabel = subscription
     ? `${subscription.planCode} · ${subscription.remainingTokens}/${subscription.monthlyTokenLimit} tokens`
     : null
@@ -84,6 +106,9 @@ export default function ChatPage() {
   const remainingTokens = subscription?.remainingTokens ?? 0
   const usedTokens = Math.max(tokenLimit - remainingTokens, 0)
   const tokenPercent = tokenLimit ? Math.max(0, Math.min(100, (remainingTokens / tokenLimit) * 100)) : 0
+  const showPresets = !activeSessionId &&
+    activeMessages.length === 1 &&
+    activeMessages[0]?.id === 'welcome'
   const inputDisabled = Boolean(loading || processingStatus?.processing)
   const inputDisabledReason = inputDisabled
     ? activeSessionProcessing
@@ -147,14 +172,33 @@ export default function ChatPage() {
 
         <span className={styles.topbarTitle}>{sessionTitle}</span>
         {tokenLabel && (
-          <button
-            type="button"
-            className={styles.tokenBadge}
-            onClick={() => setBillingOpen(true)}
-            title="Ver plan y tokens"
-          >
-            {tokenLabel}
-          </button>
+          <span className={styles.tokenControl}>
+            <button
+              type="button"
+              className={styles.tokenBadge}
+              onClick={() => setBillingOpen(true)}
+              title="Ver plan y tokens"
+              aria-describedby="token-cost-hint"
+            >
+              {tokenLabel}
+              <svg
+                className={styles.tokenInfoIcon}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="11" x2="12" y2="16.5"/>
+                <line x1="12" y1="7.5" x2="12" y2="7.5"/>
+              </svg>
+            </button>
+            <span id="token-cost-hint" className={styles.tooltip} role="note">
+              {TOKEN_COST_HINT}
+            </span>
+          </span>
         )}
 
         <button className="icon-btn" onClick={signout} title="Cerrar sesión" style={{ marginLeft: 'auto' }}>
@@ -179,15 +223,39 @@ export default function ChatPage() {
           loadingSessions={sessionsLoading}
           loadingMoreSessions={sessionsLoadingMore}
           activeSessionId={activeSessionId}
-          onSelectSession={selectSession}
+          onSelectSession={handleSelectSession}
           onLoadMoreSessions={loadMoreSessions}
-          onNewChat={startNewChat}
+          onNewChat={handleNewChat}
           onRenameSession={renameSession}
           onDeleteSession={deleteSession}
+          onSelectGlossaryTerm={setGlossaryTerm}
+          activeGlossaryTerm={glossaryTerm}
           onClose={closeSidebarOnMobile}
         />
 
         <div className={styles.main}>
+          {glossaryTerm ? (
+            <div className={styles.glossaryView}>
+              <article className={styles.glossaryCard}>
+                <span className={styles.glossaryEyebrow}>Glosario legal</span>
+                <h1>{glossaryTerm.term}</h1>
+                <p>{glossaryTerm.definition}</p>
+                <div className={styles.glossaryActions}>
+                  <button
+                    type="button"
+                    className={styles.glossaryBackBtn}
+                    onClick={() => setGlossaryTerm(null)}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="15" height="15">
+                      <path d="M19 12H5M12 5l-7 7 7 7" />
+                    </svg>
+                    Volver al chat
+                  </button>
+                </div>
+              </article>
+            </div>
+          ) : (
+          <>
           {showConnectionNotice && (
             <div className={styles.notice}>
               {error || 'Reconectando con el chat...'}
@@ -222,6 +290,25 @@ export default function ChatPage() {
                   />
                 )
               })}
+              {showPresets && (
+                <div className={styles.presets}>
+                  <p className={styles.presetsLabel}>Empieza con una consulta frecuente</p>
+                  <div className={styles.presetsGrid}>
+                    {CONVERSATION_PRESETS.map((preset) => (
+                      <button
+                        key={preset.label}
+                        type="button"
+                        className={styles.presetBtn}
+                        onClick={() => sendMessage(preset.question)}
+                        disabled={inputDisabled}
+                      >
+                        <strong>{preset.label}</strong>
+                        <span>{preset.question}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
               {(loading || activeSessionProcessing) && <TypingIndicator />}
               <div ref={messagesEndRef} />
             </div>
@@ -231,6 +318,8 @@ export default function ChatPage() {
             disabled={inputDisabled}
             disabledReason={inputDisabledReason}
           />
+          </>
+          )}
         </div>
       </div>
 
@@ -275,6 +364,7 @@ export default function ChatPage() {
               <div className={styles.tokenMeter} aria-hidden="true">
                 <span style={{ width: `${tokenPercent}%` }} />
               </div>
+              <p className={styles.tokenHint}>{TOKEN_COST_HINT}</p>
             </div>
 
             <div className={styles.planGrid}>

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import logoImg from '@/assets/logo-transparent.png'
 import styles from './BannerSection.module.css'
 
@@ -38,6 +39,7 @@ export function Footer() {
           <button onClick={() => scrollTo('precios')}>Precios</button>
           <button onClick={() => scrollTo('seguridad')}>Seguridad</button>
           <button onClick={() => scrollTo('privacidad')}>Privacidad</button>
+          <Link to="/terminos">Términos y Condiciones</Link>
         </nav>
       </div>
       <div className={styles.footerBottom}>

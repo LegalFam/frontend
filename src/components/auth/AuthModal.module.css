@@ -86,6 +86,42 @@
 }
 .phonePfx .flag { font-size: 14px; }
 
+.consent { margin-bottom: 1rem; }
+
+.checkboxRow {
+  display: flex; align-items: flex-start; gap: 9px;
+  font-size: 12px; line-height: 1.55; color: var(--text-secondary);
+  cursor: pointer;
+}
+.checkboxRow input[type="checkbox"] {
+  appearance: none; -webkit-appearance: none;
+  width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px;
+  background: var(--black-3);
+  border: 0.5px solid var(--gold-border);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast);
+}
+.checkboxRow input[type="checkbox"]:hover { border-color: var(--gold); }
+.checkboxRow input[type="checkbox"]:focus-visible {
+  outline: none; border-color: var(--gold); box-shadow: var(--shadow-gold);
+}
+.checkboxRow input[type="checkbox"]:checked {
+  background-color: var(--gold);
+  border-color: var(--gold);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%230A0A0A' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='3.5 8.5 6.5 11.5 12.5 4.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+}
+.checkboxRow a { color: var(--gold); }
+.checkboxRow a:hover { text-decoration: underline; }
+
+.consentNote {
+  margin-top: 0.55rem;
+  font-size: 11px; line-height: 1.6; color: var(--text-muted);
+}
+
 .submitBtn {
   width: 100%; padding: 11px;
   background: var(--gold); color: var(--black); border: none;
