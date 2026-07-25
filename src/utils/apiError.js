@@ -33,6 +33,7 @@ const ERROR_MESSAGES_BY_CODE = {
   profile_request_required: 'Revisa los datos ingresados e intenta nuevamente.',
   password_request_required: 'Completa los campos de contraseña e intenta nuevamente.',
   current_password_invalid: 'La contraseña actual es incorrecta.',
+  subscription_already_canceled: 'Tu suscripción ya está dada de baja y no se renovará.',
   message_required: 'Escribe una consulta antes de enviarla.',
   message_too_long: 'Tu consulta es demasiado larga. Reduce el texto e intenta nuevamente.',
   session_id_required: 'No se encontró la conversación. Vuelve a abrir el chat.',

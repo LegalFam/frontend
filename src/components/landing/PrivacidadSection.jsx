@@ -4,7 +4,8 @@ const items = [
   {
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
       </svg>
     ),
     title: 'Datos bajo tu control',
@@ -13,8 +14,8 @@ const items = [
   {
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <rect x="3" y="11" width="18" height="11" rx="2"/>
-        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        <circle cx="12" cy="12" r="9"/>
+        <path d="M5.6 5.6l12.8 12.8"/>
       </svg>
     ),
     title: 'Sin venta de datos',
@@ -23,8 +24,8 @@ const items = [
   {
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <circle cx="12" cy="12" r="10"/>
-        <path d="M12 8v4l3 3"/>
+        <rect x="3" y="4" width="18" height="18" rx="2"/>
+        <path d="M16 2v4M8 2v4M3 10h18"/>
       </svg>
     ),
     title: 'Retención limitada',
@@ -33,8 +34,8 @@ const items = [
   {
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-        <circle cx="12" cy="12" r="3"/>
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <path d="M14 2v6h6M8 13h8M8 17h8M8 9h2"/>
       </svg>
     ),
     title: 'Transparencia total',
@@ -43,21 +44,12 @@ const items = [
   {
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19M6.61 6.61A18.5 18.5 0 0 0 1 12s4 8 11 8a9.12 9.12 0 0 0 5.39-1.61"/>
+        <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24M1 1l22 22"/>
       </svg>
     ),
     title: 'Anonimización de consultas',
     desc: 'Las consultas legales se procesan de forma anonimizada. Ningún abogado externo tiene acceso a tu historial de conversaciones.',
-  },
-  {
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-        <polyline points="22,6 12,13 2,6"/>
-      </svg>
-    ),
-    title: 'Contacto de privacidad',
-    desc: 'Para ejercer tus derechos ARCO (Acceso, Rectificación, Cancelación, Oposición) escríbenos a privacidad@legalfam.pe',
   },
 ]
 
@@ -65,22 +57,35 @@ export default function PrivacidadSection() {
   return (
     <section id="privacidad" className={styles.section}>
       <div className="container">
-        <div className={styles.header}>
-          <span className="section-eyebrow">Privacidad</span>
-          <h2 className="section-title">Tu privacidad es nuestra prioridad</h2>
-          <p className="section-sub">
-            Tratamos tus datos conforme a la Ley N.° 29733 de Protección de Datos Personales
-            y las mejores prácticas internacionales de privacidad.
-          </p>
-        </div>
-        <div className={styles.grid}>
-          {items.map((item) => (
-            <div key={item.title} className={styles.card}>
-              <div className={styles.icon}>{item.icon}</div>
-              <h3>{item.title}</h3>
-              <p>{item.desc}</p>
+        <div className={styles.split}>
+          <div className={styles.intro}>
+            <div className={styles.header}>
+              <span className="section-eyebrow">Privacidad</span>
+              <h2 className="section-title">Tu privacidad es nuestra prioridad</h2>
+              <p className="section-sub">
+                Tratamos tus datos conforme a la Ley N.° 29733 de Protección de Datos Personales
+                y las mejores prácticas internacionales de privacidad.
+              </p>
             </div>
-          ))}
+            <div className={styles.contact}>
+              <h3>Contacto de privacidad</h3>
+              <p>
+                Para ejercer tus derechos ARCO (Acceso, Rectificación, Cancelación,
+                Oposición) escríbenos a <a href="mailto:privacidad@legalfam.pe">privacidad@legalfam.pe</a>
+              </p>
+            </div>
+          </div>
+          <ul className={styles.list}>
+            {items.map((item) => (
+              <li key={item.title} className={styles.item}>
+                <div className={styles.icon}>{item.icon}</div>
+                <div className={styles.body}>
+                  <h3>{item.title}</h3>
+                  <p>{item.desc}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>

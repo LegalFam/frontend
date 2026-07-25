@@ -18,7 +18,7 @@ import TypingIndicator    from '@/components/chat/TypingIndicator'
 import logoImg            from '@/assets/logo-transparent.png'
 import styles             from './ChatPage.module.css'
 
-const TOKEN_COST_HINT = 'Cada consulta descuenta tokens cuando la respuesta queda lista: 1 token para preguntas simples o no relacionadas con Derecho de Familia, y hasta 3 tokens cuando la respuesta se apoya en fuentes legales.'
+const TOKEN_COST_HINT = 'Cada consulta descuenta tokens cuando la respuesta queda lista: 1 token para consultas simples y hasta 3 tokens cuando la respuesta se apoya en fuentes legales.'
 
 const CONVERSATION_PRESETS = [
   { label: 'Alimentos', question: '¿Cómo solicito una pensión de alimentos para mi hijo?' },

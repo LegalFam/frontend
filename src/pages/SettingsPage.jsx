@@ -8,6 +8,13 @@ import { normalizeApiError } from '@/utils/apiError'
 import { STATIC_PLANS, formatPlanName, formatPlanTokens } from '@/utils/plans'
 import styles from './SettingsPage.module.css'
 
+const formatPeriodEnd = (iso) => {
+  if (!iso) return 'final del periodo actual'
+  const date = new Date(iso)
+  if (Number.isNaN(date.getTime())) return 'final del periodo actual'
+  return date.toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric' })
+}
+
 const splitName = (fullName) => {
   const trimmed = (fullName || '').trim()
   if (!trimmed) return { nombre: '', apellido: '' }
@@ -288,11 +295,22 @@ export default function SettingsPage() {
                 </div>
               </div>
               {currentPlan && <p className={styles.fieldNote}>{formatPlanTokens(currentPlan)}</p>}
-              {subscription.provider === 'MERCADO_PAGO' ? (
+              {subscription.provider === 'MERCADO_PAGO' && subscription.cancelAtPeriodEnd ? (
+                <>
+                  {billingDone && (
+                    <p className={styles.savedMsg}>Suscripción dada de baja.</p>
+                  )}
+                  <p className={styles.fieldNote}>
+                    No se renovará. Conservas tu plan y tus tokens hasta el{' '}
+                    {formatPeriodEnd(subscription.currentPeriodEnd)}; después pasarás
+                    automáticamente al plan gratuito.
+                  </p>
+                </>
+              ) : subscription.provider === 'MERCADO_PAGO' ? (
                 <>
                   <p className={styles.fieldNote}>
-                    Al dar de baja pasarás al plan gratuito de inmediato, sin conservar el tiempo
-                    restante del periodo ya pagado.
+                    Al dar de baja no se renovará el próximo mes, pero conservas tu plan y tus
+                    tokens hasta el {formatPeriodEnd(subscription.currentPeriodEnd)}.
                   </p>
                   <button
                     type="button"
@@ -305,9 +323,7 @@ export default function SettingsPage() {
                 </>
               ) : (
                 <p className={styles.fieldNote}>
-                  {billingDone
-                    ? 'Suscripción dada de baja. Ahora estás en el plan gratuito.'
-                    : 'Tu plan actual es gratuito, no hay ninguna suscripción que dar de baja.'}
+                  {'Tu plan actual es gratuito, no hay ninguna suscripción que dar de baja.'}
                 </p>
               )}
             </>
@@ -328,12 +344,14 @@ export default function SettingsPage() {
           >
             <h2 id="cancel-subscription-title">Dar de baja la suscripción</h2>
             <p>
-              La baja es <strong>inmediata</strong>: pasarás al plan gratuito ahora mismo y no se
-              conserva el tiempo restante del periodo que ya pagaste.
+              Tu suscripción dejará de renovarse, pero conservas tu plan y tus{' '}
+              <strong>{remainingTokens}</strong> tokens hasta el{' '}
+              <strong>{formatPeriodEnd(subscription?.currentPeriodEnd)}</strong>.
             </p>
             <p>
-              Tu saldo pasará de <strong>{remainingTokens}</strong> a{' '}
-              <strong>{freeTokenLimit}</strong> tokens. Esta acción no se puede deshacer.
+              Al terminar ese periodo pasarás al plan gratuito, con{' '}
+              <strong>{freeTokenLimit}</strong> tokens mensuales. Para volver a un plan de pago
+              tendrás que contratarlo de nuevo.
             </p>
             <div className={styles.confirmActions}>
               <button type="button" className={styles.cancelBtn} onClick={() => setCancelOpen(false)}>

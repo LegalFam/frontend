@@ -24,7 +24,7 @@ const sections = [
   {
     title: '3. Tokens y compras dentro de la aplicación',
     paragraphs: [
-      'El uso de LegalFam es gratuito: toda cuenta recibe un balance mensual de tokens sin costo alguno. Cada consulta descuenta tokens cuando la respuesta queda lista: hasta 1 token para preguntas simples o no relacionadas con Derecho de Familia, y hasta 3 tokens cuando la respuesta se apoya en fuentes legales.',
+      'El uso de LegalFam es gratuito: toda cuenta recibe un balance mensual de tokens sin costo alguno. Cada consulta descuenta tokens cuando la respuesta queda lista: 1 token para consultas simples y hasta 3 tokens cuando la respuesta se apoya en fuentes legales.',
       'La aplicación incluye compras opcionales: planes de suscripción mensual que amplían el balance de tokens. Ningún plan de pago es necesario para usar el servicio con el balance gratuito.',
       'Los pagos se procesan a través de Mercado Pago. LegalFam no almacena los datos de tu tarjeta. Puedes cancelar tu suscripción en cualquier momento desde la vista de configuración; el plan permanece activo hasta el final del periodo ya pagado y no se renueva.',
     ],
