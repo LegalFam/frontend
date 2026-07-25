@@ -24,7 +24,7 @@ export const STATIC_PLANS = [
   {
     code: 'FREE',
     slug: PLAN_SLUGS.FREE,
-    displayName: 'Prueba gratuita',
+    displayName: 'Plan gratuito',
     monthlyPriceCents: null,
     currency: 'pen',
     billingInterval: 'once',
