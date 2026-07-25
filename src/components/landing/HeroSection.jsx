@@ -35,7 +35,7 @@ export default function HeroSection({ isAuthenticated, onPrimaryClick, onScrollC
 
           <p className={`${styles.desc} ${loaded ? 'anim-fade-up delay-2' : ''}`}>
             Orientación jurídica en Derecho de Familia automatizada, clara y accesible para alimentos,
-            tenencia, filiación y medidas de protección — disponible las 24 horas.
+            tenencia, filiación y medidas de protección, disponible las 24 horas.
           </p>
 
           <div className={`${styles.heroBtns} ${loaded ? 'anim-fade-up delay-3' : ''}`}>
