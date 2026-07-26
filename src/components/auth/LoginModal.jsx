@@ -1,13 +1,15 @@
 import { useState } from 'react'
 import logoImg from '@/assets/logo-transparent.png'
 import { useAuth } from '@/hooks/useAuth'
+import ResendVerificationButton from './ResendVerificationButton'
 import styles from './AuthModal.module.css'
 
-export default function LoginModal({ onClose, onSwitchToRegister }) {
+export default function LoginModal({ onClose, onSwitchToRegister, onForgotPassword }) {
   const { signin, loading, error } = useAuth()
   const [fields, setFields] = useState({ email: '', password: '' })
   const [errs,   setErrs]   = useState({})
   const [showPassword, setShowPassword] = useState(false)
+  const [needsVerification, setNeedsVerification] = useState(false)
 
   const set = (k, v) => setFields((p) => ({ ...p, [k]: v }))
 
@@ -22,7 +24,8 @@ export default function LoginModal({ onClose, onSwitchToRegister }) {
   const handleSubmit = async (ev) => {
     ev.preventDefault()
     if (!validate()) return
-    await signin({ email: fields.email, password: fields.password })
+    const result = await signin({ email: fields.email, password: fields.password })
+    setNeedsVerification(result.code === 'email_not_verified')
   }
 
   return (
@@ -39,6 +42,7 @@ export default function LoginModal({ onClose, onSwitchToRegister }) {
         <p className={styles.subtitle}>Accede a tu cuenta para continuar</p>
 
         {error && <div className="api-err">{error}</div>}
+        {needsVerification && <ResendVerificationButton email={fields.email} />}
 
         <form onSubmit={handleSubmit} noValidate>
           <div className={styles.fg}>
@@ -86,6 +90,13 @@ export default function LoginModal({ onClose, onSwitchToRegister }) {
               </button>
             </div>
             {errs.password && <span className="field-err">{errs.password}</span>}
+            <button
+              type="button"
+              className={styles.forgotLink}
+              onClick={() => onForgotPassword?.(fields.email)}
+            >
+              ¿Olvidaste tu contraseña?
+            </button>
           </div>
 
           <button type="submit" className={styles.submitBtn} disabled={loading}>

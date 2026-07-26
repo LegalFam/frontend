@@ -56,6 +56,16 @@ const ERROR_MESSAGES_BY_CODE = {
   signup_request_required: 'Completa los datos para crear tu cuenta.',
   login_request_required: 'Ingresa tu correo y contraseña.',
 
+  email_not_verified: 'Confirma tu correo antes de iniciar sesión. Revisa tu bandeja de entrada.',
+  email_already_verified: 'Tu correo ya está verificado. Inicia sesión.',
+  token_required: 'El enlace no es válido. Solicita uno nuevo.',
+  verification_token_invalid: 'El enlace de verificación no es válido o ya expiró. Solicita uno nuevo.',
+  reset_token_invalid: 'El enlace para restablecer tu contraseña no es válido o ya expiró.',
+  verify_email_request_required: 'El enlace no es válido. Solicita uno nuevo.',
+  resend_verification_request_required: 'Ingresa tu correo electrónico.',
+  forgot_password_request_required: 'Ingresa tu correo electrónico.',
+  reset_password_request_required: 'Completa los campos para restablecer tu contraseña.',
+
   chat_session_not_found: 'No encontramos esta conversación.',
   chat_message_not_found: 'No encontramos este mensaje.',
   assistant_delivery_event_not_found: 'No encontramos la confirmación de entrega del mensaje.',

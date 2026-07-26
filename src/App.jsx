@@ -6,6 +6,8 @@ import BillingReturnPage from '@/pages/BillingReturnPage'
 import SpecialistAssistancePage from '@/pages/SpecialistAssistancePage'
 import TermsPage from '@/pages/TermsPage'
 import SettingsPage from '@/pages/SettingsPage'
+import VerifyEmailPage from '@/pages/VerifyEmailPage'
+import ResetPasswordPage from '@/pages/ResetPasswordPage'
 import ProtectedRoute from '@/components/auth/ProtectedRoute'
 
 export default function App() {
@@ -23,6 +25,9 @@ export default function App() {
       <Route path="/contactos-emergencia" element={<SpecialistAssistancePage />} />
       <Route path="/asistencia-especializada" element={<Navigate to="/contactos-emergencia" replace />} />
       <Route path="/terminos" element={<TermsPage />} />
+      {/* Public: these paths must match app.frontend.*-path on the backend. */}
+      <Route path="/verificar-correo" element={<VerifyEmailPage />} />
+      <Route path="/restablecer-contrasena" element={<ResetPasswordPage />} />
       <Route
         path="/configuracion"
         element={

@@ -146,6 +146,31 @@
 .switchText span { color: var(--gold); cursor: pointer; font-weight: 500; }
 .switchText span:hover { text-decoration: underline; }
 
+.forgotLink {
+  display: block; width: 100%; text-align: right;
+  background: none; border: none; padding: 0; margin-top: 6px;
+  font-size: 11.5px; color: var(--gold); cursor: pointer;
+}
+.forgotLink:hover { text-decoration: underline; }
+
+.ghostBtn {
+  width: 100%; padding: 9px;
+  background: none; color: var(--gold);
+  border: 0.5px solid var(--gold-border); border-radius: var(--radius);
+  font-size: 12.5px; margin-top: 0.6rem; cursor: pointer;
+  transition: background var(--t-fast), border-color var(--t-fast);
+}
+.ghostBtn:hover:not(:disabled) { background: var(--gold-bg); border-color: var(--gold); }
+.ghostBtn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.notice { text-align: center; padding: 0.5rem 0 0.25rem; }
+.noticeIcon { font-size: 34px; line-height: 1; margin-bottom: 0.9rem; }
+.noticeText {
+  font-size: 13px; line-height: 1.7; color: var(--text-secondary); margin-bottom: 0.5rem;
+}
+.noticeText strong { color: var(--text-primary); font-weight: 500; }
+.noticeHint { font-size: 11.5px; line-height: 1.6; color: var(--text-muted); margin-top: 0.75rem; }
+
 @media (max-width: 480px) {
   .modal { padding: 1.5rem 1.25rem; border-radius: var(--radius); }
   .row   { grid-template-columns: 1fr; }

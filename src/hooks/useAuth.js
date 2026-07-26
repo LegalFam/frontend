@@ -24,24 +24,19 @@ export function useAuth() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
+  // Signup no longer establishes a session: the account stays unverified until the
+  // emailed link is opened, so the caller shows a "check your inbox" state instead.
   const signup = async ({ nombre, apellido, email, phone, password }) => {
     setLoading(true)
     setError(null)
     try {
       const name = `${nombre} ${apellido}`.trim()
-      const { data } = await authService.signup({
-        email,
-        password,
-        name,
-        phone,
-      })
-      login(data, data.user || { name, email, phone })
-      navigate(consumePendingAuthRedirect() || '/chat')
-      return { success: true }
+      await authService.signup({ email, password, name, phone })
+      return { success: true, email }
     } catch (e) {
-      const msg = normalizeApiError(e, 'Error al crear cuenta.').message
-      setError(msg)
-      return { success: false, message: msg }
+      const { code, message } = normalizeApiError(e, 'Error al crear cuenta.')
+      setError(message)
+      return { success: false, code, message }
     } finally {
       setLoading(false)
     }
@@ -56,9 +51,9 @@ export function useAuth() {
       navigate(consumePendingAuthRedirect() || '/chat')
       return { success: true }
     } catch (e) {
-      const msg = normalizeApiError(e, 'Error al iniciar sesión.').message
-      setError(msg)
-      return { success: false, message: msg }
+      const { code, message } = normalizeApiError(e, 'Error al iniciar sesión.')
+      setError(message)
+      return { success: false, code, message }
     } finally {
       setLoading(false)
     }

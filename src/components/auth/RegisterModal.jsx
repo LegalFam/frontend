@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import logoImg from '@/assets/logo-transparent.png'
 import { useAuth } from '@/hooks/useAuth'
+import ResendVerificationButton from './ResendVerificationButton'
 import styles from './AuthModal.module.css'
 
 export default function RegisterModal({ onClose, onSwitchToLogin }) {
@@ -11,6 +12,7 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
     acceptedTerms: false,
   })
   const [errs, setErrs] = useState({})
+  const [registeredEmail, setRegisteredEmail] = useState(null)
 
   const set = (k, v) => setFields((p) => ({ ...p, [k]: v }))
 
@@ -35,10 +37,46 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
   const handleSubmit = async (ev) => {
     ev.preventDefault()
     if (!validate()) return
-    await signup({
+    const result = await signup({
       nombre: fields.nombre, apellido: fields.apellido,
       email: fields.email, phone: fields.phone, password: fields.password,
     })
+    // No session is created on signup: the account is unlocked by the emailed link.
+    if (result.success) setRegisteredEmail(result.email)
+  }
+
+  if (registeredEmail) {
+    return (
+      <div className={styles.overlay} onClick={onClose}>
+        <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+          <button className={styles.close} onClick={onClose} aria-label="Cerrar">✕</button>
+
+          <div className={styles.topBar}>
+            <img src={logoImg} alt="LegalFam" />
+            <span className={styles.logo}>LEGALFAM</span>
+          </div>
+
+          <h2 className={styles.title}>Revisa tu correo</h2>
+
+          <div className={styles.notice}>
+            <div className={styles.noticeIcon}>✉️</div>
+            <p className={styles.noticeText}>
+              Enviamos un enlace de confirmación a <strong>{registeredEmail}</strong>.
+              Ábrelo para activar tu cuenta y poder iniciar sesión.
+            </p>
+            <p className={styles.noticeHint}>
+              ¿No lo ves? Revisa la carpeta de spam. El enlace vence en 24 horas.
+            </p>
+          </div>
+
+          <ResendVerificationButton email={registeredEmail} />
+
+          <p className={styles.switchText}>
+            <span onClick={onSwitchToLogin}>Ir a iniciar sesión</span>
+          </p>
+        </div>
+      </div>
+    )
   }
 
   return (
