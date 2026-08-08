@@ -21,6 +21,30 @@ const Check = () => (
   </span>
 )
 
+// Las filas comparativas se declaran una sola vez porque alimentan las dos
+// vistas: la tabla de escritorio y las tarjetas apiladas de móvil.
+const PLAN_SPECS = [
+  {
+    label: 'Capacidad',
+    hint: 'respecto al plan gratuito',
+    value: formatPlanCapacity,
+    key: true,
+  },
+  {
+    label: 'Tokens mensuales',
+    value: (plan) => new Intl.NumberFormat('es-PE').format(plan.monthlyTokenLimit),
+  },
+  {
+    label: 'Memoria de la conversación',
+    hint: 'contexto que recuerda el asistente',
+    value: formatPlanContextMessages,
+  },
+  {
+    label: 'Historial disponible',
+    value: formatPlanHistoryWindow,
+  },
+]
+
 export default function PreciosSection({ isAuthenticated, currentPlanCode, onRegisterClick }) {
   const navigate = useNavigate()
 
@@ -86,50 +110,25 @@ export default function PreciosSection({ isAuthenticated, currentPlanCode, onReg
             </thead>
 
             <tbody>
-              <tr className={styles.keyRow}>
-                <th scope="row">
-                  Capacidad
-                  <span className={styles.rowHint}>respecto al plan gratuito</span>
-                </th>
-                {STATIC_PLANS.map((plan) => (
-                  <td
-                    key={plan.code}
-                    className={`${styles.figure} ${plan.featured ? styles.featuredCol : ''}`}
-                  >
-                    {formatPlanCapacity(plan)}
-                  </td>
-                ))}
-              </tr>
-
-              <tr>
-                <th scope="row">Tokens mensuales</th>
-                {STATIC_PLANS.map((plan) => (
-                  <td key={plan.code} className={plan.featured ? styles.featuredCol : undefined}>
-                    {new Intl.NumberFormat('es-PE').format(plan.monthlyTokenLimit)}
-                  </td>
-                ))}
-              </tr>
-
-              <tr>
-                <th scope="row">
-                  Memoria de la conversación
-                  <span className={styles.rowHint}>contexto que recuerda el asistente</span>
-                </th>
-                {STATIC_PLANS.map((plan) => (
-                  <td key={plan.code} className={plan.featured ? styles.featuredCol : undefined}>
-                    {formatPlanContextMessages(plan)}
-                  </td>
-                ))}
-              </tr>
-
-              <tr>
-                <th scope="row">Historial disponible</th>
-                {STATIC_PLANS.map((plan) => (
-                  <td key={plan.code} className={plan.featured ? styles.featuredCol : undefined}>
-                    {formatPlanHistoryWindow(plan)}
-                  </td>
-                ))}
-              </tr>
+              {PLAN_SPECS.map((spec) => (
+                <tr key={spec.label} className={spec.key ? styles.keyRow : undefined}>
+                  <th scope="row">
+                    {spec.label}
+                    {spec.hint && <span className={styles.rowHint}>{spec.hint}</span>}
+                  </th>
+                  {STATIC_PLANS.map((plan) => (
+                    <td
+                      key={plan.code}
+                      className={[
+                        spec.key ? styles.figure : '',
+                        plan.featured ? styles.featuredCol : '',
+                      ].filter(Boolean).join(' ') || undefined}
+                    >
+                      {spec.value(plan)}
+                    </td>
+                  ))}
+                </tr>
+              ))}
 
               {SHARED_PLAN_FEATURES.map((feature) => (
                 <tr key={feature}>
@@ -164,6 +163,58 @@ export default function PreciosSection({ isAuthenticated, currentPlanCode, onReg
               </tr>
             </tbody>
           </table>
+        </div>
+
+        {/* En móvil la tabla no cabe: se muestra un plan por tarjeta para no
+            depender del scroll horizontal. */}
+        <div className={styles.cards}>
+          {STATIC_PLANS.map((plan) => {
+            const isCurrent = isAuthenticated && plan.code === currentPlanCode
+            return (
+              <article
+                key={plan.code}
+                className={`${styles.card} ${plan.featured ? styles.cardFeatured : ''}`}
+              >
+                {plan.featured && <span className={styles.tag}>Más popular</span>}
+                <span className={styles.planName}>{formatPlanName(plan)}</span>
+                <span className={styles.planPrice}>
+                  {formatPlanPrice(plan)}
+                  <span className={styles.period}>{formatPlanPeriod(plan)}</span>
+                </span>
+
+                <dl className={styles.cardSpecs}>
+                  {PLAN_SPECS.map((spec) => (
+                    <div key={spec.label} className={styles.cardSpec}>
+                      <dt>
+                        {spec.label}
+                        {spec.hint && <span className={styles.rowHint}>{spec.hint}</span>}
+                      </dt>
+                      <dd className={spec.key ? styles.figure : undefined}>
+                        {spec.value(plan)}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+
+                <ul className={styles.cardFeatures}>
+                  {SHARED_PLAN_FEATURES.map((feature) => (
+                    <li key={feature}>
+                      <Check />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+
+                <button
+                  className={plan.featured ? styles.btnGold : styles.btnGhost}
+                  onClick={() => handlePlanClick(plan)}
+                  disabled={isCurrent}
+                >
+                  {buttonLabelFor(plan, isCurrent)}
+                </button>
+              </article>
+            )
+          })}
         </div>
 
         <p className={styles.note}>

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useChat }        from '@/hooks/useChat'
 import { useAuth }        from '@/hooks/useAuth'
+import { useEdgeSafeTooltip } from '@/hooks/useEdgeSafeTooltip'
 import { usePaymentStore } from '@/store/paymentStore'
 import {
   STATIC_PLANS,
@@ -48,6 +49,7 @@ export default function ChatPage() {
   const messagesContainerRef = useRef(null)
   const messagesEndRef = useRef(null)
   const loadingOlderMessagesRef = useRef(false)
+  const { ref: tokenTooltipRef, recalc: recalcTokenTooltip } = useEdgeSafeTooltip()
 
   const activeKey      = activeSessionId || 'new'
   const activeMessages = messages[activeKey] || []
@@ -172,7 +174,11 @@ export default function ChatPage() {
 
         <span className={styles.topbarTitle}>{sessionTitle}</span>
         {tokenLabel && (
-          <span className={styles.tokenControl}>
+          <span
+            className={styles.tokenControl}
+            onPointerEnter={recalcTokenTooltip}
+            onFocus={recalcTokenTooltip}
+          >
             <button
               type="button"
               className={styles.tokenBadge}
@@ -195,7 +201,12 @@ export default function ChatPage() {
                 <line x1="12" y1="7.5" x2="12" y2="7.5"/>
               </svg>
             </button>
-            <span id="token-cost-hint" className={styles.tooltip} role="note">
+            <span
+              id="token-cost-hint"
+              className={styles.tooltip}
+              role="note"
+              ref={tokenTooltipRef}
+            >
               {TOKEN_COST_HINT}
             </span>
           </span>

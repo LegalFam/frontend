@@ -30,6 +30,7 @@ a { text-decoration: none; color: inherit; }
   --error: #E24B4A; --error-bg: rgba(226,75,74,0.10);
   --error-border: rgba(226,75,74,0.35); --success: #1D9E75;
   --radius: 8px; --radius-lg: 14px; --radius-xl: 20px;
+  --chat-topbar-h: 58px;
   --t-fast: 0.15s ease; --t-base: 0.25s ease;
   --shadow-gold: 0 0 0 2px rgba(201,168,76,0.30);
 }

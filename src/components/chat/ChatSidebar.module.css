@@ -224,10 +224,13 @@
 .deleteBtn:hover { border-color: var(--error); color: #FFD0D0; }
 
 @media (max-width: 768px) {
+  /* Arranca debajo del topbar: si empieza en top:0 la barra superior (que va
+     por encima) tapa el botón de "Nueva consulta". */
   .sidebar {
-    position: fixed; top: 0; bottom: 0; left: 0; z-index: 100;
-    width: 280px; transition: transform 0.28s ease, opacity 0.28s ease;
+    position: fixed; top: var(--chat-topbar-h); bottom: 0; left: 0; z-index: 100;
+    width: min(280px, calc(100vw - 3rem));
+    transition: transform 0.28s ease, opacity 0.28s ease;
     box-shadow: 4px 0 24px rgba(0,0,0,0.55);
   }
-  .sidebar.closed { width: 280px; transform: translateX(-100%); opacity: 1; }
+  .sidebar.closed { width: min(280px, calc(100vw - 3rem)); transform: translateX(-100%); opacity: 1; }
 }

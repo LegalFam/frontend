@@ -158,22 +158,85 @@
   letter-spacing: 0.3px;
 }
 
+/* ── Vista de tarjetas (solo móvil) ── */
+.cards { display: none; }
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border: 0.5px solid var(--gold-border);
+  border-radius: var(--radius-lg);
+  background: var(--black-2);
+  padding: 1.75rem 1.25rem 1.25rem;
+}
+.cardFeatured {
+  background: var(--gold-bg);
+  border-color: var(--gold-border-h);
+}
+.card .planPrice { margin-bottom: 1.25rem; }
+
+.cardSpecs {
+  display: flex;
+  flex-direction: column;
+  border-top: 0.5px solid var(--gold-border);
+}
+.cardSpec {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 0;
+  border-bottom: 0.5px solid var(--gold-border);
+}
+.cardSpec dt {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: left;
+}
+.cardSpec dd {
+  font-size: 13px;
+  color: var(--text-primary);
+  text-align: right;
+  white-space: nowrap;
+}
+.cardSpec dd.figure {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 21px;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.cardFeatures {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 1rem 0 1.25rem;
+}
+.cardFeatures li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* La tabla necesita 620px más el padding del contenedor. Por debajo de eso se
+   sustituye por una tarjeta por plan, en vez de dejarla con scroll horizontal:
+   así se ve completa sin desplazarse. */
+@media (max-width: 720px) {
+  .tableWrap { display: none; }
+  .cards {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    max-width: 460px;
+    margin: 0 auto;
+  }
+}
+
 @media (max-width: 640px) {
   .section { padding: 4rem 0; }
-  .table th,
-  .table td { padding: 0.7rem 0.6rem; }
   .planPrice { font-size: 26px; }
-  .keyRow .figure { font-size: 21px; }
-
-  /* La tabla scrollea en horizontal en pantallas chicas: la columna de
-     etiquetas queda fija para no perder de vista a qué fila corresponde
-     cada valor. */
-  .table tbody th[scope='row'],
-  .table thead th:first-child {
-    position: sticky;
-    left: 0;
-    z-index: 1;
-    background: var(--black);
-    font-size: 12px;
-  }
 }

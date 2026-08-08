@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useEdgeSafeTooltip } from '@/hooks/useEdgeSafeTooltip'
 import styles from './HeroSection.module.css'
 
 const stats = [
@@ -6,6 +7,28 @@ const stats = [
   { num: '24/7', label: 'Disponibilidad'     },
   { num: '100%', label: 'Gratuito', info: 'Se incluyen compras dentro de la aplicación' },
 ]
+
+function StatInfo({ text }) {
+  const { ref, recalc } = useEdgeSafeTooltip()
+
+  return (
+    <span
+      className={styles.infoWrap}
+      tabIndex={0}
+      role="note"
+      aria-label={text}
+      onPointerEnter={recalc}
+      onFocus={recalc}
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="11" x2="12" y2="16.5"/>
+        <line x1="12" y1="7.5" x2="12" y2="7.5"/>
+      </svg>
+      <span className={styles.tooltip} ref={ref}>{text}</span>
+    </span>
+  )
+}
 
 export default function HeroSection({ isAuthenticated, onPrimaryClick, onScrollComo }) {
   const [loaded, setLoaded] = useState(false)
@@ -76,21 +99,7 @@ export default function HeroSection({ isAuthenticated, onPrimaryClick, onScrollC
               <div className={styles.statLabel}>
                 <span className={styles.statLabelText}>
                   {s.label}
-                  {s.info && (
-                    <span
-                      className={styles.infoWrap}
-                      tabIndex={0}
-                      role="note"
-                      aria-label={s.info}
-                    >
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
-                        <circle cx="12" cy="12" r="10"/>
-                        <line x1="12" y1="11" x2="12" y2="16.5"/>
-                        <line x1="12" y1="7.5" x2="12" y2="7.5"/>
-                      </svg>
-                      <span className={styles.tooltip}>{s.info}</span>
-                    </span>
-                  )}
+                  {s.info && <StatInfo text={s.info} />}
                 </span>
               </div>
             </div>
