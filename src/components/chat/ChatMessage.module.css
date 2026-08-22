@@ -189,6 +189,15 @@
   margin-bottom: 3px;
   font-weight: 500;
 }
+.citationEntry + .citationEntry {
+  margin-top: 8px;
+}
+.citationLocator {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gold);
+  margin-bottom: 2px;
+}
 .citationSnippet {
   font-size: 11px;
   color: var(--text-secondary);

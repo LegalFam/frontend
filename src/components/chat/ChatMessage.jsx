@@ -41,6 +41,26 @@ const normalizeSourceUrl = (value) => {
   }
 }
 
+const LOCATOR_KINDS = new Set(['exact', 'prefix', 'fuzzy'])
+
+function groupCitationsByDocument(citations) {
+  const groups = []
+  const byKey = new Map()
+
+  for (const citation of citations) {
+    const key = citation.sourceUrl || citation.sourceTitle
+    let group = byKey.get(key)
+    if (!group) {
+      group = { key, sourceTitle: citation.sourceTitle, sourceUrl: citation.sourceUrl, entries: [] }
+      byKey.set(key, group)
+      groups.push(group)
+    }
+    group.entries.push(citation)
+  }
+
+  return groups
+}
+
 export default function ChatMessage({ message, onRate, onRetry, retryText }) {
   const isBot = message.role === 'ASSISTANT'
   const isSystem = message.role === 'SYSTEM'
@@ -51,8 +71,19 @@ export default function ChatMessage({ message, onRate, onRetry, retryText }) {
       sourceTitle: normalizeTextField(citation.sourceTitle) || 'Fuente legal',
       sourceSnippet: normalizeTextField(citation.sourceSnippet),
       sourceUrl: normalizeSourceUrl(citation.sourceUrl),
+      // Solo exact/prefix/fuzzy son una ubicacion juridica. markdown_heading es el asunto
+      // del caso o ruido del OCR en resoluciones sin articulado: ahi no se muestra nada,
+      // porque el titulo de la cita ya dice lo mismo.
+      sourceLocator: LOCATOR_KINDS.has(citation.sourceLocatorKind)
+        ? normalizeTextField(citation.sourceLocator)
+        : '',
+      sourceBreadcrumb: normalizeTextField(citation.sourceBreadcrumb),
     }))
     .filter((citation) => citation.sourceTitle || citation.sourceSnippet || citation.sourceUrl)
+
+  // Un documento puede aportar varias citas, una por articulo. Se agrupan para que la
+  // lista de fuentes no crezca, sin perder la precision por articulo.
+  const citationGroups = groupCitationsByDocument(citations)
   const [rated, setRated] = useState(message.rating || 0)
   const [comment, setComment] = useState(message.feedbackComment || '')
   const [feedbackOpen, setFeedbackOpen] = useState(false)
@@ -170,17 +201,28 @@ export default function ChatMessage({ message, onRate, onRetry, retryText }) {
         <div className={styles.citations}>
           <button type="button" className={styles.sourcesToggle} onClick={() => setSourcesOpen((open) => !open)} aria-expanded={sourcesOpen}>
             <span>Fuentes utilizadas</span>
-            <span className={styles.sourcesCount}>{citations.length}</span>
+            <span className={styles.sourcesCount}>{citationGroups.length}</span>
           </button>
 
           {sourcesOpen && (
             <div className={styles.sourcesPanel}>
-              {citations.map((citation, index) => (
-                <div key={index} className={styles.citation}>
-                  <div className={styles.citationTitle}>{citation.sourceTitle}</div>
-                  {citation.sourceSnippet && <div className={styles.citationSnippet}>{citation.sourceSnippet}</div>}
-                  {citation.sourceUrl && (
-                    <a href={citation.sourceUrl} target="_blank" rel="noopener noreferrer" className={styles.citationLink}>
+              {citationGroups.map((group, groupIndex) => (
+                <div key={group.key || groupIndex} className={styles.citation}>
+                  <div className={styles.citationTitle}>{group.sourceTitle}</div>
+
+                  {group.entries.map((entry, entryIndex) => (
+                    <div key={entryIndex} className={styles.citationEntry}>
+                      {entry.sourceLocator && (
+                        <div className={styles.citationLocator} title={entry.sourceBreadcrumb || undefined}>
+                          {entry.sourceLocator}
+                        </div>
+                      )}
+                      {entry.sourceSnippet && <div className={styles.citationSnippet}>{entry.sourceSnippet}</div>}
+                    </div>
+                  ))}
+
+                  {group.sourceUrl && (
+                    <a href={group.sourceUrl} target="_blank" rel="noopener noreferrer" className={styles.citationLink}>
                       Ver fuente
                     </a>
                   )}
