@@ -32,7 +32,6 @@
   transition: color 0.12s;
 }
 .glossaryHeader:hover { color: var(--gold); }
-.glossaryPin { width: 12px; height: 12px; flex-shrink: 0; }
 .glossaryChevron {
   width: 12px; height: 12px; flex-shrink: 0;
   margin-left: auto; transition: transform 0.18s;

@@ -210,10 +210,6 @@ export default function ChatSidebar({
         aria-expanded={glossaryOpen}
         title={glossaryOpen ? 'Ocultar glosario' : 'Mostrar glosario'}
       >
-        <svg className={styles.glossaryPin} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-          <path d="M12 17v5"/>
-          <path d="M9 10.8V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v6.8a2 2 0 0 0 .55 1.38l1.4 1.46A2 2 0 0 1 18 15.5V17H6v-1.5a2 2 0 0 1 .55-1.38l1.4-1.46A2 2 0 0 0 9 10.8z"/>
-        </svg>
         <span>Glosario legal</span>
         <svg
           className={`${styles.glossaryChevron} ${glossaryOpen ? styles.glossaryChevronOpen : ''}`}
