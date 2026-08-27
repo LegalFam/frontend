@@ -1,5 +1,9 @@
 export const LEGAL_GLOSSARY = [
   {
+    term: 'Casación',
+    definition: 'Recurso extraordinario que se presenta ante la Corte Suprema para que revise si una sentencia de segunda instancia aplicó correctamente la ley o respetó las formas esenciales del proceso. No sirve para volver a discutir los hechos ni las pruebas, solo el derecho.',
+  },
+  {
     term: 'Pensión de alimentos',
     definition: 'Cantidad de dinero que un padre o madre debe aportar periódicamente para cubrir la alimentación, vivienda, educación, salud y recreación de su hijo. Se fija según las necesidades del menor y las posibilidades de quien la paga.',
   },

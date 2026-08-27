@@ -39,6 +39,7 @@ export default function ChatSidebar({
   const [editValue, setEditValue] = useState('')
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [query, setQuery] = useState('')
+  const [glossaryOpen, setGlossaryOpen] = useState(true)
 
   const filteredSessions = useMemo(() => {
     const term = normalize(query).trim()
@@ -202,24 +203,44 @@ export default function ChatSidebar({
         )}
       </div>
 
-      <div className={styles.listLabel}>Glosario legal</div>
+      <button
+        type="button"
+        className={styles.glossaryHeader}
+        onClick={() => setGlossaryOpen((v) => !v)}
+        aria-expanded={glossaryOpen}
+        title={glossaryOpen ? 'Ocultar glosario' : 'Mostrar glosario'}
+      >
+        <svg className={styles.glossaryPin} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+          <path d="M12 17v5"/>
+          <path d="M9 10.8V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v6.8a2 2 0 0 0 .55 1.38l1.4 1.46A2 2 0 0 1 18 15.5V17H6v-1.5a2 2 0 0 1 .55-1.38l1.4-1.46A2 2 0 0 0 9 10.8z"/>
+        </svg>
+        <span>Glosario legal</span>
+        <svg
+          className={`${styles.glossaryChevron} ${glossaryOpen ? styles.glossaryChevronOpen : ''}`}
+          viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+        >
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </button>
 
-      <div className={styles.glossary}>
-        {LEGAL_GLOSSARY.map((entry) => (
-          <button
-            key={entry.term}
-            type="button"
-            className={`${styles.glossaryItem} ${activeGlossaryTerm?.term === entry.term ? styles.glossaryItemActive : ''}`}
-            onClick={() => handleSelectGlossaryTerm(entry)}
-          >
-            <svg className={styles.itemIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-            </svg>
-            {entry.term}
-          </button>
-        ))}
-      </div>
+      {glossaryOpen && (
+        <div className={styles.glossary}>
+          {LEGAL_GLOSSARY.map((entry) => (
+            <button
+              key={entry.term}
+              type="button"
+              className={`${styles.glossaryItem} ${activeGlossaryTerm?.term === entry.term ? styles.glossaryItemActive : ''}`}
+              onClick={() => handleSelectGlossaryTerm(entry)}
+            >
+              <svg className={styles.itemIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+              </svg>
+              {entry.term}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className={styles.userRow}>
         <Link
