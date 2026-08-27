@@ -20,8 +20,9 @@
   --accent-bg-h: rgba(var(--accent-rgb),0.14);
   --shadow-accent: 0 0 0 2px rgba(var(--accent-rgb),0.30);
 
-  --black: #080A0F; --black-2: #0E1017; --black-3: #14171F;
-  --black-4: #1B1F29; --black-5: #262B37;
-  --text-primary: #E7EDF7; --text-secondary: #92A6C4;
-  --text-muted: #4E5E79; --text-faint: #2F3B4E;
+  /* fondos: azul acero medio (más claros que el dorado, que es casi negro) */
+  --black: #1B2433; --black-2: #222D3F; --black-3: #2C384D;
+  --black-4: #3A4860; --black-5: #4A5A75;
+  --text-primary: #EEF3FB; --text-secondary: #AABDD8;
+  --text-muted: #7C8EAA; --text-faint: #5A6C86;
 }
