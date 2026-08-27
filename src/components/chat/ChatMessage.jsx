@@ -165,6 +165,7 @@ export default function ChatMessage({ message, onRate, onRetry, retryText }) {
       {message.state === 'sending' && <span className={styles.status}>Enviando...</span>}
       {message.state === 'processing' && <span className={styles.status}>Procesando...</span>}
       {message.state === 'unknown_delivery' && <span className={styles.status}>Verificando entrega...</span>}
+      {message.state === 'failed' && <span className={styles.status}>No enviado</span>}
 
       {canRetry && (
         <button

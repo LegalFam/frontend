@@ -363,6 +363,8 @@ export function useChat() {
       )
 
       const { data } = await chatService.sendMessage({ message: trimmed, sessionId })
+      store.clearDraft(sessionId)
+      store.clearDraft('new')
       store.replaceMessage(sessionId, tempId, {
         id: data.userMessageId,
         state: 'processing',
@@ -394,6 +396,29 @@ export function useChat() {
       }
 
       if (status === 403) {
+        if (normalizedError.code === 'insufficient_tokens') {
+          // El envío se rechazó por falta de tokens: conservamos el mensaje del
+          // usuario (marcado como no enviado), devolvemos su texto al input como
+          // borrador (sobrevive a la ida al checkout de pago) y dejamos un aviso
+          // accionable en el hilo en lugar de descartarlo en silencio.
+          store.setDraft(sessionId || 'new', trimmed)
+          store.replaceMessage(sessionId || 'new', tempId, { state: 'failed' })
+          store.addMessage(sessionId || 'new', {
+            id: `err_${Date.now()}`,
+            role: 'SYSTEM',
+            content: 'Te has quedado sin tokens para enviar consultas. Recarga tu plan desde el indicador de tokens en la parte superior para continuar.',
+            errorCode: 'insufficient_tokens',
+            citations: [],
+            createdAt: new Date().toISOString(),
+            isError: true,
+            retryText: null,
+            retryAttempted: false,
+          })
+          store.setError(normalizedError.message)
+          usePaymentStore.getState().loadSubscription().catch(() => {})
+          return
+        }
+
         store.removeMessage(sessionId || 'new', tempId)
         store.setError(normalizedError.message)
         usePaymentStore.getState().loadSubscription().catch(() => {})
@@ -626,6 +651,8 @@ export function useChat() {
     processingStatus: store.processingStatus,
     connectionState: store.connectionState,
     error:           store.error,
+    drafts:          store.drafts,
+    clearDraft:      store.clearDraft,
     loadSessions,
     loadMoreSessions,
     loadMoreMessages,

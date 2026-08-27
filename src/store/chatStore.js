@@ -1,5 +1,29 @@
 import { create } from 'zustand'
 
+// Los borradores se guardan en sessionStorage para que un envío que no se pudo
+// completar (por ejemplo, por falta de tokens) sobreviva a la ida y vuelta al
+// checkout de pago, que hace una navegación completa fuera de la SPA.
+const DRAFTS_STORAGE_KEY = 'legalfam.chat.drafts'
+
+const loadDrafts = () => {
+  try {
+    const raw = sessionStorage.getItem(DRAFTS_STORAGE_KEY)
+    const parsed = raw ? JSON.parse(raw) : null
+    return parsed && typeof parsed === 'object' ? parsed : {}
+  } catch {
+    return {}
+  }
+}
+
+const persistDrafts = (drafts) => {
+  try {
+    sessionStorage.setItem(DRAFTS_STORAGE_KEY, JSON.stringify(drafts))
+  } catch {
+    // sessionStorage no disponible (modo privado, cuota llena): el borrador
+    // solo vivirá en memoria durante esta pestaña.
+  }
+}
+
 const sortByCreatedAt = (messages) =>
   [...messages].sort((a, b) => {
     const left = Date.parse(a.createdAt || '') || 0
@@ -46,6 +70,7 @@ export const useChatStore = create((set) => ({
   processingStatus: { processing: false },
   connectionState: 'idle',
   error: null,
+  drafts: loadDrafts(),
 
   setSessions: (sessions) =>
     set({
@@ -91,9 +116,12 @@ export const useChatStore = create((set) => ({
       const messages = { ...state.messages }
       const messagesNextCursors = { ...state.messagesNextCursors }
       const messagesLoadingMore = { ...state.messagesLoadingMore }
+      const drafts = { ...state.drafts }
       delete messages[sessionId]
       delete messagesNextCursors[sessionId]
       delete messagesLoadingMore[sessionId]
+      delete drafts[sessionId]
+      persistDrafts(drafts)
 
       return {
         sessions: state.sessions.filter((s) => s.id !== sessionId),
@@ -101,6 +129,7 @@ export const useChatStore = create((set) => ({
         messages,
         messagesNextCursors,
         messagesLoadingMore,
+        drafts,
       }
     }),
 
@@ -145,6 +174,7 @@ export const useChatStore = create((set) => ({
       const messages = { ...state.messages }
       const messagesNextCursors = { ...state.messagesNextCursors }
       const messagesLoadingMore = { ...state.messagesLoadingMore }
+      const drafts = { ...state.drafts }
 
       messages[toSessionId] = messages[fromSessionId] || []
       messagesNextCursors[toSessionId] = messagesNextCursors[fromSessionId] || null
@@ -154,7 +184,13 @@ export const useChatStore = create((set) => ({
       delete messagesNextCursors[fromSessionId]
       delete messagesLoadingMore[fromSessionId]
 
-      return { messages, messagesNextCursors, messagesLoadingMore }
+      if (drafts[fromSessionId]) {
+        drafts[toSessionId] = drafts[fromSessionId]
+        delete drafts[fromSessionId]
+        persistDrafts(drafts)
+      }
+
+      return { messages, messagesNextCursors, messagesLoadingMore, drafts }
     }),
 
   addMessage: (sessionId, message) =>
@@ -220,4 +256,30 @@ export const useChatStore = create((set) => ({
   }),
   setConnectionState: (connectionState) => set({ connectionState }),
   setError: (error) => set({ error }),
+
+  setDraft: (sessionId, text) =>
+    set((state) => {
+      const trimmed = (text || '').trim()
+      if (!trimmed) {
+        if (!(sessionId in state.drafts)) return {}
+        const drafts = { ...state.drafts }
+        delete drafts[sessionId]
+        persistDrafts(drafts)
+        return { drafts }
+      }
+      // El nonce fuerza a que el input reaplique el borrador aunque el texto
+      // sea idéntico al del intento anterior (reintento que vuelve a fallar).
+      const drafts = { ...state.drafts, [sessionId]: { text: trimmed, ts: Date.now() } }
+      persistDrafts(drafts)
+      return { drafts }
+    }),
+
+  clearDraft: (sessionId) =>
+    set((state) => {
+      if (!(sessionId in state.drafts)) return {}
+      const drafts = { ...state.drafts }
+      delete drafts[sessionId]
+      persistDrafts(drafts)
+      return { drafts }
+    }),
 }))

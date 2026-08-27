@@ -1,11 +1,12 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import styles from './ChatInput.module.css'
 
 const personalDataPattern = /(\b[\w.%+-]+@[\w.-]+\.[A-Za-z]{2,}\b)|((?:\+?51\s*)?(?:9\d{2}|0?1|[2-8]\d)(?:[\s.-]*\d){6,8})|(\b\d{8}\b)|(\b(?:av\.?|avenida|jr\.?|jiron|calle|pasaje|mz\.?|manzana|lote)\b)/i
 
-export default function ChatInput({ onSend, disabled, disabledReason }) {
+export default function ChatInput({ onSend, disabled, disabledReason, draft = null }) {
   const ref = useRef(null)
   const [privacyError, setPrivacyError] = useState(null)
+  const appliedDraftTsRef = useRef(0)
 
   const autoResize = () => {
     const el = ref.current
@@ -13,6 +14,20 @@ export default function ChatInput({ onSend, disabled, disabledReason }) {
     el.style.height = 'auto'
     el.style.height = Math.min(el.scrollHeight, 120) + 'px'
   }
+
+  // Recupera en el input un envío que no llegó a cursar (p. ej. sin tokens). Solo
+  // rellena si el usuario no ha escrito ya otra cosa; el nonce `ts` permite
+  // reaplicar el mismo texto tras un reintento que vuelve a fallar.
+  useEffect(() => {
+    const el = ref.current
+    if (!el || !draft?.text) return
+    if (appliedDraftTsRef.current === draft.ts) return
+    appliedDraftTsRef.current = draft.ts
+    if (el.value.trim()) return
+    el.value = draft.text
+    autoResize()
+    if (!disabled) el.focus()
+  }, [draft, disabled])
 
   const handleKey = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {

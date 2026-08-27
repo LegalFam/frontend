@@ -41,7 +41,7 @@ export default function ChatPage() {
   const {
     sessions, sessionsNextCursor, sessionsLoading, sessionsLoadingMore,
     activeSessionId, messages, messagesNextCursors, messagesLoadingMore,
-    loading, processingStatus, connectionState, error,
+    loading, processingStatus, connectionState, error, drafts,
     loadSessions, loadMoreSessions, loadMoreMessages, selectSession, startNewChat,
     sendMessage, retryMessage, rateMessage, deleteSession, renameSession,
   } = useChat()
@@ -288,7 +288,7 @@ export default function ChatPage() {
                   .slice(0, index)
                   .reverse()
                   .find((item) => item.role === 'USER')
-                const retryText = isLastMessage && isErrorMessage
+                const retryText = isLastMessage && isErrorMessage && msg.errorCode !== 'insufficient_tokens'
                   ? msg.retryText || previousUserMessage?.content
                   : null
                 return (
@@ -328,6 +328,7 @@ export default function ChatPage() {
             onSend={sendMessage}
             disabled={inputDisabled}
             disabledReason={inputDisabledReason}
+            draft={drafts[activeKey] || null}
           />
           </>
           )}
