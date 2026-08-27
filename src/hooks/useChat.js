@@ -406,7 +406,7 @@ export function useChat() {
           store.addMessage(sessionId || 'new', {
             id: `err_${Date.now()}`,
             role: 'SYSTEM',
-            content: 'Te has quedado sin tokens para enviar consultas. Recarga tu plan desde el indicador de tokens en la parte superior para continuar.',
+            content: 'Te has quedado sin tokens para enviar consultas. Recarga tu plan para continuar.',
             errorCode: 'insufficient_tokens',
             citations: [],
             createdAt: new Date().toISOString(),

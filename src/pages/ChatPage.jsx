@@ -1,20 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { useChat }        from '@/hooks/useChat'
 import { useAuth }        from '@/hooks/useAuth'
 import { useEdgeSafeTooltip } from '@/hooks/useEdgeSafeTooltip'
 import { usePaymentStore } from '@/store/paymentStore'
-import {
-  STATIC_PLANS,
-  formatPlanName,
-  formatPlanPrice,
-  formatPlanPeriod,
-  formatPlanTokens,
-  planSlug,
-} from '@/utils/plans'
 import ChatSidebar        from '@/components/chat/ChatSidebar'
 import ChatMessage        from '@/components/chat/ChatMessage'
 import ChatInput          from '@/components/chat/ChatInput'
+import BillingDialog      from '@/components/billing/BillingDialog'
 import TypingIndicator    from '@/components/chat/TypingIndicator'
 import logoImg            from '@/assets/logo-transparent.png'
 import styles             from './ChatPage.module.css'
@@ -30,13 +23,12 @@ const CONVERSATION_PRESETS = [
 
 export default function ChatPage() {
   const { signout } = useAuth()
-  const navigate = useNavigate()
   const { sessionId: routeSessionId } = useParams()
   const isMobile = () => window.innerWidth <= 768
   const [sidebarOpen, setSidebarOpen] = useState(() => !isMobile())
   const [billingOpen, setBillingOpen] = useState(false)
   const [glossaryTerm, setGlossaryTerm] = useState(null)
-  const { plans, subscription, refreshBilling, cancelSubscription, loading: billingLoading } = usePaymentStore()
+  const { subscription, refreshBilling } = usePaymentStore()
 
   const {
     sessions, sessionsNextCursor, sessionsLoading, sessionsLoadingMore,
@@ -102,12 +94,6 @@ export default function ChatPage() {
   const tokenLabel = subscription
     ? `${subscription.planCode} · ${subscription.remainingTokens}/${subscription.monthlyTokenLimit} tokens`
     : null
-  const availablePlans = plans.length ? plans : STATIC_PLANS
-  const currentPlan = availablePlans.find((plan) => plan.code === subscription?.planCode)
-  const tokenLimit = subscription?.monthlyTokenLimit || currentPlan?.monthlyTokenLimit || 0
-  const remainingTokens = subscription?.remainingTokens ?? 0
-  const usedTokens = Math.max(tokenLimit - remainingTokens, 0)
-  const tokenPercent = tokenLimit ? Math.max(0, Math.min(100, (remainingTokens / tokenLimit) * 100)) : 0
   const showPresets = !activeSessionId &&
     activeMessages.length === 1 &&
     activeMessages[0]?.id === 'welcome'
@@ -118,15 +104,6 @@ export default function ChatPage() {
       : 'Hay otra consulta en proceso. Puedes revisar tus sesiones, pero espera a que termine para enviar una nueva.'
     : null
 
-  const switchPlan = (plan) => {
-    setBillingOpen(false)
-    if (plan.code === subscription?.planCode) return
-    navigate(`/pago/${planSlug(plan)}`)
-  }
-
-  const handleCancelSubscription = async () => {
-    await cancelSubscription().catch(() => {})
-  }
 
   const handleMessagesScroll = async () => {
     const container = messagesContainerRef.current
@@ -298,6 +275,7 @@ export default function ChatPage() {
                     onRate={rateMessage}
                     onRetry={retryMessage}
                     retryText={retryText}
+                    onUpgrade={() => setBillingOpen(true)}
                   />
                 )
               })}
@@ -335,82 +313,7 @@ export default function ChatPage() {
         </div>
       </div>
 
-      {billingOpen && subscription && (
-        <div className={styles.modalLayer} role="presentation" onMouseDown={() => setBillingOpen(false)}>
-          <section
-            className={styles.billingDialog}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="billing-title"
-            onMouseDown={(e) => e.stopPropagation()}
-          >
-            <div className={styles.dialogHeader}>
-              <div>
-                <p className={styles.dialogEyebrow}>Suscripción</p>
-                <h2 id="billing-title">Plan y tokens</h2>
-              </div>
-              <button className="icon-btn" onClick={() => setBillingOpen(false)} aria-label="Cerrar">
-                <svg viewBox="0 0 24 24">
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              </button>
-            </div>
-
-            <div className={styles.billingSummary}>
-              <div>
-                <span>Plan actual</span>
-                <strong>{formatPlanName(currentPlan) || subscription.planCode}</strong>
-              </div>
-              <div>
-                <span>Tokens disponibles</span>
-                <strong>{remainingTokens}/{tokenLimit}</strong>
-              </div>
-            </div>
-
-            <div className={styles.tokenMeterBlock}>
-              <div className={styles.tokenMeterLabels}>
-                <span>{usedTokens} usados</span>
-                <span>{remainingTokens} restantes</span>
-              </div>
-              <div className={styles.tokenMeter} aria-hidden="true">
-                <span style={{ width: `${tokenPercent}%` }} />
-              </div>
-              <p className={styles.tokenHint}>{TOKEN_COST_HINT}</p>
-            </div>
-
-            <div className={styles.planGrid}>
-              {availablePlans.map((plan) => {
-                const isCurrent = plan.code === subscription.planCode
-                return (
-                  <button
-                    type="button"
-                    key={plan.code}
-                    className={`${styles.planOption} ${isCurrent ? styles.currentPlan : ''}`}
-                    onClick={() => switchPlan(plan)}
-                    disabled={isCurrent}
-                  >
-                    <span>{formatPlanName(plan)}</span>
-                    <strong>{formatPlanPrice(plan)} {formatPlanPeriod(plan)}</strong>
-                    <small>{formatPlanTokens(plan)}</small>
-                    <em>{isCurrent ? 'Plan activo' : 'Cambiar plan'}</em>
-                  </button>
-                )
-              })}
-            </div>
-            {subscription.provider === 'MERCADO_PAGO' && (
-              <button
-                type="button"
-                className={styles.cancelSubscriptionBtn}
-                onClick={handleCancelSubscription}
-                disabled={billingLoading}
-              >
-                {billingLoading ? 'Cancelando...' : 'Cancelar suscripción'}
-              </button>
-            )}
-          </section>
-        </div>
-      )}
+      {billingOpen && <BillingDialog onClose={() => setBillingOpen(false)} />}
     </div>
   )
 }

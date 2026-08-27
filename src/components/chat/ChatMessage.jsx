@@ -61,7 +61,7 @@ function groupCitationsByDocument(citations) {
   return groups
 }
 
-export default function ChatMessage({ message, onRate, onRetry, retryText }) {
+export default function ChatMessage({ message, onRate, onRetry, retryText, onUpgrade }) {
   const isBot = message.role === 'ASSISTANT'
   const isSystem = message.role === 'SYSTEM'
   const isUser = message.role === 'USER'
@@ -97,6 +97,7 @@ export default function ChatMessage({ message, onRate, onRetry, retryText }) {
   const lowConfidence = message.confidenceStatus === 'LOW'
   const showLowConfidenceFallback = lowConfidence && !citationSupportStatus
   const canRetry = isSystem && retryText && !message.retryAttempted
+  const showUpgrade = isSystem && message.errorCode === 'insufficient_tokens'
   const citationNotice = citationSupportStatus === 'WEAK'
     ? {
         title: 'Fuentes de apoyo limitadas',
@@ -174,6 +175,16 @@ export default function ChatMessage({ message, onRate, onRetry, retryText }) {
           onClick={() => onRetry?.(retryText, message.id)}
         >
           Reintentar consulta
+        </button>
+      )}
+
+      {showUpgrade && (
+        <button
+          type="button"
+          className={styles.upgradeBtn}
+          onClick={() => onUpgrade?.()}
+        >
+          Ver planes y tokens
         </button>
       )}
 

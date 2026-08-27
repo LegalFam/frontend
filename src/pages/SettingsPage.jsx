@@ -6,6 +6,7 @@ import { useAuthStore } from '@/store/authStore'
 import { usePaymentStore } from '@/store/paymentStore'
 import { normalizeApiError } from '@/utils/apiError'
 import { STATIC_PLANS, formatPlanName, formatPlanTokens } from '@/utils/plans'
+import BillingDialog from '@/components/billing/BillingDialog'
 import styles from './SettingsPage.module.css'
 
 const formatPeriodEnd = (iso) => {
@@ -46,6 +47,7 @@ export default function SettingsPage() {
   const [passwordSaving, setPasswordSaving] = useState(false)
 
   const [cancelOpen, setCancelOpen] = useState(false)
+  const [plansOpen, setPlansOpen] = useState(false)
   const [billingError, setBillingError] = useState(null)
   const [billingDone, setBillingDone] = useState(false)
 
@@ -322,9 +324,18 @@ export default function SettingsPage() {
                   </button>
                 </>
               ) : (
-                <p className={styles.fieldNote}>
-                  {'Tu plan actual es gratuito, no hay ninguna suscripción que dar de baja.'}
-                </p>
+                <>
+                  <p className={styles.fieldNote}>
+                    {'Tu plan actual es gratuito, no hay ninguna suscripción que dar de baja.'}
+                  </p>
+                  <button
+                    type="button"
+                    className={styles.primaryBtn}
+                    onClick={() => setPlansOpen(true)}
+                  >
+                    Ver planes y tokens
+                  </button>
+                </>
               )}
             </>
           ) : (
@@ -332,6 +343,8 @@ export default function SettingsPage() {
           )}
         </section>
       </main>
+
+      {plansOpen && <BillingDialog onClose={() => setPlansOpen(false)} />}
 
       {cancelOpen && (
         <div className={styles.confirmLayer} role="presentation" onMouseDown={() => setCancelOpen(false)}>

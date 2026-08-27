@@ -131,6 +131,20 @@
 .retryBtn:hover {
   border-color: var(--error);
 }
+.upgradeBtn {
+  margin-top: 0.5rem;
+  min-height: 32px;
+  padding: 0.35rem 0.7rem;
+  border: 0.5px solid var(--gold-border-h, var(--gold-border));
+  border-radius: 6px;
+  background: var(--gold-bg);
+  color: var(--gold);
+  font-size: 11px;
+  line-height: 1;
+}
+.upgradeBtn:hover {
+  border-color: var(--gold);
+}
 
 /* Citations */
 .citations {
