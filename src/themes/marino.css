@@ -19,6 +19,7 @@
   --accent-bg: rgba(var(--accent-rgb),0.07);
   --accent-bg-h: rgba(var(--accent-rgb),0.14);
   --shadow-accent: 0 0 0 2px rgba(var(--accent-rgb),0.30);
+  --glass: rgba(16,23,36,0.82);   /* panel translúcido sobre backdrop-filter */
 
   /* fondos: azul acero medio (más claros que el dorado, que es casi negro) */
   --black: #1B2433; --black-2: #222D3F; --black-3: #2C384D;

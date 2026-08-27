@@ -82,7 +82,7 @@
 .trustDot { width: 3px; height: 3px; background: var(--text-faint); border-radius: 50%; }
 
 .statBox {
-  background: rgba(18,16,10,0.82); border: 0.5px solid var(--accent-border);
+  background: var(--glass); border: 0.5px solid var(--accent-border);
   border-left: 2px solid var(--accent);
   border-radius: var(--radius-lg); padding: 18px 24px; text-align: right;
   backdrop-filter: blur(10px); transition: border-color 0.15s;

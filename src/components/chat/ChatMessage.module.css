@@ -180,7 +180,7 @@
   height: 18px;
   padding: 0 0.3rem;
   border-radius: 999px;
-  background: rgba(212, 175, 55, 0.16);
+  background: rgba(var(--accent-rgb), 0.16);
   color: var(--text-primary);
   font-size: 10px;
 }
@@ -247,8 +247,8 @@
   color: #ffd2d2;
 }
 .citationNotice {
-  border-color: rgba(212, 175, 55, 0.45);
-  background: rgba(212, 175, 55, 0.08);
+  border-color: rgba(var(--accent-rgb), 0.45);
+  background: rgba(var(--accent-rgb), 0.08);
 }
 .specialistNotice {
   display: flex;

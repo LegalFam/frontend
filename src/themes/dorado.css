@@ -19,6 +19,7 @@
   --accent-bg: rgba(var(--accent-rgb),0.07);
   --accent-bg-h: rgba(var(--accent-rgb),0.14);
   --shadow-accent: 0 0 0 2px rgba(var(--accent-rgb),0.30);
+  --glass: rgba(18,16,10,0.82);   /* panel translúcido sobre backdrop-filter */
 
   --black: #0A0A0A; --black-2: #111111; --black-3: #181818;
   --black-4: #202020; --black-5: #2A2A2A;
