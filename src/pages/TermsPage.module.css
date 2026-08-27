@@ -9,7 +9,7 @@
 .header {
   height: 64px;
   background: var(--black-2);
-  border-bottom: 0.5px solid var(--gold-border);
+  border-bottom: 0.5px solid var(--accent-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -29,16 +29,16 @@
   transition: color var(--t-fast);
   padding: 0;
 }
-.backBtn:hover { color: var(--gold); }
+.backBtn:hover { color: var(--accent); }
 
 .logo { display: flex; align-items: center; gap: 9px; }
 .logo img {
   width: 32px; height: 32px; object-fit: contain;
-  filter: drop-shadow(0 0 5px rgba(201, 168, 76, 0.3));
+  filter: drop-shadow(0 0 5px rgba(var(--accent-rgb), 0.3));
 }
 .logo span {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 18px; color: var(--gold); letter-spacing: 2.5px;
+  font-size: 18px; color: var(--accent); letter-spacing: 2.5px;
 }
 
 .headerSpacer { width: 68px; }
@@ -53,7 +53,7 @@
 
 .eyebrow {
   display: block;
-  color: var(--gold);
+  color: var(--accent);
   font-size: 10px;
   letter-spacing: 2px;
   text-transform: uppercase;
@@ -82,7 +82,7 @@
 }
 
 .card {
-  border: 0.5px solid var(--gold-border);
+  border: 0.5px solid var(--accent-border);
   border-radius: var(--radius-lg);
   background: var(--black-2);
   padding: 1.35rem 1.5rem;
@@ -93,7 +93,7 @@
   font-family: 'Cormorant Garamond', serif;
   font-size: 22px;
   font-weight: 400;
-  color: var(--gold);
+  color: var(--accent);
   margin-bottom: 0.75rem;
 }
 
@@ -105,10 +105,10 @@
 .card p + p { margin-top: 0.75rem; }
 
 .callout {
-  border: 0.5px solid var(--gold-border);
-  border-left: 2px solid var(--gold);
+  border: 0.5px solid var(--accent-border);
+  border-left: 2px solid var(--accent);
   border-radius: var(--radius-lg);
-  background: var(--gold-bg);
+  background: var(--accent-bg);
   padding: 1.35rem 1.5rem;
   margin-top: 1.5rem;
 }
@@ -131,14 +131,14 @@
   display: inline-flex;
   align-items: center;
   padding: 9px 18px;
-  border: 0.5px solid var(--gold);
+  border: 0.5px solid var(--accent);
   border-radius: var(--radius);
-  color: var(--gold);
+  color: var(--accent);
   font-size: 13px;
   letter-spacing: 0.3px;
   transition: background var(--t-fast);
 }
-.calloutLink:hover { background: rgba(201, 168, 76, 0.16); }
+.calloutLink:hover { background: rgba(var(--accent-rgb), 0.16); }
 
 @media (max-width: 768px) {
   .header { padding: 0 1rem; }

@@ -1,0 +1,27 @@
+/*
+ * Tema DORADO — activo por defecto (sin atributo data-theme en <html>).
+ * Define los tokens genéricos que consume el resto de la app:
+ *   --accent*  color de acento y sus variantes
+ *   --accent-rgb   canales RGB del acento, para rgba() dinámico
+ *   --accent-ink   color de texto que va encima del acento
+ *   --black* / --text*   fondos y textos base
+ */
+:root {
+  --accent: #C9A84C;
+  --accent-light: #E8C96A;   /* fondo :hover de los botones de acento */
+  --accent-pale: #F5E6B8;
+  --accent-dark: #8B6914;
+  --accent-rgb: 201,168,76;
+  --accent-ink: var(--black);
+
+  --accent-border: rgba(var(--accent-rgb),0.25);
+  --accent-border-h: rgba(var(--accent-rgb),0.50);
+  --accent-bg: rgba(var(--accent-rgb),0.07);
+  --accent-bg-h: rgba(var(--accent-rgb),0.14);
+  --shadow-accent: 0 0 0 2px rgba(var(--accent-rgb),0.30);
+
+  --black: #0A0A0A; --black-2: #111111; --black-3: #181818;
+  --black-4: #202020; --black-5: #2A2A2A;
+  --text-primary: #F0E6C8; --text-secondary: #A89060;
+  --text-muted: #5A4A2A; --text-faint: #3A2E18;
+}

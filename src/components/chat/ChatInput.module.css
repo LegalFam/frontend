@@ -1,5 +1,5 @@
 .area {
-  border-top: 0.5px solid var(--gold-border);
+  border-top: 0.5px solid var(--accent-border);
   padding: 1rem 1.25rem;
   background: var(--black-2);
   flex-shrink: 0;
@@ -17,7 +17,7 @@
   flex: 1;
   padding: 11px 15px;
   background: var(--black-3);
-  border: 0.5px solid var(--gold-border);
+  border: 0.5px solid var(--accent-border);
   border-radius: var(--radius-lg);
   font-size: 13px;
   color: var(--text-primary);
@@ -28,7 +28,7 @@
 }
 .textarea:focus {
   outline: none;
-  border-color: var(--gold);
+  border-color: var(--accent);
 }
 .textarea::placeholder { color: var(--text-muted); }
 .textarea:disabled { opacity: 0.65; cursor: not-allowed; }
@@ -43,7 +43,7 @@
   width: 43px;
   min-height: 43px;
   padding: 0;
-  background: var(--gold);
+  background: var(--accent);
   border: none;
   border-radius: var(--radius-lg);
   display: flex;
@@ -51,14 +51,14 @@
   justify-content: center;
   transition: background 0.2s;
   flex-shrink: 0;
-  color: var(--black);
+  color: var(--accent-ink);
 }
-.sendBtn:hover:not(:disabled) { background: var(--gold-light); }
+.sendBtn:hover:not(:disabled) { background: var(--accent-light); }
 .sendBtn:disabled {
   opacity: 0.82;
   cursor: wait;
-  background: var(--gold-bg);
-  border: 0.5px solid var(--gold-border);
+  background: var(--accent-bg);
+  border: 0.5px solid var(--accent-border);
 }
 .sendBtn svg { width: 15px; height: 15px; stroke: var(--black); }
 
@@ -66,7 +66,7 @@
   width: 18px;
   height: 18px;
   border: 2px solid rgba(212, 175, 55, 0.28);
-  border-top-color: var(--gold);
+  border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -78,7 +78,7 @@
   z-index: 5;
   width: min(320px, calc(100vw - 2rem));
   padding: 8px 10px;
-  border: 0.5px solid var(--gold-border);
+  border: 0.5px solid var(--accent-border);
   border-radius: var(--radius);
   background: var(--black-3);
   color: var(--text-secondary);

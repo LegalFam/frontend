@@ -9,7 +9,7 @@
 .header {
   height: 64px;
   background: var(--black-2);
-  border-bottom: 0.5px solid var(--gold-border);
+  border-bottom: 0.5px solid var(--accent-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -31,7 +31,7 @@
 }
 
 .backBtn:hover {
-  color: var(--gold);
+  color: var(--accent);
 }
 
 .logo {
@@ -44,13 +44,13 @@
   width: 32px;
   height: 32px;
   object-fit: contain;
-  filter: drop-shadow(0 0 5px rgba(201, 168, 76, 0.3));
+  filter: drop-shadow(0 0 5px rgba(var(--accent-rgb), 0.3));
 }
 
 .logo span {
   font-family: 'Cormorant Garamond', serif;
   font-size: 18px;
-  color: var(--gold);
+  color: var(--accent);
   letter-spacing: 2.5px;
 }
 
@@ -73,7 +73,7 @@
 .emergencyLabel,
 .cardHeader span {
   display: block;
-  color: var(--gold);
+  color: var(--accent);
   font-size: 10px;
   letter-spacing: 2px;
   text-transform: uppercase;
@@ -138,8 +138,8 @@
   min-height: 38px;
   padding: 0.65rem 0.95rem;
   border-radius: var(--radius);
-  background: var(--gold);
-  color: var(--black);
+  background: var(--accent);
+  color: var(--accent-ink);
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.2px;
@@ -165,7 +165,7 @@
 }
 
 .primaryAction:hover {
-  background: var(--gold-light);
+  background: var(--accent-light);
 }
 
 .resourceGrid {
@@ -178,7 +178,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  border: 0.5px solid var(--gold-border);
+  border: 0.5px solid var(--accent-border);
   border-radius: var(--radius);
   background: var(--black-2);
   padding: 1rem;
@@ -186,7 +186,7 @@
 
 .cardHeader {
   padding-bottom: 0.8rem;
-  border-bottom: 0.5px solid var(--gold-border);
+  border-bottom: 0.5px solid var(--accent-border);
   margin-bottom: 0.85rem;
 }
 
@@ -221,10 +221,10 @@
   justify-content: center;
   min-height: 36px;
   padding: 0.55rem 0.75rem;
-  border: 0.5px solid var(--gold-border);
+  border: 0.5px solid var(--accent-border);
   border-radius: var(--radius);
   background: transparent;
-  color: var(--gold);
+  color: var(--accent);
   font-size: 12px;
   line-height: 1.25;
   text-align: center;
@@ -232,21 +232,21 @@
 }
 
 .secondaryAction:hover {
-  border-color: var(--gold);
-  background: var(--gold-bg);
+  border-color: var(--accent);
+  background: var(--accent-bg);
 }
 
 .safetyNote {
   margin-top: 1.25rem;
-  border: 0.5px solid var(--gold-border);
+  border: 0.5px solid var(--accent-border);
   border-radius: var(--radius);
-  background: var(--gold-bg);
+  background: var(--accent-bg);
   padding: 0.9rem 1rem;
 }
 
 .safetyNote strong {
   display: block;
-  color: var(--gold);
+  color: var(--accent);
   font-size: 11px;
   letter-spacing: 1.5px;
   text-transform: uppercase;

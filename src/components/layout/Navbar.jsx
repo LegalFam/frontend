@@ -56,13 +56,13 @@ export default function Navbar({
           <div className={styles.mobileBtns}>
             {isAuthenticated ? (
               <>
-                <button className={`btn-gold ${styles.mobileAuthBtn}`} onClick={() => { setMenuOpen(false); onChatClick() }}>Ir al chat</button>
+                <button className={`btn-accent ${styles.mobileAuthBtn}`} onClick={() => { setMenuOpen(false); onChatClick() }}>Ir al chat</button>
                 <button className={`${styles.signoutBtn} ${styles.mobileAuthBtn}`} onClick={() => { setMenuOpen(false); onSignoutClick() }}>Cerrar sesión</button>
               </>
             ) : (
               <>
                 <button className={`btn-ghost ${styles.mobileAuthBtn}`} onClick={() => { setMenuOpen(false); onLoginClick() }}>Iniciar sesión</button>
-                <button className={`btn-gold ${styles.mobileAuthBtn}`} onClick={() => { setMenuOpen(false); onRegisterClick() }}>Registrarse</button>
+                <button className={`btn-accent ${styles.mobileAuthBtn}`} onClick={() => { setMenuOpen(false); onRegisterClick() }}>Registrarse</button>
               </>
             )}
           </div>
@@ -71,13 +71,13 @@ export default function Navbar({
         <div className={styles.btns}>
           {isAuthenticated ? (
             <>
-              <button className="btn-gold" onClick={onChatClick}>Ir al chat</button>
+              <button className="btn-accent" onClick={onChatClick}>Ir al chat</button>
               <button className={styles.signoutBtn} onClick={onSignoutClick}>Cerrar sesión</button>
             </>
           ) : (
             <>
               <button className="btn-ghost" onClick={onLoginClick}>Iniciar sesión</button>
-              <button className="btn-gold" onClick={onRegisterClick}>Registrarse</button>
+              <button className="btn-accent" onClick={onRegisterClick}>Registrarse</button>
             </>
           )}
         </div>

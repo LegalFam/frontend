@@ -6,20 +6,20 @@
 }
 .billingDialog {
   width: min(620px, 100%); max-height: calc(100vh - 2rem); overflow-y: auto;
-  background: var(--black-2); border: 0.5px solid var(--gold-border);
+  background: var(--black-2); border: 0.5px solid var(--accent-border);
   border-radius: var(--radius); box-shadow: 0 18px 60px rgba(0,0,0,0.45);
   padding: 1rem;
 }
 .dialogHeader {
   display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;
-  border-bottom: 0.5px solid var(--gold-border); padding-bottom: 0.875rem;
+  border-bottom: 0.5px solid var(--accent-border); padding-bottom: 0.875rem;
 }
 .dialogHeader h2 {
   font-family: 'Cormorant Garamond', serif;
   color: var(--text-primary); font-size: 27px; font-weight: 400; line-height: 1.1;
 }
 .dialogEyebrow {
-  color: var(--gold); font-size: 10px; letter-spacing: 1.8px; text-transform: uppercase;
+  color: var(--accent); font-size: 10px; letter-spacing: 1.8px; text-transform: uppercase;
   margin-bottom: 0.25rem;
 }
 .billingSummary {
@@ -27,7 +27,7 @@
   margin: 1rem 0;
 }
 .billingSummary div, .planOption {
-  border: 0.5px solid var(--gold-border); border-radius: var(--radius);
+  border: 0.5px solid var(--accent-border); border-radius: var(--radius);
   background: var(--black-3);
 }
 .billingSummary div { padding: 0.875rem; }
@@ -35,7 +35,7 @@
   color: var(--text-secondary); font-size: 11px;
 }
 .billingSummary strong {
-  display: block; color: var(--gold); font-size: 18px; margin-top: 0.25rem;
+  display: block; color: var(--accent); font-size: 18px; margin-top: 0.25rem;
 }
 .tokenMeterBlock { margin-bottom: 1rem; }
 .tokenMeterLabels {
@@ -44,10 +44,10 @@
 }
 .tokenMeter {
   height: 8px; overflow: hidden; background: var(--black-4);
-  border-radius: 999px; border: 0.5px solid var(--gold-border);
+  border-radius: 999px; border: 0.5px solid var(--accent-border);
 }
 .tokenMeter span {
-  display: block; height: 100%; background: var(--gold);
+  display: block; height: 100%; background: var(--accent);
   border-radius: inherit; transition: width var(--t-base);
 }
 .tokenRenew {
@@ -64,14 +64,14 @@
   display: flex; flex-direction: column; gap: 0.35rem;
   transition: border-color var(--t-fast), background var(--t-fast);
 }
-.planOption:hover:not(:disabled) { border-color: var(--gold); background: var(--black-4); }
+.planOption:hover:not(:disabled) { border-color: var(--accent); background: var(--black-4); }
 .planOption:disabled { cursor: default; }
-.planOption span { color: var(--gold); font-size: 13px; }
+.planOption span { color: var(--accent); font-size: 13px; }
 .planOption strong { color: var(--text-primary); font-size: 16px; font-weight: 500; }
 .planOption em {
-  color: var(--gold); font-size: 11px; font-style: normal; margin-top: auto;
+  color: var(--accent); font-size: 11px; font-style: normal; margin-top: auto;
 }
-.currentPlan { background: var(--gold-bg); border-color: var(--gold-border-h); }
+.currentPlan { background: var(--accent-bg); border-color: var(--accent-border-h); }
 .cancelSubscriptionBtn {
   width: 100%;
   margin-top: 0.875rem;

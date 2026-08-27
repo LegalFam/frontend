@@ -45,7 +45,7 @@ export default function BillingReturnPage() {
                 ? `Plan actual: ${subscription.planCode}. Tokens disponibles: ${subscription.remainingTokens}/${subscription.monthlyTokenLimit}.`
                 : 'Si el pago fue aprobado, el webhook puede tardar unos segundos en reflejar el cambio.')}
           </p>
-          <button className={styles.btnGold} onClick={() => navigate('/chat')}>
+          <button className={styles.btnAccent} onClick={() => navigate('/chat')}>
             Ir al chat
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
               <path d="M5 12h14M12 5l7 7-7 7"/>

@@ -23,7 +23,7 @@
 }
 .bot .bubble {
   background: var(--black-3);
-  border: 0.5px solid var(--gold-border);
+  border: 0.5px solid var(--accent-border);
   color: var(--text-primary);
 }
 .system .bubble {
@@ -31,8 +31,8 @@
   color: #ffd2d2;
 }
 .user .bubble {
-  background: var(--gold);
-  color: var(--black);
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 .bubble p {
   margin: 0 0 0.65rem;
@@ -67,7 +67,7 @@
 .bubble blockquote {
   margin: 0.65rem 0;
   padding: 0.4rem 0 0.4rem 0.75rem;
-  border-left: 2px solid var(--gold-border);
+  border-left: 2px solid var(--accent-border);
   color: var(--text-secondary);
 }
 .bubble code {
@@ -89,7 +89,7 @@
   background: transparent;
 }
 .bubble a {
-  color: var(--gold);
+  color: var(--accent);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
@@ -101,14 +101,14 @@
 }
 .bubble th,
 .bubble td {
-  border: 1px solid var(--gold-border);
+  border: 1px solid var(--accent-border);
   padding: 0.35rem 0.45rem;
   text-align: left;
   vertical-align: top;
 }
 .bubble hr {
   border: 0;
-  border-top: 1px solid var(--gold-border);
+  border-top: 1px solid var(--accent-border);
   margin: 0.75rem 0;
 }
 .status {
@@ -135,15 +135,15 @@
   margin-top: 0.5rem;
   min-height: 32px;
   padding: 0.35rem 0.7rem;
-  border: 0.5px solid var(--gold-border-h, var(--gold-border));
+  border: 0.5px solid var(--accent-border-h, var(--accent-border));
   border-radius: 6px;
-  background: var(--gold-bg);
-  color: var(--gold);
+  background: var(--accent-bg);
+  color: var(--accent);
   font-size: 11px;
   line-height: 1;
 }
 .upgradeBtn:hover {
-  border-color: var(--gold);
+  border-color: var(--accent);
 }
 
 /* Citations */
@@ -161,16 +161,16 @@
   width: fit-content;
   min-height: 30px;
   padding: 0.35rem 0.6rem;
-  border: 0.5px solid var(--gold-border);
+  border: 0.5px solid var(--accent-border);
   border-radius: 6px;
-  background: var(--gold-bg);
-  color: var(--gold);
+  background: var(--accent-bg);
+  color: var(--accent);
   font-size: 11px;
   line-height: 1;
   cursor: pointer;
 }
 .sourcesToggle:hover {
-  border-color: var(--gold);
+  border-color: var(--accent);
 }
 .sourcesCount {
   display: inline-flex;
@@ -190,15 +190,15 @@
   gap: 0.4rem;
 }
 .citation {
-  background: var(--gold-bg);
-  border: 0.5px solid var(--gold-border);
+  background: var(--accent-bg);
+  border: 0.5px solid var(--accent-border);
   border-radius: 6px;
   padding: 8px 12px;
 }
 .citationTitle {
   font-size: 10px;
   letter-spacing: 0.5px;
-  color: var(--gold);
+  color: var(--accent);
   text-transform: uppercase;
   margin-bottom: 3px;
   font-weight: 500;
@@ -209,7 +209,7 @@
 .citationLocator {
   font-size: 11px;
   font-weight: 600;
-  color: var(--gold);
+  color: var(--accent);
   margin-bottom: 2px;
 }
 .citationSnippet {
@@ -220,7 +220,7 @@
 .citationLink {
   display: inline-block;
   font-size: 10px;
-  color: var(--gold);
+  color: var(--accent);
   margin-top: 4px;
   opacity: 0.7;
   transition: opacity 0.2s;
@@ -233,9 +233,9 @@
 .guidanceBlock {
   width: 100%;
   margin-top: 0.625rem;
-  border: 0.5px solid var(--gold-border);
+  border: 0.5px solid var(--accent-border);
   border-radius: 6px;
-  background: var(--gold-bg);
+  background: var(--accent-bg);
   padding: 0.65rem 0.75rem;
   color: var(--text-secondary);
   font-size: 12px;
@@ -269,7 +269,7 @@
 .specialistNotice strong,
 .blockTitle {
   display: block;
-  color: var(--gold);
+  color: var(--accent);
   font-size: 10px;
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -327,18 +327,18 @@
   line-height: 1;
 }
 .star:hover  { transform: scale(1.2); }
-.starActive  { color: var(--gold); }
+.starActive  { color: var(--accent); }
 .star:disabled { cursor: wait; opacity: 0.7; }
 .feedbackToggle {
   margin-left: 0.35rem;
   background: transparent;
-  border: 0.5px solid var(--gold-border);
+  border: 0.5px solid var(--accent-border);
   border-radius: 5px;
   color: var(--text-secondary);
   font-size: 11px;
   padding: 3px 7px;
 }
-.feedbackToggle:hover:not(:disabled) { color: var(--gold); border-color: var(--gold); }
+.feedbackToggle:hover:not(:disabled) { color: var(--accent); border-color: var(--accent); }
 .ratingStatus {
   align-self: center;
   color: var(--text-muted);
@@ -356,7 +356,7 @@
   min-height: 38px;
   max-height: 90px;
   resize: vertical;
-  border: 0.5px solid var(--gold-border);
+  border: 0.5px solid var(--accent-border);
   border-radius: 6px;
   background: var(--black-3);
   color: var(--text-primary);
@@ -367,8 +367,8 @@
 .feedbackBox button {
   border: none;
   border-radius: 6px;
-  background: var(--gold);
-  color: var(--black);
+  background: var(--accent);
+  color: var(--accent-ink);
   font-size: 12px;
   padding: 0 0.75rem;
 }

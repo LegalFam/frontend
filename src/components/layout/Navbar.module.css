@@ -9,19 +9,19 @@
 }
 .nav.scrolled {
   background: rgba(10,10,10,0.98);
-  border-bottom-color: var(--gold-border);
+  border-bottom-color: var(--accent-border);
 }
 .logo { display: flex; align-items: center; gap: 10px; }
 .logoImg {
   width: 40px; height: 40px; object-fit: contain;
-  filter: drop-shadow(0 0 8px rgba(201,168,76,0.35));
+  filter: drop-shadow(0 0 8px rgba(var(--accent-rgb), 0.35));
   transition: filter 0.2s;
 }
-.logoImg:hover { filter: drop-shadow(0 0 12px rgba(201,168,76,0.6)); }
+.logoImg:hover { filter: drop-shadow(0 0 12px rgba(var(--accent-rgb), 0.6)); }
 .logoText {
   font-family: 'Cormorant Garamond', serif;
   font-size: 22px; font-weight: 500;
-  color: var(--gold); letter-spacing: 2.5px;
+  color: var(--accent); letter-spacing: 2.5px;
 }
 .links { display: flex; align-items: center; gap: 2rem; }
 .link {
@@ -30,8 +30,8 @@
   padding-bottom: 2px; border-bottom: 1px solid transparent;
   transition: color 0.15s, border-color 0.15s;
 }
-.link:hover { color: var(--gold); }
-.link.linkActive { color: var(--gold); border-bottom-color: var(--gold); }
+.link:hover { color: var(--accent); }
+.link.linkActive { color: var(--accent); border-bottom-color: var(--accent); }
 .btns { display: flex; gap: 10px; align-items: center; }
 .mobileBtns { display: none; }
 .signoutBtn {
@@ -45,7 +45,7 @@
   background: none; border: none; padding: 5px; cursor: pointer;
 }
 .hamburger span {
-  display: block; width: 22px; height: 1.5px; background: var(--gold);
+  display: block; width: 22px; height: 1.5px; background: var(--accent);
   transition: transform 0.2s, opacity 0.2s; transform-origin: center;
 }
 .hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
@@ -61,7 +61,7 @@
 @media (max-width: 800px) {
   .links {
     display: none; position: fixed; top: 68px; left: 0; right: 0;
-    background: rgba(10,10,10,0.99); border-bottom: 0.5px solid var(--gold-border);
+    background: rgba(10,10,10,0.99); border-bottom: 0.5px solid var(--accent-border);
     flex-direction: column; align-items: flex-start;
     padding: 1.5rem 2rem; gap: 1.25rem; z-index: 99;
     animation: slideDown 0.2s ease;
@@ -72,7 +72,7 @@
   .mobileBtns {
     display: flex; flex-direction: column; gap: 10px;
     width: 100%; margin-top: 0.5rem; padding-top: 1rem;
-    border-top: 0.5px solid var(--gold-border);
+    border-top: 0.5px solid var(--accent-border);
   }
   .mobileAuthBtn {
     max-width: 220px; width: 100%; align-self: center;

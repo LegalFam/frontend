@@ -151,7 +151,7 @@ export default function PreciosSection({ isAuthenticated, currentPlanCode, onReg
                       className={plan.featured ? styles.featuredCol : undefined}
                     >
                       <button
-                        className={plan.featured ? styles.btnGold : styles.btnGhost}
+                        className={plan.featured ? styles.btnAccent : styles.btnGhost}
                         onClick={() => handlePlanClick(plan)}
                         disabled={isCurrent}
                       >
@@ -206,7 +206,7 @@ export default function PreciosSection({ isAuthenticated, currentPlanCode, onReg
                 </ul>
 
                 <button
-                  className={plan.featured ? styles.btnGold : styles.btnGhost}
+                  className={plan.featured ? styles.btnAccent : styles.btnGhost}
                   onClick={() => handlePlanClick(plan)}
                   disabled={isCurrent}
                 >

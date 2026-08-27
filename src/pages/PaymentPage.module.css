@@ -8,7 +8,7 @@
 .header {
   height: 64px;
   background: var(--black-2);
-  border-bottom: 0.5px solid var(--gold-border);
+  border-bottom: 0.5px solid var(--accent-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -22,18 +22,18 @@
   font-size: 13px; cursor: pointer; letter-spacing: 0.3px;
   transition: color 0.15s; padding: 0;
 }
-.backBtn:hover { color: var(--gold); }
+.backBtn:hover { color: var(--accent); }
 
 .logo {
   display: flex; align-items: center; gap: 9px;
 }
 .logo img {
   width: 32px; height: 32px; object-fit: contain;
-  filter: drop-shadow(0 0 5px rgba(201,168,76,0.3));
+  filter: drop-shadow(0 0 5px rgba(var(--accent-rgb), 0.3));
 }
 .logo span {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 18px; color: var(--gold); letter-spacing: 2.5px;
+  font-size: 18px; color: var(--accent); letter-spacing: 2.5px;
 }
 
 /* ── Layout ── */
@@ -52,7 +52,7 @@
 /* ── Summary sidebar ── */
 .summary {
   background: var(--black-2);
-  border: 0.5px solid var(--gold-border);
+  border: 0.5px solid var(--accent-border);
   border-radius: var(--radius-lg);
   padding: 2rem;
   margin-right: 1.5rem;
@@ -60,7 +60,7 @@
 
 .summaryLabel {
   font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
-  color: var(--gold); display: block; margin-bottom: 1.25rem;
+  color: var(--accent); display: block; margin-bottom: 1.25rem;
 }
 
 .planName {
@@ -79,9 +79,9 @@
 }
 
 .planTokens {
-  font-size: 12px; color: var(--gold); letter-spacing: 0.5px;
+  font-size: 12px; color: var(--accent); letter-spacing: 0.5px;
   margin-bottom: 1.25rem; padding-bottom: 1.25rem;
-  border-bottom: 0.5px solid var(--gold-border);
+  border-bottom: 0.5px solid var(--accent-border);
 }
 
 .features {
@@ -94,7 +94,7 @@
   display: flex; gap: 8px; align-items: flex-start; line-height: 1.5;
 }
 .features li::before {
-  content: '—'; color: var(--gold); flex-shrink: 0;
+  content: '—'; color: var(--accent); flex-shrink: 0;
   font-size: 11px; margin-top: 1px;
 }
 
@@ -102,12 +102,12 @@
   display: flex; align-items: center; gap: 6px;
   font-size: 11px; color: var(--text-muted); letter-spacing: 0.3px;
 }
-.securityNote svg { color: var(--gold); flex-shrink: 0; }
+.securityNote svg { color: var(--accent); flex-shrink: 0; }
 
 /* ── Form ── */
 .formCard {
   background: var(--black-2);
-  border: 0.5px solid var(--gold-border);
+  border: 0.5px solid var(--accent-border);
   border-radius: var(--radius-lg);
   padding: 2rem 2.25rem;
 }
@@ -123,8 +123,8 @@
 }
 
 .checkoutBox {
-  border-top: 0.5px solid var(--gold-border);
-  border-bottom: 0.5px solid var(--gold-border);
+  border-top: 0.5px solid var(--accent-border);
+  border-bottom: 0.5px solid var(--accent-border);
   padding: 1rem 0;
   margin-bottom: 1.25rem;
 }
@@ -147,12 +147,12 @@
   text-transform: uppercase;
 }
 .fg input {
-  background: var(--black-3); border: 0.5px solid var(--gold-border);
+  background: var(--black-3); border: 0.5px solid var(--accent-border);
   border-radius: var(--radius); padding: 10px 14px;
   font-size: 14px; color: var(--text-primary); outline: none;
   transition: border-color 0.15s; width: 100%;
 }
-.fg input:focus { border-color: var(--gold); box-shadow: var(--shadow-gold); }
+.fg input:focus { border-color: var(--accent); box-shadow: var(--shadow-accent); }
 .fg input.hasError { border-color: var(--error); }
 .fg input::placeholder { color: var(--text-muted); }
 
@@ -174,13 +174,13 @@
 .submitBtn {
   width: 100%; margin-top: 0.75rem;
   padding: 13px;
-  background: var(--gold); color: var(--black); border: none;
+  background: var(--accent); color: var(--accent-ink); border: none;
   border-radius: var(--radius); font-size: 14px; font-weight: 500;
   letter-spacing: 0.4px; cursor: pointer;
   display: flex; align-items: center; justify-content: center; gap: 8px;
   transition: background 0.15s;
 }
-.submitBtn:hover:not(:disabled) { background: var(--gold-light); }
+.submitBtn:hover:not(:disabled) { background: var(--accent-light); }
 .submitBtn:disabled { opacity: 0.7; cursor: not-allowed; }
 
 .secondaryBtn {
@@ -189,12 +189,12 @@
   padding: 12px;
   background: transparent;
   color: var(--text-secondary);
-  border: 0.5px solid var(--gold-border);
+  border: 0.5px solid var(--accent-border);
   border-radius: var(--radius);
   font-size: 13px;
   cursor: pointer;
 }
-.secondaryBtn:hover { color: var(--gold); border-color: var(--gold); }
+.secondaryBtn:hover { color: var(--accent); border-color: var(--accent); }
 
 .loadingText {
   display: flex; align-items: center; gap: 10px;
@@ -216,7 +216,7 @@
 }
 .successCard {
   background: var(--black-2);
-  border: 0.5px solid var(--gold-border);
+  border: 0.5px solid var(--accent-border);
   border-radius: var(--radius-lg);
   padding: 3rem 2.5rem;
   text-align: center;
@@ -224,9 +224,9 @@
 }
 .successIcon {
   width: 64px; height: 64px; margin: 0 auto 1.5rem;
-  background: var(--gold-bg); border: 1px solid var(--gold-border);
+  background: var(--accent-bg); border: 1px solid var(--accent-border);
   border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  color: var(--gold);
+  color: var(--accent);
 }
 .successCard h2 {
   font-family: 'Cormorant Garamond', serif;
@@ -237,13 +237,13 @@
   font-size: 14px; color: var(--text-secondary);
   line-height: 1.7; margin-bottom: 2rem;
 }
-.btnGold {
+.btnAccent {
   display: inline-flex; align-items: center; gap: 8px;
-  padding: 12px 28px; background: var(--gold); color: var(--black);
+  padding: 12px 28px; background: var(--accent); color: var(--accent-ink);
   border: none; border-radius: var(--radius); font-size: 14px;
   font-weight: 500; cursor: pointer; transition: background 0.15s;
 }
-.btnGold:hover { background: var(--gold-light); }
+.btnAccent:hover { background: var(--accent-light); }
 
 /* ── Responsive ── */
 @media (max-width: 760px) {

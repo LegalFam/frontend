@@ -1,0 +1,27 @@
+/*
+ * Tema AZUL MARINO — variante de evaluación.
+ * Activar con <html data-theme="marino"> (lo hace src/theme.js):
+ *   ?tema=marino en la URL  ·  setTema('marino') en consola.
+ * Mismos tokens que dorado.css, con otros valores.
+ */
+:root[data-theme="marino"] {
+  --accent: #4C86C9;
+  --accent-light: #3E73B4;   /* más oscuro que --accent: es el fondo :hover
+                                de los botones y debe contrastar con el texto
+                                claro de --accent-ink */
+  --accent-pale: #BFD8F5;
+  --accent-dark: #1C4D86;
+  --accent-rgb: 76,134,201;
+  --accent-ink: #F2F7FF;
+
+  --accent-border: rgba(var(--accent-rgb),0.25);
+  --accent-border-h: rgba(var(--accent-rgb),0.50);
+  --accent-bg: rgba(var(--accent-rgb),0.07);
+  --accent-bg-h: rgba(var(--accent-rgb),0.14);
+  --shadow-accent: 0 0 0 2px rgba(var(--accent-rgb),0.30);
+
+  --black: #080A0F; --black-2: #0E1017; --black-3: #14171F;
+  --black-4: #1B1F29; --black-5: #262B37;
+  --text-primary: #E7EDF7; --text-secondary: #92A6C4;
+  --text-muted: #4E5E79; --text-faint: #2F3B4E;
+}
