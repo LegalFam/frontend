@@ -1,0 +1,27 @@
+/*
+ * Tema DORADO-LIGHTER — mismo acento dorado que dorado.css, pero con los
+ * fondos más claros (carbón cálido en vez de casi negro). Sigue siendo dark mode.
+ * Activar con <html data-theme="dorado-lighter"> (ver src/theme.js):
+ *   ?tema=dorado-lighter  ·  setTema('dorado-lighter')
+ */
+:root[data-theme="dorado-lighter"] {
+  --accent: #C9A84C;
+  --accent-light: #E8C96A;   /* fondo :hover de los botones de acento */
+  --accent-pale: #F5E6B8;
+  --accent-dark: #8B6914;
+  --accent-rgb: 201,168,76;
+  --accent-ink: #1A150A;      /* texto sobre el acento (fijo, no depende de --black) */
+
+  --accent-border: rgba(var(--accent-rgb),0.25);
+  --accent-border-h: rgba(var(--accent-rgb),0.50);
+  --accent-bg: rgba(var(--accent-rgb),0.07);
+  --accent-bg-h: rgba(var(--accent-rgb),0.14);
+  --shadow-accent: 0 0 0 2px rgba(var(--accent-rgb),0.30);
+  --glass: rgba(26,22,14,0.80);   /* panel translúcido sobre backdrop-filter */
+
+  /* fondos: carbón cálido medio (más claros que dorado, que es casi negro) */
+  --black: #201C15; --black-2: #29241B; --black-3: #332D21;
+  --black-4: #423A2B; --black-5: #524736;
+  --text-primary: #F4ECD4; --text-secondary: #C0A876;
+  --text-muted: #8A7550; --text-faint: #665640;
+}
