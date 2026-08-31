@@ -7,18 +7,18 @@
 .user { align-self: flex-end;   align-items: flex-end; }
 
 .label {
-  font-size: 10px;
-  letter-spacing: 1px;
+  font-size: 13px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
   color: var(--text-muted);
-  margin-bottom: 4px;
-  padding: 0 4px;
+  margin-bottom: 5px;
+  padding: 0 5px;
 }
 
 .bubble {
-  padding: 11px 15px;
+  padding: 14px 19px;
   border-radius: var(--radius-lg);
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.7;
 }
 .bot .bubble {
@@ -35,7 +35,7 @@
   color: var(--accent-ink);
 }
 .bubble p {
-  margin: 0 0 0.65rem;
+  margin: 0 0 0.8125rem;
 }
 .bubble p:last-child {
   margin-bottom: 0;
@@ -44,8 +44,8 @@
 .bubble h2,
 .bubble h3,
 .bubble h4 {
-  margin: 0.7rem 0 0.35rem;
-  font-size: 0.95rem;
+  margin: 0.875rem 0 0.4375rem;
+  font-size: 1.1875rem;
   line-height: 1.35;
   font-weight: 650;
   letter-spacing: 0;
@@ -58,30 +58,30 @@
 }
 .bubble ul,
 .bubble ol {
-  margin: 0.4rem 0 0.7rem;
-  padding-left: 1.25rem;
+  margin: 0.5rem 0 0.875rem;
+  padding-left: 1.5625rem;
 }
 .bubble li {
-  margin: 0.15rem 0;
+  margin: 0.1875rem 0;
 }
 .bubble blockquote {
-  margin: 0.65rem 0;
-  padding: 0.4rem 0 0.4rem 0.75rem;
+  margin: 0.8125rem 0;
+  padding: 0.5rem 0 0.5rem 0.9375rem;
   border-left: 2px solid var(--accent-border);
   color: var(--text-secondary);
 }
 .bubble code {
-  padding: 0.08rem 0.25rem;
-  border-radius: 4px;
+  padding: 0.125rem 0.3125rem;
+  border-radius: 5px;
   background: rgba(255, 255, 255, 0.08);
   font-size: 0.92em;
 }
 .bubble pre {
   max-width: 100%;
   overflow-x: auto;
-  margin: 0.65rem 0;
-  padding: 0.65rem;
-  border-radius: 6px;
+  margin: 0.8125rem 0;
+  padding: 0.8125rem;
+  border-radius: 7.5px;
   background: rgba(0, 0, 0, 0.22);
 }
 .bubble pre code {
@@ -91,55 +91,55 @@
 .bubble a {
   color: var(--accent);
   text-decoration: underline;
-  text-underline-offset: 2px;
+  text-underline-offset: 2.5px;
 }
 .bubble table {
   width: 100%;
   border-collapse: collapse;
-  margin: 0.65rem 0;
+  margin: 0.8125rem 0;
   font-size: 0.92em;
 }
 .bubble th,
 .bubble td {
   border: 1px solid var(--accent-border);
-  padding: 0.35rem 0.45rem;
+  padding: 0.4375rem 0.5625rem;
   text-align: left;
   vertical-align: top;
 }
 .bubble hr {
   border: 0;
   border-top: 1px solid var(--accent-border);
-  margin: 0.75rem 0;
+  margin: 0.9375rem 0;
 }
 .status {
-  font-size: 10px;
+  font-size: 13px;
   color: var(--text-muted);
-  margin-top: 4px;
-  padding: 0 4px;
+  margin-top: 5px;
+  padding: 0 5px;
 }
 .retryBtn {
-  margin-top: 0.5rem;
-  min-height: 32px;
-  padding: 0.35rem 0.7rem;
+  margin-top: 0.625rem;
+  min-height: 40px;
+  padding: 0.4375rem 0.875rem;
   border: 0.5px solid var(--error-border);
-  border-radius: 6px;
+  border-radius: 7.5px;
   background: var(--error-bg);
   color: #ffd2d2;
-  font-size: 11px;
+  font-size: 14px;
   line-height: 1;
 }
 .retryBtn:hover {
   border-color: var(--error);
 }
 .upgradeBtn {
-  margin-top: 0.5rem;
-  min-height: 32px;
-  padding: 0.35rem 0.7rem;
+  margin-top: 0.625rem;
+  min-height: 40px;
+  padding: 0.4375rem 0.875rem;
   border: 0.5px solid var(--accent-border-h, var(--accent-border));
-  border-radius: 6px;
+  border-radius: 7.5px;
   background: var(--accent-bg);
   color: var(--accent);
-  font-size: 11px;
+  font-size: 14px;
   line-height: 1;
 }
 .upgradeBtn:hover {
@@ -148,24 +148,24 @@
 
 /* Citations */
 .citations {
-  margin-top: 0.625rem;
+  margin-top: 0.8125rem;
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.5rem;
   width: 100%;
 }
 .sourcesToggle {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.5625rem;
   width: fit-content;
-  min-height: 30px;
-  padding: 0.35rem 0.6rem;
+  min-height: 38px;
+  padding: 0.4375rem 0.75rem;
   border: 0.5px solid var(--accent-border);
-  border-radius: 6px;
+  border-radius: 7.5px;
   background: var(--accent-bg);
   color: var(--accent);
-  font-size: 11px;
+  font-size: 14px;
   line-height: 1;
   cursor: pointer;
 }
@@ -176,52 +176,52 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 0.3rem;
-  border-radius: 999px;
+  min-width: 23px;
+  height: 23px;
+  padding: 0 0.375rem;
+  border-radius: 1249px;
   background: rgba(var(--accent-rgb), 0.16);
   color: var(--text-primary);
-  font-size: 10px;
+  font-size: 13px;
 }
 .sourcesPanel {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.5rem;
 }
 .citation {
   background: var(--accent-bg);
   border: 0.5px solid var(--accent-border);
-  border-radius: 6px;
-  padding: 8px 12px;
+  border-radius: 7.5px;
+  padding: 10px 15px;
 }
 .citationTitle {
-  font-size: 10px;
+  font-size: 13px;
   letter-spacing: 0.5px;
   color: var(--accent);
   text-transform: uppercase;
-  margin-bottom: 3px;
+  margin-bottom: 4px;
   font-weight: 500;
 }
 .citationEntry + .citationEntry {
-  margin-top: 8px;
+  margin-top: 10px;
 }
 .citationLocator {
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--accent);
-  margin-bottom: 2px;
+  margin-bottom: 2.5px;
 }
 .citationSnippet {
-  font-size: 11px;
+  font-size: 14px;
   color: var(--text-secondary);
   line-height: 1.5;
 }
 .citationLink {
   display: inline-block;
-  font-size: 10px;
+  font-size: 13px;
   color: var(--accent);
-  margin-top: 4px;
+  margin-top: 5px;
   opacity: 0.7;
   transition: opacity 0.2s;
 }
@@ -232,13 +232,13 @@
 .specialistNotice,
 .guidanceBlock {
   width: 100%;
-  margin-top: 0.625rem;
+  margin-top: 0.8125rem;
   border: 0.5px solid var(--accent-border);
-  border-radius: 6px;
+  border-radius: 7.5px;
   background: var(--accent-bg);
-  padding: 0.65rem 0.75rem;
+  padding: 0.8125rem 0.9375rem;
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.45;
 }
 .safetyNote {
@@ -254,9 +254,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: 0.9375rem;
   margin-top: 0;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.625rem;
   border-color: rgba(238, 128, 128, 0.5);
   background: rgba(238, 128, 128, 0.1);
   color: #ffd2d2;
@@ -270,10 +270,10 @@
 .blockTitle {
   display: block;
   color: var(--accent);
-  font-size: 10px;
-  letter-spacing: 1px;
+  font-size: 13px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.3125rem;
 }
 .safetyNote strong {
   color: #ffb4b4;
@@ -286,13 +286,13 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  min-height: 32px;
-  padding: 0.45rem 0.7rem;
+  min-height: 40px;
+  padding: 0.5625rem 0.875rem;
   border: 0.5px solid rgba(238, 128, 128, 0.55);
-  border-radius: 6px;
+  border-radius: 7.5px;
   background: rgba(238, 128, 128, 0.13);
   color: #ffd2d2;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 600;
   line-height: 1;
   transition: background var(--t-fast), border-color var(--t-fast), transform var(--t-fast);
@@ -306,23 +306,23 @@
 }
 .guidanceBlock ul {
   margin: 0;
-  padding-left: 1.1rem;
+  padding-left: 1.375rem;
 }
-.guidanceBlock li { margin: 0.2rem 0; }
+.guidanceBlock li { margin: 0.25rem 0; }
 
 /* Stars */
 .stars {
   display: flex;
-  gap: 3px;
-  margin-top: 0.5rem;
-  padding: 0 4px;
+  gap: 4px;
+  margin-top: 0.625rem;
+  padding: 0 5px;
 }
 .star {
   background: none;
   border: none;
-  font-size: 15px;
+  font-size: 19px;
   color: var(--text-muted);
-  padding: 1px;
+  padding: 1.5px;
   transition: transform 0.1s, color 0.15s;
   line-height: 1;
 }
@@ -330,50 +330,50 @@
 .starActive  { color: var(--accent); }
 .star:disabled { cursor: wait; opacity: 0.7; }
 .feedbackToggle {
-  margin-left: 0.35rem;
+  margin-left: 0.4375rem;
   background: transparent;
   border: 0.5px solid var(--accent-border);
-  border-radius: 5px;
+  border-radius: 6.5px;
   color: var(--text-secondary);
-  font-size: 11px;
-  padding: 3px 7px;
+  font-size: 14px;
+  padding: 4px 9px;
 }
 .feedbackToggle:hover:not(:disabled) { color: var(--accent); border-color: var(--accent); }
 .ratingStatus {
   align-self: center;
   color: var(--text-muted);
-  font-size: 10px;
-  margin-left: 0.25rem;
+  font-size: 13px;
+  margin-left: 0.3125rem;
 }
 .feedbackBox {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.625rem;
   width: 100%;
-  margin-top: 0.5rem;
+  margin-top: 0.625rem;
 }
 .feedbackBox textarea {
   flex: 1;
-  min-height: 38px;
-  max-height: 90px;
+  min-height: 48px;
+  max-height: 113px;
   resize: vertical;
   border: 0.5px solid var(--accent-border);
-  border-radius: 6px;
+  border-radius: 7.5px;
   background: var(--black-3);
   color: var(--text-primary);
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.4;
-  padding: 0.5rem;
+  padding: 0.625rem;
 }
 .feedbackBox button {
   border: none;
-  border-radius: 6px;
+  border-radius: 7.5px;
   background: var(--accent);
   color: var(--accent-ink);
-  font-size: 12px;
-  padding: 0 0.75rem;
+  font-size: 15px;
+  padding: 0 0.9375rem;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 800px) {
   .wrap { max-width: 92%; }
   .specialistNotice {
     align-items: stretch;
@@ -381,5 +381,5 @@
   }
   .specialistLink { width: 100%; }
   .feedbackBox { flex-direction: column; }
-  .feedbackBox button { min-height: 34px; }
+  .feedbackBox button { min-height: 43px; }
 }

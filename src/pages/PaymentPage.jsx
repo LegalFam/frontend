@@ -65,7 +65,7 @@ export default function PaymentPage() {
           <img src={logoImg} alt="LegalFam" />
           <span>LEGALFAM</span>
         </Link>
-        <div style={{ width: 80 }} />
+        <div style={{ width: 100 }} />
       </header>
 
       <div className={styles.body}>

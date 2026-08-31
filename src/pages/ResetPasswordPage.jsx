@@ -81,7 +81,7 @@ export default function ResetPasswordPage() {
             <h1 className={styles.title}>Crea una contraseña nueva</h1>
             <p className={styles.text}>Elige una contraseña de al menos 8 caracteres.</p>
 
-            {error && <div className="api-err" style={{ marginTop: '1rem' }}>{error}</div>}
+            {error && <div className="api-err" style={{ marginTop: '1.25rem' }}>{error}</div>}
 
             {tokenExpired ? (
               <button

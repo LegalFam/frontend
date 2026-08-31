@@ -1,27 +1,27 @@
 .section {
-  padding: 6rem 0;
+  padding: 7.5rem 0;
   background: var(--black-2);
 }
 
 .header {
   text-align: center;
-  margin-bottom: 3.5rem;
+  margin-bottom: 4.375rem;
 }
 .header .section-sub {
-  margin: 0.75rem auto 0;
+  margin: 0.9375rem auto 0;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(275px, 1fr));
+  gap: 1.875rem;
 }
 
 .card {
   background: var(--black-3);
   border: 0.5px solid var(--accent-border);
   border-radius: var(--radius-lg);
-  padding: 2rem 1.5rem;
+  padding: 2.5rem 1.875rem;
   position: relative;
   overflow: hidden;
   transition: border-color 0.25s;
@@ -30,44 +30,44 @@
 
 .stepNum {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 64px;
+  font-size: 80px;
   font-weight: 300;
   color: rgba(var(--accent-rgb), 0.07);
   position: absolute;
-  top: -10px; right: 14px;
+  top: -12px; right: 18px;
   line-height: 1;
   pointer-events: none;
 }
 
 .icon {
-  width: 44px;
-  height: 44px;
+  width: 55px;
+  height: 55px;
   background: var(--accent-bg);
   border: 0.5px solid var(--accent-border);
-  border-radius: 10px;
+  border-radius: 13px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
   color: var(--accent);
 }
 .icon svg {
-  width: 20px;
-  height: 20px;
+  width: 25px;
+  height: 25px;
 }
 
 .card h3 {
-  font-size: 15px;
+  font-size: 19px;
   font-weight: 500;
   color: var(--text-primary);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.625rem;
 }
 .card p {
-  font-size: 13px;
+  font-size: 16px;
   color: var(--text-secondary);
   line-height: 1.6;
 }
 
-@media (max-width: 640px) {
-  .section { padding: 4rem 0; }
+@media (max-width: 800px) {
+  .section { padding: 5rem 0; }
 }

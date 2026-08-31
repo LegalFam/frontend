@@ -1,7 +1,7 @@
 .page {
   min-height: 100vh;
   display: flex; align-items: center; justify-content: center;
-  padding: 1.5rem;
+  padding: 1.875rem;
   background: var(--black);
 }
 
@@ -9,43 +9,43 @@
   background: var(--black-2);
   border: 0.5px solid var(--accent-border);
   border-radius: var(--radius-lg);
-  padding: 2.25rem;
-  width: 100%; max-width: 440px;
+  padding: 2.8125rem;
+  width: 100%; max-width: 550px;
   text-align: center;
 }
 
 .topBar {
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-  margin-bottom: 1.5rem;
+  display: flex; align-items: center; justify-content: center; gap: 13px;
+  margin-bottom: 1.875rem;
 }
-.topBar img { width: 32px; height: 32px; object-fit: contain; border-radius: 50%; }
+.topBar img { width: 40px; height: 40px; object-fit: contain; border-radius: 50%; }
 .logo {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 16px; color: var(--accent); letter-spacing: 2px;
+  font-size: 20px; color: var(--accent); letter-spacing: 2.5px;
 }
 
-.icon { font-size: 38px; line-height: 1; margin-bottom: 1rem; }
+.icon { font-size: 48px; line-height: 1; margin-bottom: 1.25rem; }
 
 .title {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 26px; font-weight: 400;
-  color: var(--text-primary); margin-bottom: 0.5rem;
+  font-size: 33px; font-weight: 400;
+  color: var(--text-primary); margin-bottom: 0.625rem;
 }
-.text { font-size: 13px; line-height: 1.7; color: var(--text-secondary); }
-.hint { font-size: 11.5px; line-height: 1.6; color: var(--text-muted); margin-top: 0.75rem; }
+.text { font-size: 16px; line-height: 1.7; color: var(--text-secondary); }
+.hint { font-size: 14px; line-height: 1.6; color: var(--text-muted); margin-top: 0.9375rem; }
 
-.form { text-align: left; margin-top: 1.5rem; }
-.fg { margin-bottom: 1rem; }
+.form { text-align: left; margin-top: 1.875rem; }
+.fg { margin-bottom: 1.25rem; }
 .fg label {
-  display: block; font-size: 10px;
-  letter-spacing: 1.2px; text-transform: uppercase;
-  color: var(--text-secondary); margin-bottom: 5px;
+  display: block; font-size: 13px;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--text-secondary); margin-bottom: 6.5px;
 }
 .fg input {
-  width: 100%; padding: 9px 12px;
+  width: 100%; padding: 11px 15px;
   background: var(--black-3);
   border: 0.5px solid var(--accent-border);
-  border-radius: var(--radius); font-size: 13px;
+  border-radius: var(--radius); font-size: 16px;
   color: var(--text-primary);
   transition: border-color var(--t-fast), box-shadow var(--t-fast);
 }
@@ -54,10 +54,10 @@
 .fg input.hasError { border-color: var(--error); }
 
 .primaryBtn {
-  width: 100%; padding: 11px;
+  width: 100%; padding: 14px;
   background: var(--accent); color: var(--accent-ink); border: none;
-  border-radius: var(--radius); font-size: 14px; font-weight: 500;
-  letter-spacing: 0.4px; margin-top: 1.25rem; cursor: pointer;
+  border-radius: var(--radius); font-size: 18px; font-weight: 500;
+  letter-spacing: 0.5px; margin-top: 1.5625rem; cursor: pointer;
   transition: background var(--t-fast), transform var(--t-fast);
 }
 .primaryBtn:hover:not(:disabled) { background: var(--accent-light); }
@@ -65,17 +65,17 @@
 .primaryBtn:disabled { opacity: 0.55; cursor: not-allowed; }
 
 .ghostBtn {
-  width: 100%; padding: 9px;
+  width: 100%; padding: 11px;
   background: none; color: var(--accent);
   border: 0.5px solid var(--accent-border); border-radius: var(--radius);
-  font-size: 12.5px; margin-top: 0.75rem; cursor: pointer;
+  font-size: 16px; margin-top: 0.9375rem; cursor: pointer;
   transition: background var(--t-fast), border-color var(--t-fast);
 }
 .ghostBtn:hover:not(:disabled) { background: var(--accent-bg); border-color: var(--accent); }
 .ghostBtn:disabled { opacity: 0.55; cursor: not-allowed; }
 
 .spinner {
-  width: 26px; height: 26px; margin: 0 auto 1rem;
+  width: 33px; height: 33px; margin: 0 auto 1.25rem;
   border: 2px solid var(--accent-border);
   border-top-color: var(--accent);
   border-radius: 50%;
@@ -83,6 +83,6 @@
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-@media (max-width: 480px) {
-  .card { padding: 1.5rem 1.25rem; border-radius: var(--radius); }
+@media (max-width: 600px) {
+  .card { padding: 1.875rem 1.5625rem; border-radius: var(--radius); }
 }

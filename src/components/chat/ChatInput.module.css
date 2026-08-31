@@ -1,28 +1,28 @@
 .area {
   border-top: 0.5px solid var(--accent-border);
-  padding: 1rem 1.25rem;
+  padding: 1.25rem 1.5625rem;
   background: var(--black-2);
   flex-shrink: 0;
 }
 
 .wrap {
   display: flex;
-  gap: 8px;
-  max-width: 800px;
+  gap: 10px;
+  max-width: 1000px;
   margin: 0 auto;
   align-items: flex-end;
 }
 
 .textarea {
   flex: 1;
-  padding: 11px 15px;
+  padding: 14px 19px;
   background: var(--black-3);
   border: 0.5px solid var(--accent-border);
   border-radius: var(--radius-lg);
-  font-size: 13px;
+  font-size: 16px;
   color: var(--text-primary);
   resize: none;
-  max-height: 120px;
+  max-height: 150px;
   line-height: 1.5;
   transition: border-color 0.2s;
 }
@@ -40,8 +40,8 @@
 }
 
 .sendBtn {
-  width: 43px;
-  min-height: 43px;
+  width: 54px;
+  min-height: 54px;
   padding: 0;
   background: var(--accent);
   border: none;
@@ -60,11 +60,11 @@
   background: var(--accent-bg);
   border: 0.5px solid var(--accent-border);
 }
-.sendBtn svg { width: 15px; height: 15px; stroke: var(--black); }
+.sendBtn svg { width: 19px; height: 19px; stroke: var(--black); }
 
 .spinner {
-  width: 18px;
-  height: 18px;
+  width: 23px;
+  height: 23px;
   border: 2px solid rgba(var(--accent-rgb), 0.28);
   border-top-color: var(--accent);
   border-radius: 50%;
@@ -74,21 +74,21 @@
 .tooltip {
   position: absolute;
   right: 0;
-  bottom: calc(100% + 8px);
+  bottom: calc(100% + 10px);
   z-index: 5;
-  width: min(320px, calc(100vw - 2rem));
-  padding: 8px 10px;
+  width: min(400px, calc(100vw - 2.5rem));
+  padding: 10px 13px;
   border: 0.5px solid var(--accent-border);
   border-radius: var(--radius);
   background: var(--black-3);
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.4;
   text-align: left;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 13px 38px rgba(0, 0, 0, 0.28);
   opacity: 0;
   pointer-events: none;
-  transform: translateY(4px);
+  transform: translateY(5px);
   transition: opacity var(--t-fast), transform var(--t-fast);
 }
 
@@ -103,21 +103,21 @@
 }
 
 .note {
-  font-size: 10px;
+  font-size: 13px;
   color: var(--text-muted);
   text-align: center;
-  margin-top: 0.5rem;
-  max-width: 800px;
+  margin-top: 0.625rem;
+  max-width: 1000px;
   margin-left: auto;
   margin-right: auto;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.5px;
 }
 
 .privacyError {
-  font-size: 11px;
+  font-size: 14px;
   color: #ffb4b4;
   text-align: center;
-  margin: 0.5rem auto 0;
-  max-width: 800px;
+  margin: 0.625rem auto 0;
+  max-width: 1000px;
   line-height: 1.4;
 }

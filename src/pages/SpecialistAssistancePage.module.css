@@ -7,25 +7,25 @@
 }
 
 .header {
-  height: 64px;
+  height: 80px;
   background: var(--black-2);
   border-bottom: 0.5px solid var(--accent-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 2rem;
+  padding: 0 2.5rem;
   flex-shrink: 0;
 }
 
 .backBtn {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 9px;
   background: none;
   border: none;
   color: var(--text-secondary);
-  font-size: 13px;
-  letter-spacing: 0.3px;
+  font-size: 16px;
+  letter-spacing: 0.5px;
   transition: color var(--t-fast);
   padding: 0;
 }
@@ -37,36 +37,36 @@
 .logo {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 11px;
 }
 
 .logo img {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   object-fit: contain;
-  filter: drop-shadow(0 0 5px rgba(var(--accent-rgb), 0.3));
+  filter: drop-shadow(0 0 6.5px rgba(var(--accent-rgb), 0.3));
 }
 
 .logo span {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 18px;
+  font-size: 23px;
   color: var(--accent);
-  letter-spacing: 2.5px;
+  letter-spacing: 3px;
 }
 
 .headerSpacer {
-  width: 68px;
+  width: 85px;
 }
 
 .main {
-  width: min(1040px, 100%);
+  width: min(1300px, 100%);
   margin: 0 auto;
-  padding: 2.5rem 1.5rem 3rem;
+  padding: 3.125rem 1.875rem 3.75rem;
 }
 
 .hero {
-  max-width: 740px;
-  margin-bottom: 1.5rem;
+  max-width: 925px;
+  margin-bottom: 1.875rem;
 }
 
 .eyebrow,
@@ -74,19 +74,19 @@
 .cardHeader span {
   display: block;
   color: var(--accent);
-  font-size: 10px;
-  letter-spacing: 2px;
+  font-size: 13px;
+  letter-spacing: 2.5px;
   text-transform: uppercase;
-  margin-bottom: 0.55rem;
+  margin-bottom: 0.6875rem;
 }
 
 .hero h1 {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(32px, 5vw, 52px);
+  font-size: clamp(40px, 5vw, 65px);
   font-weight: 400;
   line-height: 1.08;
   color: var(--text-primary);
-  margin-bottom: 0.85rem;
+  margin-bottom: 1.0625rem;
   letter-spacing: 0;
 }
 
@@ -96,7 +96,7 @@
 .availability,
 .safetyNote p {
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: 18px;
   line-height: 1.7;
 }
 
@@ -104,21 +104,21 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1.25rem;
+  gap: 1.5625rem;
   border: 0.5px solid rgba(238, 128, 128, 0.45);
   border-left: 3px solid #ee8080;
   border-radius: var(--radius-lg);
   background: rgba(238, 128, 128, 0.09);
-  padding: 1rem 1.15rem;
-  margin-bottom: 1.25rem;
+  padding: 1.25rem 1.4375rem;
+  margin-bottom: 1.5625rem;
 }
 
 .emergencyBand h2 {
   color: #ffd2d2;
-  font-size: 20px;
+  font-size: 25px;
   font-weight: 600;
   letter-spacing: 0;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.3125rem;
 }
 
 .emergencyBand p {
@@ -127,7 +127,7 @@
 
 .emergencyLabel {
   color: #ffb4b4;
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.4375rem;
 }
 
 .emergencyCall,
@@ -135,14 +135,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 38px;
-  padding: 0.65rem 0.95rem;
+  min-height: 48px;
+  padding: 0.8125rem 1.1875rem;
   border-radius: var(--radius);
   background: var(--accent);
   color: var(--accent-ink);
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 600;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.5px;
   white-space: nowrap;
   transition: background var(--t-fast), transform var(--t-fast);
 }
@@ -171,7 +171,7 @@
 .resourceGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.9rem;
+  gap: 1.125rem;
 }
 
 .resourceCard {
@@ -181,37 +181,37 @@
   border: 0.5px solid var(--accent-border);
   border-radius: var(--radius);
   background: var(--black-2);
-  padding: 1rem;
+  padding: 1.25rem;
 }
 
 .cardHeader {
-  padding-bottom: 0.8rem;
+  padding-bottom: 1rem;
   border-bottom: 0.5px solid var(--accent-border);
-  margin-bottom: 0.85rem;
+  margin-bottom: 1.0625rem;
 }
 
 .cardHeader h2 {
   color: var(--text-primary);
-  font-size: 18px;
+  font-size: 23px;
   font-weight: 600;
   line-height: 1.25;
   letter-spacing: 0;
 }
 
 .useFor {
-  margin-bottom: 0.7rem;
+  margin-bottom: 0.875rem;
 }
 
 .availability {
   color: var(--text-muted);
-  font-size: 12px;
-  margin-bottom: 1rem;
+  font-size: 15px;
+  margin-bottom: 1.25rem;
 }
 
 .actions {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.625rem;
   margin-top: auto;
 }
 
@@ -219,13 +219,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 36px;
-  padding: 0.55rem 0.75rem;
+  min-height: 45px;
+  padding: 0.6875rem 0.9375rem;
   border: 0.5px solid var(--accent-border);
   border-radius: var(--radius);
   background: transparent;
   color: var(--accent);
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.25;
   text-align: center;
   transition: border-color var(--t-fast), background var(--t-fast);
@@ -237,31 +237,31 @@
 }
 
 .safetyNote {
-  margin-top: 1.25rem;
+  margin-top: 1.5625rem;
   border: 0.5px solid var(--accent-border);
   border-radius: var(--radius);
   background: var(--accent-bg);
-  padding: 0.9rem 1rem;
+  padding: 1.125rem 1.25rem;
 }
 
 .safetyNote strong {
   display: block;
   color: var(--accent);
-  font-size: 11px;
-  letter-spacing: 1.5px;
+  font-size: 14px;
+  letter-spacing: 2px;
   text-transform: uppercase;
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.4375rem;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1125px) {
   .resourceGrid {
     grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 800px) {
   .header {
-    padding: 0 1rem;
+    padding: 0 1.25rem;
   }
 
   .logo span {
@@ -269,11 +269,11 @@
   }
 
   .headerSpacer {
-    width: 52px;
+    width: 65px;
   }
 
   .main {
-    padding: 1.5rem 1rem 2rem;
+    padding: 1.875rem 1.25rem 2.5rem;
   }
 
   .emergencyBand {

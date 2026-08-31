@@ -12,7 +12,7 @@ export default function ChatInput({ onSend, disabled, disabledReason, draft = nu
     const el = ref.current
     if (!el) return
     el.style.height = 'auto'
-    el.style.height = Math.min(el.scrollHeight, 120) + 'px'
+    el.style.height = Math.min(el.scrollHeight, 150) + 'px'
   }
 
   // Recupera en el input un envío que no llegó a cursar (p. ej. sin tokens). Solo

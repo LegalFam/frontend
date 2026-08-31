@@ -24,7 +24,7 @@ const CONVERSATION_PRESETS = [
 export default function ChatPage() {
   const { signout } = useAuth()
   const { sessionId: routeSessionId } = useParams()
-  const isMobile = () => window.innerWidth <= 768
+  const isMobile = () => window.innerWidth <= 960
   const [sidebarOpen, setSidebarOpen] = useState(() => !isMobile())
   const [billingOpen, setBillingOpen] = useState(false)
   const [glossaryTerm, setGlossaryTerm] = useState(null)

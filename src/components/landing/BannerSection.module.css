@@ -1,5 +1,5 @@
 .banner {
-  position: relative; height: 340px; overflow: hidden; flex-shrink: 0;
+  position: relative; height: 425px; overflow: hidden; flex-shrink: 0;
 }
 .banner img { width: 100%; height: 100%; object-fit: cover; opacity: 0.18; filter: grayscale(50%); }
 .overlay {
@@ -8,19 +8,19 @@
   display: flex; align-items: center; justify-content: center;
 }
 .text {
-  padding: 0 3rem;
-  max-width: 760px;
+  padding: 0 3.75rem;
+  max-width: 950px;
   width: 100%;
   text-align: center;
 }
 .text blockquote {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(20px, 3vw, 32px); font-weight: 300;
-  font-style: italic; line-height: 1.5; color: var(--text-primary); margin-bottom: 1rem;
+  font-size: clamp(25px, 3vw, 40px); font-weight: 300;
+  font-style: italic; line-height: 1.5; color: var(--text-primary); margin-bottom: 1.25rem;
 }
 .text cite {
   display: block;
-  font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+  font-size: 14px; letter-spacing: 2px; text-transform: uppercase;
   color: var(--accent); font-style: normal;
   text-align: right;
 }
@@ -32,35 +32,35 @@
 }
 .footerTop {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 2rem 2rem 1.5rem; flex-wrap: wrap; gap: 1.5rem;
+  padding: 2.5rem 2.5rem 1.875rem; flex-wrap: wrap; gap: 1.875rem;
   border-bottom: 0.5px solid var(--accent-border);
 }
-.footerBrand { display: flex; align-items: center; gap: 12px; }
+.footerBrand { display: flex; align-items: center; gap: 15px; }
 .footerLogo {
-  width: 44px; height: 44px; object-fit: contain;
-  filter: drop-shadow(0 0 6px rgba(var(--accent-rgb), 0.3));
+  width: 55px; height: 55px; object-fit: contain;
+  filter: drop-shadow(0 0 7.5px rgba(var(--accent-rgb), 0.3));
 }
 .footerLogoText {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 20px; color: var(--accent); letter-spacing: 2.5px;
+  font-size: 25px; color: var(--accent); letter-spacing: 3px;
 }
-.footerTagline { font-size: 11px; color: var(--text-muted); margin-top: 2px; letter-spacing: 0.3px; }
+.footerTagline { font-size: 14px; color: var(--text-muted); margin-top: 2.5px; letter-spacing: 0.5px; }
 .footerLinks {
-  display: flex; gap: 2rem; flex-wrap: wrap;
+  display: flex; gap: 2.5rem; flex-wrap: wrap;
 }
 .footerLinks button,
 .footerLinks a {
-  font-size: 12px; color: var(--text-secondary); cursor: pointer; letter-spacing: 0.3px;
+  font-size: 15px; color: var(--text-secondary); cursor: pointer; letter-spacing: 0.5px;
   transition: color 0.15s; background: none; border: none; padding: 0; font-family: 'Outfit', sans-serif;
 }
 .footerLinks button:hover,
 .footerLinks a:hover { color: var(--accent); }
-.footerBottom { padding: 1.25rem 2rem; text-align: center; }
-.footerBottom p { font-size: 11px; color: var(--text-muted); line-height: 1.7; }
+.footerBottom { padding: 1.5625rem 2.5rem; text-align: center; }
+.footerBottom p { font-size: 14px; color: var(--text-muted); line-height: 1.7; }
 
-@media (max-width: 640px) {
-  .text { padding: 0 1.5rem; }
-  .banner { height: 260px; }
+@media (max-width: 800px) {
+  .text { padding: 0 1.875rem; }
+  .banner { height: 325px; }
   .footerTop { flex-direction: column; }
-  .footerLinks { gap: 1.25rem; }
+  .footerLinks { gap: 1.5625rem; }
 }

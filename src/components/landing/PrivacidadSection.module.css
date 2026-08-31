@@ -1,39 +1,39 @@
 .section {
-  padding: 7rem 0;
+  padding: 8.75rem 0;
 }
 
 .split {
   display: grid;
   grid-template-columns: 1fr 1.4fr;
-  gap: 3.5rem;
+  gap: 4.375rem;
   align-items: start;
 }
 
 .intro {
   position: sticky;
-  top: 6rem;
+  top: 7.5rem;
 }
 
 .header {
   text-align: left;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
 }
-.header .section-sub { margin: 0.75rem 0 0; }
+.header .section-sub { margin: 0.9375rem 0 0; }
 
 .contact {
   background: var(--black-2);
   border: 0.5px solid var(--accent-border);
   border-radius: var(--radius-lg);
-  padding: 1.5rem;
+  padding: 1.875rem;
 }
 .contact h3 {
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 500;
   color: var(--text-primary);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.625rem;
 }
 .contact p {
-  font-size: 12px;
+  font-size: 15px;
   color: var(--text-secondary);
   line-height: 1.7;
 }
@@ -52,47 +52,47 @@
 
 .item {
   display: flex;
-  gap: 1.25rem;
-  padding: 1.5rem 0;
+  gap: 1.5625rem;
+  padding: 1.875rem 0;
   border-bottom: 0.5px solid var(--accent-border);
 }
 
 .icon {
   flex-shrink: 0;
-  width: 38px;
-  height: 38px;
+  width: 48px;
+  height: 48px;
   background: var(--accent-bg);
   border: 0.5px solid var(--accent-border);
-  border-radius: 8px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--accent);
 }
-.icon svg { width: 16px; height: 16px; }
+.icon svg { width: 20px; height: 20px; }
 
 .body h3 {
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 500;
   color: var(--text-primary);
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.5rem;
 }
 .body p {
-  font-size: 12px;
+  font-size: 15px;
   color: var(--text-secondary);
   line-height: 1.6;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1125px) {
   .split {
     grid-template-columns: 1fr;
-    gap: 2.5rem;
+    gap: 3.125rem;
   }
   .intro {
     position: static;
   }
 }
 
-@media (max-width: 640px) {
-  .section { padding: 4rem 0; }
+@media (max-width: 800px) {
+  .section { padding: 5rem 0; }
 }

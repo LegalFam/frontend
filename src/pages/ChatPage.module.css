@@ -5,39 +5,39 @@
 .topbar {
   height: var(--chat-topbar-h); background: var(--black-2);
   border-bottom: 0.5px solid var(--accent-border);
-  display: flex; align-items: center; gap: 10px;
-  padding: 0 1.25rem; flex-shrink: 0; position: relative; z-index: 101;
+  display: flex; align-items: center; gap: 13px;
+  padding: 0 1.5625rem; flex-shrink: 0; position: relative; z-index: 101;
 }
 .topbarLogo {
-  display: flex; align-items: center; gap: 8px;
+  display: flex; align-items: center; gap: 10px;
 }
 .topbarLogoImg {
-  width: 30px; height: 30px; object-fit: contain;
-  filter: drop-shadow(0 0 5px rgba(var(--accent-rgb), 0.3));
+  width: 38px; height: 38px; object-fit: contain;
+  filter: drop-shadow(0 0 6.5px rgba(var(--accent-rgb), 0.3));
 }
 .topbarLogoText {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 17px; color: var(--accent); letter-spacing: 2px;
+  font-size: 21px; color: var(--accent); letter-spacing: 2.5px;
 }
 .topbarTitle {
-  font-size: 12px; color: var(--text-secondary);
+  font-size: 15px; color: var(--text-secondary);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;
-  padding-left: 4px; border-left: 0.5px solid var(--accent-border);
+  padding-left: 5px; border-left: 0.5px solid var(--accent-border);
 }
 .tokenBadge {
-  display: inline-flex; align-items: center; gap: 6px;
+  display: inline-flex; align-items: center; gap: 7.5px;
   border: 0.5px solid var(--accent-border);
-  border-radius: 999px;
-  padding: 5px 10px;
+  border-radius: 1249px;
+  padding: 6.5px 13px;
   color: var(--accent);
   background: var(--accent-bg);
-  font-size: 11px;
+  font-size: 14px;
   white-space: nowrap;
   transition: background var(--t-fast), border-color var(--t-fast);
 }
 .tokenBadge:hover { background: var(--accent-bg-h); border-color: var(--accent); }
 
-.tokenInfoIcon { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.75; }
+.tokenInfoIcon { width: 20px; height: 20px; flex-shrink: 0; opacity: 0.75; }
 .tokenBadge:hover .tokenInfoIcon { opacity: 1; }
 
 .tokenControl { position: relative; display: flex; align-items: center; flex-shrink: 0; }
@@ -47,22 +47,22 @@
   /* --tip-shift lo calcula useEdgeSafeTooltip para que el globo no se salga
      de la pantalla cuando el chip queda pegado a un borde. */
   right: calc(-1 * var(--tip-shift, 0px));
-  top: calc(100% + 8px);
+  top: calc(100% + 10px);
   z-index: 120;
-  width: min(300px, calc(100vw - 2rem));
-  padding: 8px 10px;
+  width: min(375px, calc(100vw - 2.5rem));
+  padding: 10px 13px;
   border: 0.5px solid var(--accent-border);
   border-radius: var(--radius);
   background: var(--black-3);
   color: var(--text-secondary);
-  font-size: 11px;
+  font-size: 14px;
   line-height: 1.5;
   text-align: left;
   white-space: normal;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 13px 38px rgba(0, 0, 0, 0.45);
   opacity: 0;
   pointer-events: none;
-  transform: translateY(-4px);
+  transform: translateY(-5px);
   transition: opacity var(--t-fast), transform var(--t-fast);
 }
 .tokenControl:hover .tooltip,
@@ -73,16 +73,16 @@
 .body  { display: flex; flex: 1; overflow: hidden; position: relative; }
 .main  { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
 .notice {
-  margin: 12px auto 0;
-  max-width: 760px;
-  width: calc(100% - 2rem);
+  margin: 15px auto 0;
+  max-width: 950px;
+  width: calc(100% - 2.5rem);
   border: 0.5px solid var(--accent-border);
-  border-radius: 6px;
+  border-radius: 7.5px;
   background: var(--accent-bg);
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.4;
-  padding: 9px 12px;
+  padding: 11px 15px;
 }
 
 /* Backdrop for mobile sidebar */
@@ -92,65 +92,65 @@
 
 .messages {
   flex: 1; overflow-y: auto;
-  padding: 1.5rem 1rem;
-  display: flex; flex-direction: column; gap: 1.25rem;
+  padding: 1.875rem 1.25rem;
+  display: flex; flex-direction: column; gap: 1.5625rem;
 }
 .messagesInner {
-  max-width: 760px; width: 100%; margin: 0 auto;
-  display: flex; flex-direction: column; gap: 1.25rem;
+  max-width: 950px; width: 100%; margin: 0 auto;
+  display: flex; flex-direction: column; gap: 1.5625rem;
 }
 .glossaryView {
   flex: 1; overflow-y: auto;
-  padding: 2rem 1rem;
+  padding: 2.5rem 1.25rem;
   display: flex; justify-content: center; align-items: flex-start;
 }
 .glossaryCard {
-  max-width: 640px; width: 100%;
+  max-width: 800px; width: 100%;
   border: 0.5px solid var(--accent-border);
   border-radius: var(--radius-lg);
   background: var(--black-2);
-  padding: 1.75rem;
+  padding: 2.1875rem;
 }
 .glossaryEyebrow {
   display: block; color: var(--accent);
-  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
-  margin-bottom: 0.6rem;
+  font-size: 13px; letter-spacing: 2.5px; text-transform: uppercase;
+  margin-bottom: 0.75rem;
 }
 .glossaryCard h1 {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(26px, 4vw, 34px); font-weight: 400; line-height: 1.2;
-  color: var(--text-primary); margin-bottom: 0.85rem;
+  font-size: clamp(33px, 4vw, 43px); font-weight: 400; line-height: 1.2;
+  color: var(--text-primary); margin-bottom: 1.0625rem;
 }
 .glossaryCard p {
-  font-size: 14px; line-height: 1.85; color: var(--text-secondary);
+  font-size: 18px; line-height: 1.85; color: var(--text-secondary);
 }
 .glossaryActions {
-  display: flex; align-items: center; gap: 0.625rem; flex-wrap: wrap;
-  margin-top: 1.5rem;
+  display: flex; align-items: center; gap: 0.8125rem; flex-wrap: wrap;
+  margin-top: 1.875rem;
 }
 .glossaryBackBtn {
-  display: inline-flex; align-items: center; gap: 7px;
-  padding: 9px 16px;
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 11px 20px;
   border: 0.5px solid var(--accent); border-radius: var(--radius);
   background: var(--accent-bg); color: var(--accent);
-  font-size: 13px; letter-spacing: 0.3px;
+  font-size: 16px; letter-spacing: 0.5px;
   transition: background var(--t-fast);
 }
 .glossaryBackBtn:hover { background: var(--accent-bg-h); }
 
-.presets { display: flex; flex-direction: column; gap: 9px; }
+.presets { display: flex; flex-direction: column; gap: 11px; }
 .presetsLabel {
-  font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+  font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
   color: var(--text-muted);
 }
 .presetsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(275px, 1fr));
+  gap: 10px;
 }
 .presetBtn {
-  display: flex; flex-direction: column; gap: 4px; text-align: left;
-  padding: 11px 13px;
+  display: flex; flex-direction: column; gap: 5px; text-align: left;
+  padding: 14px 16px;
   border: 0.5px solid var(--accent-border);
   border-radius: var(--radius);
   background: var(--black-2);
@@ -159,45 +159,45 @@
 .presetBtn:hover:not(:disabled) { background: var(--accent-bg); border-color: var(--accent); }
 .presetBtn:disabled { opacity: 0.5; cursor: not-allowed; }
 .presetBtn strong {
-  font-size: 11px; font-weight: 500; color: var(--accent); letter-spacing: 0.3px;
+  font-size: 14px; font-weight: 500; color: var(--accent); letter-spacing: 0.5px;
 }
 .presetBtn span {
-  font-size: 12px; color: var(--text-secondary); line-height: 1.5;
+  font-size: 15px; color: var(--text-secondary); line-height: 1.5;
 }
 
 .historyLoader {
   align-self: center;
-  min-height: 30px;
-  padding: 7px 12px;
+  min-height: 38px;
+  padding: 9px 15px;
   border: 0.5px solid var(--accent-border);
   border-radius: var(--radius);
   background: var(--black-2);
   color: var(--text-secondary);
-  font-size: 12px;
-  letter-spacing: 0.3px;
+  font-size: 15px;
+  letter-spacing: 0.5px;
 }
 /* El diálogo de plan y tokens vive ahora en components/billing/BillingDialog. */
-@media (max-width: 768px) {
+@media (max-width: 960px) {
   .topbarLogoText { display: none; }
   .tokenBadge {
-    max-width: 132px; overflow: hidden; text-overflow: ellipsis;
-    padding: 5px 8px;
+    max-width: 165px; overflow: hidden; text-overflow: ellipsis;
+    padding: 6.5px 10px;
   }
-  .messages { padding: 1rem 0.75rem; }
-  .topbar { padding: 0 0.75rem; gap: 8px; }
+  .messages { padding: 1.25rem 0.9375rem; }
+  .topbar { padding: 0 0.9375rem; gap: 10px; }
   .backdrop {
     display: block;
     position: fixed; top: var(--chat-topbar-h); bottom: 0; left: 0; right: 0; z-index: 99;
     background: rgba(0,0,0,0.6);
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2.5px);
+    -webkit-backdrop-filter: blur(2.5px);
   }
 }
 
 /* Por debajo de este ancho el título quedaría reducido a dos o tres letras con
    puntos suspensivos, así que se oculta: el nombre de la consulta sigue
    visible en el historial del drawer. */
-@media (max-width: 640px) {
+@media (max-width: 800px) {
   .topbarTitle { display: none; }
   /* Sin el título, el chip ocuparía el hueco de la izquierda. */
   .tokenControl { margin-left: auto; }
