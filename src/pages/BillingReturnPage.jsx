@@ -67,9 +67,18 @@ export default function BillingReturnPage() {
           <div className={styles.successIcon}>
             {waiting ? (
               <span className={styles.spinner} />
+            ) : canceled ? (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="32" height="32">
+                <path d="M18 6 6 18M6 6l12 12"/>
+              </svg>
+            ) : upgraded ? (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="32" height="32">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
             ) : (
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="32" height="32">
-                {canceled ? <path d="M18 6 6 18M6 6l12 12"/> : <polyline points="20 6 9 17 4 12"/>}
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 7v5l3 3"/>
               </svg>
             )}
           </div>
