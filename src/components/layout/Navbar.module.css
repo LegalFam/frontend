@@ -21,15 +21,15 @@
 .logoImg:hover { filter: drop-shadow(0 0 15px rgba(var(--accent-rgb), 0.6)); }
 .logoText {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 28px; font-weight: 500;
-  color: var(--accent); letter-spacing: 3px;
+  font-size: 22px; font-weight: 500;
+  color: var(--accent); letter-spacing: 2.5px;
   white-space: nowrap;
 }
 .links { display: flex; align-items: center; gap: 2.5rem; flex-shrink: 0; }
 .link {
-  font-size: 15px; color: var(--text-secondary);
-  letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
-  padding-bottom: 2.5px; border-bottom: 1px solid transparent;
+  font-size: 12px; color: var(--text-secondary);
+  letter-spacing: 0.8px; text-transform: uppercase; cursor: pointer;
+  padding-bottom: 2px; border-bottom: 1px solid transparent;
   transition: color 0.15s, border-color 0.15s;
   white-space: nowrap;
 }
@@ -39,7 +39,7 @@
 .mobileBtns { display: none; }
 .signoutBtn {
   background: transparent; border: none; color: var(--text-muted);
-  font-size: 15px; padding: 9px 5px;
+  font-size: 12px; padding: 7px 4px;
   transition: color var(--t-fast);
 }
 .signoutBtn:hover { color: var(--text-secondary); }
@@ -61,7 +61,7 @@
 }
 @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
 @keyframes slideDown { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
-@media (max-width: 1300px) {
+@media (max-width: 800px) {
   .links {
     display: none; position: fixed; top: 85px; left: 0; right: 0;
     background: rgba(10,10,10,0.99); border-bottom: 0.5px solid var(--accent-border);
