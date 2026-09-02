@@ -2,13 +2,14 @@
 // son variantes de evaluación que se activan con data-theme en <html>:
 //   - dorado-lighter : mismo acento dorado, fondos más claros
 //   - marino         : acento azul marino, fondos azul acero
+//   - toga           : estética abogado — marino de sala de juntas, acento latón champagne
 //
 // Cómo probar durante la evaluación:
 //   - abrir la app con ?tema=marino  (o ?tema=dorado para volver)
 //   - o desde la consola:  setTema('marino')  /  setTema('dorado')
 // La elección queda guardada en localStorage.
 
-const TEMAS = ['dorado', 'dorado-lighter', 'marino']
+const TEMAS = ['dorado', 'dorado-lighter', 'marino', 'toga']
 const KEY = 'legalfam-tema'
 
 export function aplicarTema(tema) {

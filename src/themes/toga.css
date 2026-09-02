@@ -1,0 +1,32 @@
+/*
+ * Tema TOGA — estética "abogado": azul marino de sala de juntas con un
+ * acento de latón champagne (discreto, no amarillo chillón) y texto marfil.
+ * Referencias: traje azul marino, biblioteca jurídica, reloj de bolsillo.
+ * Sigue siendo dark mode. Activar con <html data-theme="toga"> (ver src/theme.js):
+ *   ?tema=toga en la URL  ·  setTema('toga') en consola.
+ *
+ * Tokens (mismos que dorado.css):
+ *   --accent*  acento y variantes   --accent-ink  texto sobre el acento
+ *   --black*   fondos base          --text-*      textos
+ */
+:root[data-theme="toga"] {
+  --accent: #C2A56B;              /* latón champagne apagado */
+  --accent-light: #D8BE8A;        /* fondo :hover de los botones de acento */
+  --accent-pale: #EBDCBB;
+  --accent-dark: #8A7343;
+  --accent-rgb: 194,165,107;
+  --accent-ink: #131A24;          /* texto sobre el acento: azul marino fijo */
+
+  --accent-border: rgba(var(--accent-rgb),0.25);
+  --accent-border-h: rgba(var(--accent-rgb),0.50);
+  --accent-bg: rgba(var(--accent-rgb),0.07);
+  --accent-bg-h: rgba(var(--accent-rgb),0.14);
+  --shadow-accent: 0 0 0 2px rgba(var(--accent-rgb),0.30);
+  --glass: rgba(14,19,27,0.85);   /* panel translúcido sobre backdrop-filter */
+
+  /* fondos: azul marino desaturado, de sala de juntas (no negro puro) */
+  --black: #121924; --black-2: #172029; --black-3: #1E2833;
+  --black-4: #293440; --black-5: #37434F;
+  --text-primary: #ECE7DA; --text-secondary: #A9A38F;
+  --text-muted: #6E7784; --text-faint: #464F5B;
+}

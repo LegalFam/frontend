@@ -3,6 +3,7 @@
 @import './themes/dorado.css';           /* por defecto (:root) */
 @import './themes/dorado-lighter.css';   /* :root[data-theme="dorado-lighter"] */
 @import './themes/marino.css';           /* :root[data-theme="marino"] */
+@import './themes/toga.css';             /* :root[data-theme="toga"] */
 
 /* ── RESET ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
