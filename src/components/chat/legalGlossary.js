@@ -103,4 +103,8 @@ export const LEGAL_GLOSSARY = [
     term: 'Juzgado de Paz Letrado',
     definition: 'Instancia judicial que suele ver los procesos de alimentos. Los casos de tenencia, régimen de visitas, filiación y violencia familiar corresponden en cambio al Juzgado de Familia.',
   },
+  {
+    term: 'Unidades de Referencia Procesal (URP)',
+    definition: 'Valor que sirve para calcular montos dentro de un proceso judicial, como los aranceles, las multas o la cuantía de la demanda. Equivale al 10% de la Unidad Impositiva Tributaria (UIT) vigente, por lo que su monto en soles se actualiza cada año.',
+  },
 ]
