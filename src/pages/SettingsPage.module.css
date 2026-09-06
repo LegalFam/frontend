@@ -200,3 +200,52 @@
   .card { padding: 1.375rem 1.4375rem; }
   .row, .summary { grid-template-columns: 1fr; }
 }
+
+/* Selector de tema (Apariencia) */
+.themeIntro {
+  font-size: 14px; line-height: 1.6; color: var(--text-muted);
+  margin-bottom: 1.25rem;
+}
+
+.themeGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.875rem; }
+
+.themeOption {
+  display: flex; align-items: center; gap: 0.875rem;
+  width: 100%; text-align: left;
+  padding: 0.9375rem 1rem;
+  background: var(--black-3);
+  border: 0.5px solid var(--accent-border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  transition: border-color var(--t-fast), box-shadow var(--t-fast), background var(--t-fast);
+}
+.themeOption:hover { border-color: var(--accent); }
+.themeActive { border-color: var(--accent); box-shadow: var(--shadow-accent); }
+
+.themeSwatch {
+  flex-shrink: 0;
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid;
+  display: flex; align-items: center; justify-content: center;
+}
+.themeSwatch i { width: 15px; height: 15px; border-radius: 50%; display: block; }
+
+.themeText { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.themeText strong {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px; font-weight: 400; color: var(--accent);
+}
+.themeText small { font-size: 13px; line-height: 1.5; color: var(--text-muted); }
+
+.themeCheck {
+  flex-shrink: 0; margin-left: auto;
+  width: 18px; text-align: center;
+  color: var(--accent); font-size: 16px;
+}
+
+/* Separación entre la nota del plan gratuito y el botón de planes */
+.plansBtn { margin-top: 1.375rem; }
+
+@media (max-width: 800px) {
+  .themeGrid { grid-template-columns: 1fr; }
+}

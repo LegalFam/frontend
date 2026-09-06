@@ -5,6 +5,7 @@ import { userService } from '@/services/api'
 import { useAuthStore } from '@/store/authStore'
 import { usePaymentStore } from '@/store/paymentStore'
 import { normalizeApiError } from '@/utils/apiError'
+import { TEMAS_PUBLICOS, aplicarTema, temaActual } from '@/theme'
 import { STATIC_PLANS, formatPlanName, formatPlanTokens } from '@/utils/plans'
 import BillingDialog from '@/components/billing/BillingDialog'
 import styles from './SettingsPage.module.css'
@@ -45,6 +46,8 @@ export default function SettingsPage() {
   const [passwordError, setPasswordError] = useState(null)
   const [passwordSaved, setPasswordSaved] = useState(false)
   const [passwordSaving, setPasswordSaving] = useState(false)
+
+  const [tema, setTema] = useState(() => temaActual())
 
   const [cancelOpen, setCancelOpen] = useState(false)
   const [plansOpen, setPlansOpen] = useState(false)
@@ -140,6 +143,10 @@ export default function SettingsPage() {
     } finally {
       setPasswordSaving(false)
     }
+  }
+
+  const cambiarTema = (id) => {
+    setTema(aplicarTema(id))
   }
 
   const confirmCancelSubscription = async () => {
@@ -282,6 +289,40 @@ export default function SettingsPage() {
         </section>
 
         <section className={styles.card}>
+          <h2>Apariencia</h2>
+          <p className={styles.themeIntro}>
+            Elige la paleta con la que quieres ver LegalFam. El cambio se aplica al instante y
+            queda guardado en este navegador.
+          </p>
+          <div className={styles.themeGrid}>
+            {TEMAS_PUBLICOS.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                className={`${styles.themeOption} ${tema === t.id ? styles.themeActive : ''}`}
+                onClick={() => cambiarTema(t.id)}
+                aria-pressed={tema === t.id}
+              >
+                <span
+                  className={styles.themeSwatch}
+                  style={{ background: t.muestra.fondo, borderColor: t.muestra.acento }}
+                  aria-hidden="true"
+                >
+                  <i style={{ background: t.muestra.acento }} />
+                </span>
+                <span className={styles.themeText}>
+                  <strong>{t.nombre}</strong>
+                  <small>{t.descripcion}</small>
+                </span>
+                <span className={styles.themeCheck} aria-hidden="true">
+                  {tema === t.id ? '✓' : ''}
+                </span>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section className={styles.card}>
           <h2>Suscripción</h2>
           {billingError && <div className="api-err">{billingError}</div>}
           {subscription ? (
@@ -330,7 +371,7 @@ export default function SettingsPage() {
                   </p>
                   <button
                     type="button"
-                    className={styles.primaryBtn}
+                    className={`${styles.primaryBtn} ${styles.plansBtn}`}
                     onClick={() => setPlansOpen(true)}
                   >
                     Ver planes y tokens

@@ -34,3 +34,25 @@ export function initTema() {
 
   return aplicarTema(inicial)
 }
+
+// Temas ofrecidos al usuario en Configuración (los demás quedan sólo para
+// evaluación interna vía ?tema= o setTema()).
+export const TEMAS_PUBLICOS = [
+  {
+    id: 'dorado',
+    nombre: 'Clásico',
+    descripcion: 'Negro profundo y acento dorado, la identidad original de LegalFam.',
+    muestra: { fondo: '#0A0A0A', acento: '#C9A84C' },
+  },
+  {
+    id: 'toga',
+    nombre: 'Moderno',
+    descripcion: 'Azul marino sereno y acento en latón champagne.',
+    muestra: { fondo: '#121924', acento: '#C2A56B' },
+  },
+]
+
+export function temaActual() {
+  const attr = document.documentElement.getAttribute('data-theme')
+  return attr || 'dorado'
+}
