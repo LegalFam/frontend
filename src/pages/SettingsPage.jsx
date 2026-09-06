@@ -294,28 +294,20 @@ export default function SettingsPage() {
             Elige la paleta con la que quieres ver LegalFam. El cambio se aplica al instante y
             queda guardado en este navegador.
           </p>
-          <div className={styles.themeGrid}>
+          <div className={styles.themeGrid} role="radiogroup" aria-label="Apariencia">
             {TEMAS_PUBLICOS.map((t) => (
               <button
                 key={t.id}
                 type="button"
+                role="radio"
                 className={`${styles.themeOption} ${tema === t.id ? styles.themeActive : ''}`}
                 onClick={() => cambiarTema(t.id)}
-                aria-pressed={tema === t.id}
+                aria-checked={tema === t.id}
               >
-                <span
-                  className={styles.themeSwatch}
-                  style={{ background: t.muestra.fondo, borderColor: t.muestra.acento }}
-                  aria-hidden="true"
-                >
-                  <i style={{ background: t.muestra.acento }} />
-                </span>
+                <span className={styles.themeRadio} aria-hidden="true" />
                 <span className={styles.themeText}>
                   <strong>{t.nombre}</strong>
                   <small>{t.descripcion}</small>
-                </span>
-                <span className={styles.themeCheck} aria-hidden="true">
-                  {tema === t.id ? '✓' : ''}
                 </span>
               </button>
             ))}

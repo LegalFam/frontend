@@ -210,37 +210,50 @@
 .themeGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.875rem; }
 
 .themeOption {
-  display: flex; align-items: center; gap: 0.875rem;
+  display: flex; align-items: flex-start; gap: 0.8125rem;
   width: 100%; text-align: left;
-  padding: 0.9375rem 1rem;
+  padding: 1rem 1.0625rem;
   background: var(--black-3);
   border: 0.5px solid var(--accent-border);
   border-radius: var(--radius);
   color: var(--text-primary);
+  cursor: pointer;
   transition: border-color var(--t-fast), box-shadow var(--t-fast), background var(--t-fast);
 }
 .themeOption:hover { border-color: var(--accent); }
-.themeActive { border-color: var(--accent); box-shadow: var(--shadow-accent); }
+.themeOption:focus-visible { outline: none; border-color: var(--accent); box-shadow: var(--shadow-accent); }
+.themeActive { border-color: var(--accent); background: var(--accent-bg); }
 
-.themeSwatch {
+/* Indicador de radio */
+.themeRadio {
   flex-shrink: 0;
-  width: 40px; height: 40px; border-radius: 50%;
-  border: 1px solid;
-  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  margin-top: 4px;   /* alinea el radio con la línea del título */
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 1px solid var(--accent-border);
+  transition: border-color var(--t-fast);
 }
-.themeSwatch i { width: 15px; height: 15px; border-radius: 50%; display: block; }
+.themeOption:hover .themeRadio { border-color: var(--accent); }
+.themeRadio::after {
+  content: '';
+  position: absolute; inset: 0; margin: auto;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent);
+  transform: scale(0);
+  transition: transform var(--t-fast);
+}
+.themeActive .themeRadio { border-color: var(--accent); }
+.themeActive .themeRadio::after { transform: scale(1); }
 
-.themeText { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.themeText { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .themeText strong {
   font-family: 'Cormorant Garamond', serif;
   font-size: 20px; font-weight: 400; color: var(--accent);
 }
 .themeText small { font-size: 13px; line-height: 1.5; color: var(--text-muted); }
 
-.themeCheck {
-  flex-shrink: 0; margin-left: auto;
-  width: 18px; text-align: center;
-  color: var(--accent); font-size: 16px;
+@media (prefers-reduced-motion: reduce) {
+  .themeRadio::after { transition: none; }
 }
 
 /* Separación entre la nota del plan gratuito y el botón de planes */
