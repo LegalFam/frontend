@@ -212,6 +212,28 @@
   color: var(--accent);
   margin-bottom: 2.5px;
 }
+/* El pasaje literal se separa del resumen para que se lea de quien es cada texto: la
+   fuente cita, el asistente interpreta. */
+.citationQuote {
+  margin: 0 0 7.5px;
+  padding-left: 10px;
+  border-left: 2px solid var(--accent-border);
+  font-size: 14px;
+  font-style: italic;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+.citationLabel {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-style: normal;
+  font-weight: 500;
+  color: var(--accent);
+  opacity: 0.75;
+  margin-bottom: 2.5px;
+}
 .citationSnippet {
   font-size: 14px;
   color: var(--text-secondary);

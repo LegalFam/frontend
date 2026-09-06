@@ -70,6 +70,9 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
     .map((citation) => ({
       sourceTitle: normalizeTextField(citation.sourceTitle) || 'Fuente legal',
       sourceSnippet: normalizeTextField(citation.sourceSnippet),
+      // El pasaje literal del documento, del que sale la ubicacion. Se muestra aparte del
+      // resumen para que se vea que dice la fuente y que agrego el asistente.
+      sourceOriginalSnippet: normalizeTextField(citation.sourceOriginalSnippet),
       sourceUrl: normalizeSourceUrl(citation.sourceUrl),
       // Solo exact/prefix/fuzzy son una ubicacion juridica. markdown_heading es el asunto
       // del caso o ruido del OCR en resoluciones sin articulado: ahi no se muestra nada,
@@ -229,7 +232,20 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
                           {entry.sourceLocator}
                         </div>
                       )}
-                      {entry.sourceSnippet && <div className={styles.citationSnippet}>{entry.sourceSnippet}</div>}
+                      {entry.sourceOriginalSnippet && (
+                        <blockquote className={styles.citationQuote}>
+                          <span className={styles.citationLabel}>Texto de la fuente</span>
+                          {entry.sourceOriginalSnippet}
+                        </blockquote>
+                      )}
+                      {entry.sourceSnippet && (
+                        <div className={styles.citationSnippet}>
+                          {entry.sourceOriginalSnippet && (
+                            <span className={styles.citationLabel}>Resumen del asistente</span>
+                          )}
+                          {entry.sourceSnippet}
+                        </div>
+                      )}
                     </div>
                   ))}
 
