@@ -5,6 +5,7 @@ import { useChatStore } from '@/store/chatStore'
 import { useAuthStore } from '@/store/authStore'
 import { usePaymentStore } from '@/store/paymentStore'
 import { normalizeApiError, normalizeAssistantErrorMessage } from '@/utils/apiError'
+import { leerIdioma } from '@/i18n/languages'
 
 const BACKOFF_MS = [1000, 2000, 5000, 10000, 30000]
 
@@ -52,12 +53,18 @@ const sseEventToMessage = (event) => {
     return {
       id: data.messageId,
       role: 'ASSISTANT',
+      // `content` es siempre el español canónico; `contentLocalized` es lo que el usuario
+      // lee cuando su idioma no es el español. El español no se descarta: es la versión
+      // que prevalece y la que el conmutador "Ver en español" muestra.
       content: data.message || '',
+      language: data.language || 'es',
+      contentLocalized: data.messageLocalized || null,
       citations: data.citations || [],
       createdAt: data.createdAt || new Date().toISOString(),
       confidenceStatus: data.confidenceStatus,
       confidenceReason: data.confidenceReason,
       nextSteps: data.nextSteps,
+      nextStepsLocalized: data.nextStepsLocalized,
       specialistSupportRecommended: data.specialistSupportRecommended,
       citationSupportStatus: data.citationSupportStatus,
       receiptStatus: data.receiptStatus,
@@ -335,7 +342,7 @@ export function useChat() {
       return data.id
     }, [navigate, store])
 
-  const sendMessage = useCallback(async (text) => {
+  const sendMessage = useCallback(async (text, language = leerIdioma()) => {
     const trimmed = text.trim()
     if (!trimmed || sendingTextRef.current === trimmed) return
 
@@ -350,7 +357,12 @@ export function useChat() {
       const userMsg = {
         id: tempId,
         role: 'USER',
+        // De forma optimista el texto ocupa las dos ranuras: es lo único que existe hasta
+        // que el flujo devuelve su traducción al español, que es la que el backend guardará
+        // como canónica.
         content: trimmed,
+        language,
+        contentLocalized: language === 'es' ? null : trimmed,
         citations: [],
         createdAt: new Date().toISOString(),
         state: 'sending',
@@ -362,7 +374,7 @@ export function useChat() {
         useChatStore.getState().messages[sessionId] || []
       )
 
-      const { data } = await chatService.sendMessage({ message: trimmed, sessionId })
+      const { data } = await chatService.sendMessage({ message: trimmed, sessionId, language })
       store.clearDraft(sessionId)
       store.clearDraft('new')
       store.replaceMessage(sessionId, tempId, {

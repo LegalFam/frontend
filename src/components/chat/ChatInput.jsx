@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { IDIOMAS, guardarIdioma, leerIdioma } from '@/i18n/languages'
 import styles from './ChatInput.module.css'
 
 const personalDataPattern = /(\b[\w.%+-]+@[\w.-]+\.[A-Za-z]{2,}\b)|((?:\+?51\s*)?(?:9\d{2}|0?1|[2-8]\d)(?:[\s.-]*\d){6,8})|(\b\d{8}\b)|(\b(?:av\.?|avenida|jr\.?|jiron|calle|pasaje|mz\.?|manzana|lote)\b)/i
@@ -6,6 +7,10 @@ const personalDataPattern = /(\b[\w.%+-]+@[\w.-]+\.[A-Za-z]{2,}\b)|((?:\+?51\s*)
 export default function ChatInput({ onSend, disabled, disabledReason, draft = null }) {
   const ref = useRef(null)
   const [privacyError, setPrivacyError] = useState(null)
+  // El idioma se elige junto al cuadro de texto, que es donde se decide, y se recuerda entre
+  // sesiones en localStorage igual que el tema. No se guarda en el servidor: lo que sí queda
+  // en la base de datos es el idioma de cada mensaje ya enviado.
+  const [idioma, setIdioma] = useState(leerIdioma)
   const appliedDraftTsRef = useRef(0)
 
   const autoResize = () => {
@@ -44,9 +49,13 @@ export default function ChatInput({ onSend, disabled, disabledReason, draft = nu
       return
     }
     setPrivacyError(null)
-    onSend(text)
+    onSend(text, idioma)
     ref.current.value = ''
     ref.current.style.height = 'auto'
+  }
+
+  const cambiarIdioma = (codigo) => {
+    setIdioma(guardarIdioma(codigo))
   }
 
   return (
@@ -89,9 +98,28 @@ export default function ChatInput({ onSend, disabled, disabledReason, draft = nu
         </span>
       </div>
       {privacyError && <p className={styles.privacyError}>{privacyError}</p>}
-      <p className={styles.note}>
-        Los tokens se descuentan cuando la respuesta queda lista. No incluyas datos personales innecesarios.
-      </p>
+      <div className={styles.footer}>
+        <div className={styles.languagePicker} role="group" aria-label="Idioma de la orientación">
+          {IDIOMAS.map((opcion) => (
+            <button
+              key={opcion.codigo}
+              type="button"
+              className={`${styles.languageBtn} ${idioma === opcion.codigo ? styles.languageBtnActive : ''}`}
+              onClick={() => cambiarIdioma(opcion.codigo)}
+              aria-pressed={idioma === opcion.codigo}
+              // La etiqueta va en la propia lengua para que se reconozca sin saber español;
+              // el nombre en español queda en el title para quien no reconozca la etiqueta.
+              title={opcion.nombre}
+              lang={opcion.codigo}
+            >
+              {opcion.etiqueta}
+            </button>
+          ))}
+        </div>
+        <p className={styles.note}>
+          Los tokens se descuentan cuando la respuesta queda lista. No incluyas datos personales innecesarios.
+        </p>
+      </div>
     </div>
   )
 }

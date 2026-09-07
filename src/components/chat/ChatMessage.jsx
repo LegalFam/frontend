@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import { avisoTraduccion, idiomaPorCodigo } from '@/i18n/languages'
 import styles from './ChatMessage.module.css'
 
 const normalizeMarkdownContent = (content) => {
@@ -134,11 +135,32 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
   const isBot = message.role === 'ASSISTANT'
   const isSystem = message.role === 'SYSTEM'
   const isUser = message.role === 'USER'
-  const markdownContent = normalizeMarkdownContent(message.content)
+
+  // El español es siempre la versión canónica y nunca se descarta. Cuando la conversación
+  // es en quechua o aymara se muestra la traducción, con un conmutador para ver el original:
+  // es la única forma de que el usuario, o un abogado que lo acompañe, pueda contrastar la
+  // orientación contra las normas citadas, que solo existen en español.
+  const translated = normalizeTextField(message.contentLocalized)
+  const isTranslated = Boolean(translated) && message.language && message.language !== 'es'
+  const translationNotice = avisoTraduccion(message.language)
+  const [showSpanish, setShowSpanish] = useState(false)
+  const markdownContent = normalizeMarkdownContent(
+    isTranslated && !showSpanish ? translated : message.content
+  )
+
+  const nextStepsTranslated = Array.isArray(message.nextStepsLocalized)
+    ? message.nextStepsLocalized
+    : []
+
   const citations = (message.citations || [])
     .map((citation) => ({
       sourceTitle: normalizeTextField(citation.sourceTitle) || 'Fuente legal',
-      sourceSnippet: normalizeTextField(citation.sourceSnippet),
+      // Solo el resumen se traduce; el pasaje literal de abajo se queda en español.
+      sourceSnippet: normalizeTextField(
+        isTranslated && !showSpanish && citation.sourceSnippetLocalized
+          ? citation.sourceSnippetLocalized
+          : citation.sourceSnippet
+      ),
       // El pasaje literal del documento, del que sale la ubicacion. Se muestra aparte del
       // resumen para que se vea que dice la fuente y que agrego el asistente.
       sourceOriginalSnippet: normalizeTextField(citation.sourceOriginalSnippet),
@@ -162,7 +184,12 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
   const [ratingPending, setRatingPending] = useState(false)
   const [hover, setHover] = useState(0)
   const [sourcesOpen, setSourcesOpen] = useState(false)
-  const nextSteps = Array.isArray(message.nextSteps) ? message.nextSteps : []
+  const spanishNextSteps = Array.isArray(message.nextSteps) ? message.nextSteps : []
+  // Si la traducción de los pasos falló o vino incompleta, se muestran los del español en
+  // lugar de una lista a medias.
+  const nextSteps = isTranslated && !showSpanish && nextStepsTranslated.length === spanishNextSteps.length
+    ? nextStepsTranslated
+    : spanishNextSteps
   const citationSupportStatus = ['GOOD', 'WEAK', 'NONE'].includes(message.citationSupportStatus)
     ? message.citationSupportStatus
     : null
@@ -231,9 +258,31 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
             {markdownContent}
           </ReactMarkdown>
         ) : (
-          message.content
+          isTranslated && !showSpanish ? translated : message.content
         )}
       </div>
+
+      {isTranslated && (
+        <div className={styles.translationNotice}>
+          <div className={styles.translationNoticeText}>
+            {/* El aviso en la lengua del usuario primero: uno en español no cumple su
+                función con quien eligió no leer en español. */}
+            {translationNotice.propio && (
+              <span lang={message.language}>{translationNotice.propio}</span>
+            )}
+            <span className={styles.translationNoticeSpanish}>{translationNotice.espanol}</span>
+          </div>
+          <button
+            type="button"
+            className={styles.translationToggle}
+            onClick={() => setShowSpanish((open) => !open)}
+            aria-pressed={showSpanish}
+          >
+            {showSpanish ? `Ver en ${idiomaPorCodigo(message.language).etiqueta}` : 'Ver en español'}
+          </button>
+        </div>
+      )}
+
 
       {message.state === 'sending' && <span className={styles.status}>Enviando...</span>}
       {message.state === 'processing' && <span className={styles.status}>Procesando...</span>}

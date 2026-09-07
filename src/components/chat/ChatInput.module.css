@@ -121,3 +121,41 @@
   max-width: 1000px;
   line-height: 1.4;
 }
+
+/* Selector de idioma de la orientacion. Va junto al cuadro de texto porque es ahi donde se
+   decide en que lengua se pregunta, no en una pantalla de configuracion aparte. */
+.footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 0.5rem;
+}
+.languagePicker {
+  display: flex;
+  gap: 0.25rem;
+  border: 0.5px solid var(--accent-border);
+  border-radius: 999px;
+  padding: 0.1875rem;
+}
+.languageBtn {
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  padding: 0.1875rem 0.6875rem;
+  color: var(--text-muted);
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.languageBtn:hover {
+  color: var(--text-secondary);
+}
+.languageBtnActive,
+.languageBtnActive:hover {
+  background: rgba(var(--accent-rgb), 0.16);
+  color: var(--accent);
+}
+.footer .note {
+  margin-top: 0;
+}
