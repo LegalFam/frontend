@@ -43,6 +43,21 @@ const normalizeSourceUrl = (value) => {
 
 const LOCATOR_KINDS = new Set(['exact', 'prefix', 'fuzzy'])
 
+const passageKeyText = (value) => String(value || '').toLowerCase().replace(/[^0-9a-záéíóúüñ]+/g, '')
+
+// El asistente puede citar dos veces el mismo pasaje del mismo articulo y redactar un
+// resumen distinto para cada copia; el segundo dice lo mismo con otras palabras. Sin esto
+// el articulo aparece repetido. El recorte del pasaje lo elige el modelo, asi que dos
+// copias del mismo tramo pueden diferir en los bordes: se comparan por contencion.
+const isSamePassage = (a, b) => {
+  if (a.sourceLocator !== b.sourceLocator) return false
+
+  const left = passageKeyText(a.sourceOriginalSnippet)
+  const right = passageKeyText(b.sourceOriginalSnippet)
+  if (!left || !right) return left === right
+  return left.includes(right) || right.includes(left)
+}
+
 function groupCitationsByDocument(citations) {
   const groups = []
   const byKey = new Map()
@@ -55,6 +70,9 @@ function groupCitationsByDocument(citations) {
       byKey.set(key, group)
       groups.push(group)
     }
+    // El flujo ya deduplica, pero las conversaciones guardadas antes traen el duplicado
+    // persistido: se filtra tambien al mostrar.
+    if (group.entries.some((entry) => isSamePassage(entry, citation))) continue
     group.entries.push(citation)
   }
 
@@ -75,7 +93,12 @@ function CitationQuote({ text }) {
     const node = textRef.current
     if (!node || expanded) return undefined
 
-    const measure = () => setClamped(node.scrollHeight - node.clientHeight > 1)
+    // Sin ancho todavia no hay recorte que medir: cada palabra caeria en su propia linea y
+    // hasta un pasaje de una linea pareceria cortado. El observer vuelve a medir despues.
+    const measure = () => {
+      if (!node.clientWidth) return
+      setClamped(node.scrollHeight - node.clientHeight > 1)
+    }
     measure()
 
     if (typeof ResizeObserver === 'undefined') return undefined
