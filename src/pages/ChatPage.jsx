@@ -10,6 +10,7 @@ import ChatInput          from '@/components/chat/ChatInput'
 import BillingDialog      from '@/components/billing/BillingDialog'
 import TypingIndicator    from '@/components/chat/TypingIndicator'
 import logoImg            from '@/assets/logo-transparent.png'
+import SelectorIdioma from '@/components/common/SelectorIdioma'
 import TextoLegalBilingue from '@/components/common/TextoLegalBilingue'
 import { useT }           from '@/i18n/traducir'
 import styles             from './ChatPage.module.css'
@@ -191,7 +192,13 @@ export default function ChatPage() {
           </span>
         )}
 
-        <button className="icon-btn" onClick={signout} title={t('chat.cerrarSesion')} style={{ marginLeft: 'auto' }}>
+        {/* El mismo control en sus dos formas: ancha cuando la barra da de sí, compacta
+            cuando no. El CSS decide cuál se ve; ambas escriben en el mismo store. */}
+        <SelectorIdioma className={styles.topbarIdioma} />
+        <SelectorIdioma compacto className={styles.topbarIdiomaCompacto} />
+
+        {/* En móvil este botón se oculta: el cajón ya tiene uno en la fila de usuario. */}
+        <button className={`icon-btn ${styles.topbarSignout}`} onClick={signout} title={t('chat.cerrarSesion')}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
             <polyline points="16 17 21 12 16 7"/>

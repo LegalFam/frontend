@@ -194,12 +194,31 @@
   }
 }
 
-/* Por debajo de este ancho el título quedaría reducido a dos o tres letras con
-   puntos suspensivos, así que se oculta: el nombre de la consulta sigue
-   visible en el historial del drawer. */
+/* Por debajo de este ancho el logo se comprimía hasta quedar en un muñón de 15px y el
+   título no cabía. Se saca la marca de la barra —pasa a la cabecera del cajón, ver
+   ChatSidebar.brandRow— y con el hueco que deja vuelve el título de la consulta, que ya se
+   recorta solo con puntos suspensivos. La barra queda en cuatro piezas que sí caben:
+   menú · título · tokens · salir. */
+/* La forma compacta del selector sólo entra en juego en la barra estrecha; la regla base va
+   antes del media query para que éste pueda ganarle. */
+.topbarIdiomaCompacto { display: none; }
+
+/* Qué se cae primero cuando la barra deja de dar de sí. El título es lo primero: el nombre de
+   la consulta sigue visible en el historial del cajón, mientras que los tokens y el idioma no
+   están en ningún otro sitio del chat.
+   Los selectores van cualificados con .topbar porque .icon-btn es una clase global y con la
+   misma especificidad gana la que aparezca más tarde en la hoja. */
 @media (max-width: 800px) {
-  .topbarTitle { display: none; }
-  /* Sin el título, el chip ocuparía el hueco de la izquierda. */
+  .topbar .topbarTitle { display: none; }
+  /* El logo se comprimía hasta quedar en un muñón de 15px: la marca —y con ella el enlace a la
+     portada— pasa a la cabecera del cajón (ChatSidebar.brandRow). */
+  .topbar .topbarLogo { display: none; }
+  /* El cajón ya tiene un botón de salir en la fila de usuario: aquí estaba duplicado. */
+  .topbar .topbarSignout { display: none; }
+  /* Las tres etiquetas de corrido son 220px y no caben junto al chip de tokens. */
+  .topbar .topbarIdioma { display: none; }
+  .topbar .topbarIdiomaCompacto { display: block; }
+  /* Sin título ni logo, los dos controles que quedan se agrupan a la derecha. */
   .tokenControl { margin-left: auto; }
 }
 
@@ -209,4 +228,14 @@
   font-size: 13px;
   color: var(--text-tertiary, var(--text-secondary));
   line-height: 1.5;
+}
+
+/* El selector de idioma empuja al botón de salir hacia la derecha: los dos controles de
+   sesión quedan juntos al final de la barra. */
+.topbarIdioma {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.topbarIdiomaCompacto {
+  margin-left: 0;
 }

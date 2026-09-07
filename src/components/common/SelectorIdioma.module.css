@@ -24,3 +24,55 @@
   background: rgba(var(--accent-rgb), 0.16);
   color: var(--accent);
 }
+
+/* Forma compacta: un solo botón con el idioma activo, que despliega las tres opciones.
+   Ver el comentario de SelectorIdioma.jsx para por qué no se abrevian las etiquetas. */
+.compacto {
+  position: relative;
+  flex-shrink: 0;
+}
+.disparador {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 0.5px solid var(--accent-border);
+  border-radius: 999px;
+  background: transparent;
+  padding: 6.5px 11px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.disparador:hover,
+.disparador[aria-expanded='true'] {
+  background: rgba(var(--accent-rgb), 0.12);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.disparador svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+.menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 130;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 5px;
+  border: 0.5px solid var(--accent-border);
+  border-radius: var(--radius, 12px);
+  background: var(--black-2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+}
+.menu .btn {
+  text-align: left;
+  padding: 7px 14px;
+  font-size: 13.5px;
+}

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import logoImg from '@/assets/logo-transparent.png'
 import { useAuth } from '@/hooks/useAuth'
 import { LEGAL_GLOSSARY } from './legalGlossary'
 import { useT } from '@/i18n/traducir'
@@ -103,6 +104,13 @@ export default function ChatSidebar({
 
   return (
     <aside className={`${styles.sidebar} ${!open ? styles.closed : ''}`}>
+      {/* En móvil el logo no cabe en la barra superior sin quedar aplastado, así que la marca
+          —y con ella el enlace a la portada— vive aquí, en la cabecera del cajón. */}
+      <Link to="/" className={styles.brandRow} onClick={onClose} aria-label={t('chat.irAlInicio')}>
+        <img src={logoImg} alt="LegalFam" className={styles.brandLogo} />
+        <span className={styles.brandText}>LEGALFAM</span>
+      </Link>
+
       <button className={styles.newBtn} onClick={handleNewChat}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M12 5v14M5 12h14"/>

@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import SelectorIdioma from '@/components/common/SelectorIdioma'
 import { useT } from '@/i18n/traducir'
 import { useIdiomaStore } from '@/store/idiomaStore'
 import styles from './ChatInput.module.css'
@@ -10,9 +9,9 @@ export default function ChatInput({ onSend, disabled, disabledReason, draft = nu
   const t = useT()
   const ref = useRef(null)
   const [privacyError, setPrivacyError] = useState(null)
-  // El idioma vive en el store, no aquí: el mismo control aparece también en la barra de la
-  // portada y en Configuración, y los tres tienen que decir lo mismo. Lo que sí queda en la
-  // base de datos es el idioma de cada mensaje ya enviado, que no cambia después.
+  // El idioma vive en el store; el control para cambiarlo está en la barra superior y en
+  // Configuración, no aquí. Lo que sí queda en la base de datos es el idioma de cada mensaje
+  // ya enviado, que no cambia después aunque se cambie de lengua.
   const idioma = useIdiomaStore((estado) => estado.idioma)
   const appliedDraftTsRef = useRef(0)
 
@@ -98,7 +97,6 @@ export default function ChatInput({ onSend, disabled, disabledReason, draft = nu
       </div>
       {privacyError && <p className={styles.privacyError}>{privacyError}</p>}
       <div className={styles.footer}>
-        <SelectorIdioma />
         <p className={styles.note}>{t('chat.input.nota')}</p>
       </div>
     </div>

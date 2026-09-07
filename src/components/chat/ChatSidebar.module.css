@@ -248,3 +248,33 @@
   }
   .sidebar.closed { width: min(350px, calc(100vw - 3.75rem)); transform: translateX(-100%); opacity: 1; }
 }
+
+/* La marca sólo aparece aquí cuando la barra superior no puede con ella (ver ChatPage.module
+   .css): por encima de 800px el logo sigue en la barra y aquí sobraría. */
+.brandRow {
+  display: none;
+}
+@media (max-width: 800px) {
+  .brandRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    padding: 1.125rem 1.25rem 0;
+  }
+  .brandLogo {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 6.5px rgba(var(--accent-rgb), 0.3));
+  }
+  .brandText {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    color: var(--accent);
+    letter-spacing: 2.5px;
+  }
+  /* La marca ya separa del borde superior; el botón no necesita repetirlo. */
+  .newBtn { margin-top: 0.9375rem; }
+}
