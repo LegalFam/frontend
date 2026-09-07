@@ -2,7 +2,8 @@ import { useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import { avisoTraduccion, idiomaPorCodigo } from '@/i18n/languages'
+import { AvisoTraduccion } from '@/components/common/TextoLegalBilingue'
+import { tOpcional, useT } from '@/i18n/traducir'
 import styles from './ChatMessage.module.css'
 
 const normalizeMarkdownContent = (content) => {
@@ -83,6 +84,7 @@ function groupCitationsByDocument(citations) {
 // El pasaje literal puede ocupar varias lineas y empuja el resumen fuera de la vista.
 // Se muestra recortado a dos lineas y se despliega a pedido.
 function CitationQuote({ text }) {
+  const t = useT()
   const [expanded, setExpanded] = useState(false)
   const [clamped, setClamped] = useState(false)
   const textRef = useRef(null)
@@ -124,7 +126,7 @@ function CitationQuote({ text }) {
           onClick={() => setExpanded((open) => !open)}
           aria-expanded={expanded}
         >
-          {expanded ? 'Ver menos' : 'Ver más'}
+          {expanded ? t('comun.verMenos') : t('comun.verMas')}
         </button>
       )}
     </blockquote>
@@ -132,20 +134,30 @@ function CitationQuote({ text }) {
 }
 
 export default function ChatMessage({ message, onRate, onRetry, retryText, onUpgrade }) {
+  const t = useT()
   const isBot = message.role === 'ASSISTANT'
   const isSystem = message.role === 'SYSTEM'
   const isUser = message.role === 'USER'
+
+  // Los avisos de sistema y la bienvenida no guardan texto sino una clave o un código de
+  // error, y se resuelven aquí: así un cambio de idioma alcanza también a lo que ya está en
+  // el hilo. El texto guardado sólo se usa cuando el error venía únicamente del servidor.
+  const contenidoBase = message.messageKey
+    ? t(message.messageKey, message.messageVars)
+    : (isSystem && message.errorCode && tOpcional(`errores.${message.errorCode}`)) || message.content
 
   // El español es siempre la versión canónica y nunca se descarta. Cuando la conversación
   // es en quechua o aymara se muestra la traducción, con un conmutador para ver el original:
   // es la única forma de que el usuario, o un abogado que lo acompañe, pueda contrastar la
   // orientación contra las normas citadas, que solo existen en español.
+  //
+  // Ojo: esto sigue a message.language, que es inmutable, y NO al idioma de la interfaz.
+  // Cambiar de idioma no reescribe una conversación pasada; sólo cambia el texto de alrededor.
   const translated = normalizeTextField(message.contentLocalized)
   const isTranslated = Boolean(translated) && message.language && message.language !== 'es'
-  const translationNotice = avisoTraduccion(message.language)
   const [showSpanish, setShowSpanish] = useState(false)
   const markdownContent = normalizeMarkdownContent(
-    isTranslated && !showSpanish ? translated : message.content
+    isTranslated && !showSpanish ? translated : contenidoBase
   )
 
   const nextStepsTranslated = Array.isArray(message.nextStepsLocalized)
@@ -154,7 +166,7 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
 
   const citations = (message.citations || [])
     .map((citation) => ({
-      sourceTitle: normalizeTextField(citation.sourceTitle) || 'Fuente legal',
+      sourceTitle: normalizeTextField(citation.sourceTitle) || t('chat.mensaje.fuenteLegal'),
       // Solo el resumen se traduce; el pasaje literal de abajo se queda en español.
       sourceSnippet: normalizeTextField(
         isTranslated && !showSpanish && citation.sourceSnippetLocalized
@@ -198,15 +210,9 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
   const canRetry = isSystem && retryText && !message.retryAttempted
   const showUpgrade = isSystem && message.errorCode === 'insufficient_tokens'
   const citationNotice = citationSupportStatus === 'WEAK'
-    ? {
-        title: 'Fuentes de apoyo limitadas',
-        text: 'Estas fuentes pueden orientar, pero no respaldan de forma directa todos los puntos de la respuesta.',
-      }
+    ? { title: t('chat.mensaje.fuentesDebilesTitulo'), text: t('chat.mensaje.fuentesDebilesTexto') }
     : citationSupportStatus === 'NONE'
-      ? {
-          title: 'Sin fuentes recuperadas',
-          text: 'Esta orientación es general y debe verificarse con una fuente oficial o asesoría especializada antes de tomar decisiones.',
-        }
+      ? { title: t('chat.mensaje.sinFuentesTitulo'), text: t('chat.mensaje.sinFuentesTexto') }
       : null
 
   const handleRate = async (stars) => {
@@ -226,18 +232,18 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
 
   return (
     <div className={`${styles.wrap} ${isUser ? styles.user : styles.bot} ${isSystem ? styles.system : ''}`}>
-      <span className={styles.label}>{isUser ? 'Tu' : isSystem ? 'Sistema' : 'LegalFam'}</span>
+      <span className={styles.label}>
+        {isUser ? t('chat.mensaje.tu') : isSystem ? t('chat.mensaje.sistema') : 'LegalFam'}
+      </span>
 
       {isBot && message.specialistSupportRecommended === true && (
         <div className={styles.specialistNotice} role="note">
           <div className={styles.specialistText}>
-            <strong>Apoyo especializado recomendado</strong>
-            <span>
-              Por el tipo de situación, considera acudir a una entidad especializada como CEM, PNP o DEMUNA, según corresponda, para recibir orientación y protección directa.
-            </span>
+            <strong>{t('chat.mensaje.especialistaTitulo')}</strong>
+            <span>{t('chat.mensaje.especialistaTexto')}</span>
           </div>
           <Link className={styles.specialistLink} to="/contactos-emergencia">
-            Ver contactos de emergencia
+            {t('chat.mensaje.especialistaEnlace')}
           </Link>
         </div>
       )}
@@ -258,36 +264,23 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
             {markdownContent}
           </ReactMarkdown>
         ) : (
-          isTranslated && !showSpanish ? translated : message.content
+          isTranslated && !showSpanish ? translated : contenidoBase
         )}
       </div>
 
       {isTranslated && (
-        <div className={styles.translationNotice}>
-          <div className={styles.translationNoticeText}>
-            {/* El aviso en la lengua del usuario primero: uno en español no cumple su
-                función con quien eligió no leer en español. */}
-            {translationNotice.propio && (
-              <span lang={message.language}>{translationNotice.propio}</span>
-            )}
-            <span className={styles.translationNoticeSpanish}>{translationNotice.espanol}</span>
-          </div>
-          <button
-            type="button"
-            className={styles.translationToggle}
-            onClick={() => setShowSpanish((open) => !open)}
-            aria-pressed={showSpanish}
-          >
-            {showSpanish ? `Ver en ${idiomaPorCodigo(message.language).etiqueta}` : 'Ver en español'}
-          </button>
-        </div>
+        <AvisoTraduccion
+          idioma={message.language}
+          mostrandoEspanol={showSpanish}
+          onToggle={() => setShowSpanish((open) => !open)}
+        />
       )}
 
 
-      {message.state === 'sending' && <span className={styles.status}>Enviando...</span>}
-      {message.state === 'processing' && <span className={styles.status}>Procesando...</span>}
-      {message.state === 'unknown_delivery' && <span className={styles.status}>Verificando entrega...</span>}
-      {message.state === 'failed' && <span className={styles.status}>No enviado</span>}
+      {message.state === 'sending' && <span className={styles.status}>{t('chat.mensaje.enviando')}</span>}
+      {message.state === 'processing' && <span className={styles.status}>{t('chat.mensaje.procesando')}</span>}
+      {message.state === 'unknown_delivery' && <span className={styles.status}>{t('chat.mensaje.verificando')}</span>}
+      {message.state === 'failed' && <span className={styles.status}>{t('chat.mensaje.noEnviado')}</span>}
 
       {canRetry && (
         <button
@@ -295,7 +288,7 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
           className={styles.retryBtn}
           onClick={() => onRetry?.(retryText, message.id)}
         >
-          Reintentar consulta
+          {t('chat.mensaje.reintentar')}
         </button>
       )}
 
@@ -305,7 +298,7 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
           className={styles.upgradeBtn}
           onClick={() => onUpgrade?.()}
         >
-          Ver planes y tokens
+          {t('chat.mensaje.verPlanes')}
         </button>
       )}
 
@@ -318,14 +311,14 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
 
       {isBot && showLowConfidenceFallback && (
         <div className={styles.safetyNote}>
-          <strong>Información de alcance limitado</strong>
-          <span>Esta orientación es general y puede no cubrir todos los detalles de tu caso. Para decisiones importantes, consulta con un abogado o una entidad competente.</span>
+          <strong>{t('chat.mensaje.alcanceLimitadoTitulo')}</strong>
+          <span>{t('chat.mensaje.alcanceLimitadoTexto')}</span>
         </div>
       )}
 
       {isBot && nextSteps.length > 0 && (
         <div className={styles.guidanceBlock}>
-          <span className={styles.blockTitle}>Siguientes pasos</span>
+          <span className={styles.blockTitle}>{t('chat.mensaje.siguientesPasos')}</span>
           <ul>{nextSteps.map((item, index) => <li key={index}>{item}</li>)}</ul>
         </div>
       )}
@@ -333,7 +326,7 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
       {isBot && citations.length > 0 && (
         <div className={styles.citations}>
           <button type="button" className={styles.sourcesToggle} onClick={() => setSourcesOpen((open) => !open)} aria-expanded={sourcesOpen}>
-            <span>Fuentes utilizadas</span>
+            <span>{t('chat.mensaje.fuentesUtilizadas')}</span>
             <span className={styles.sourcesCount}>{citationGroups.length}</span>
           </button>
 
@@ -356,7 +349,7 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
                       {entry.sourceSnippet && (
                         <div className={styles.citationSnippet}>
                           {entry.sourceOriginalSnippet && (
-                            <span className={styles.citationLabel}>Resumen del asistente</span>
+                            <span className={styles.citationLabel}>{t('chat.mensaje.resumenAsistente')}</span>
                           )}
                           {entry.sourceSnippet}
                         </div>
@@ -366,7 +359,7 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
 
                   {group.sourceUrl && (
                     <a href={group.sourceUrl} target="_blank" rel="noopener noreferrer" className={styles.citationLink}>
-                      Ver fuente
+                      {t('chat.mensaje.verFuente')}
                     </a>
                   )}
                 </div>
@@ -386,15 +379,15 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
               onMouseEnter={() => setHover(n)}
               onMouseLeave={() => setHover(0)}
               disabled={ratingPending}
-              title={`Calificar ${n} estrella${n > 1 ? 's' : ''}`}
+              title={t.plural('chat.mensaje.calificar', n)}
             >
               ★
             </button>
           ))}
           <button type="button" className={styles.feedbackToggle} onClick={() => setFeedbackOpen((open) => !open)} disabled={ratingPending}>
-            Comentario
+            {t('chat.mensaje.comentario')}
           </button>
-          {ratingPending && <span className={styles.ratingStatus}>Guardando...</span>}
+          {ratingPending && <span className={styles.ratingStatus}>{t('chat.mensaje.guardando')}</span>}
         </div>
       )}
 
@@ -404,10 +397,10 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
             value={comment}
             maxLength={1000}
             onChange={(e) => setComment(e.target.value)}
-            placeholder="Comentario opcional sobre la respuesta"
+            placeholder={t('chat.mensaje.comentarioPlaceholder')}
           />
           <button type="button" onClick={() => handleRate(rated || 5)} disabled={ratingPending}>
-            Guardar feedback
+            {t('chat.mensaje.guardarFeedback')}
           </button>
         </div>
       )}

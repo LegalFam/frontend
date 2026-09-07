@@ -2,9 +2,11 @@ import { useState } from 'react'
 import logoImg from '@/assets/logo-transparent.png'
 import { useAuth } from '@/hooks/useAuth'
 import ResendVerificationButton from './ResendVerificationButton'
+import { useT } from '@/i18n/traducir'
 import styles from './AuthModal.module.css'
 
 export default function LoginModal({ onClose, onSwitchToRegister, onForgotPassword }) {
+  const t = useT()
   const { signin, loading, error } = useAuth()
   const [fields, setFields] = useState({ email: '', password: '' })
   const [errs,   setErrs]   = useState({})
@@ -15,8 +17,8 @@ export default function LoginModal({ onClose, onSwitchToRegister, onForgotPasswo
 
   const validate = () => {
     const e = {}
-    if (!fields.email || !fields.email.includes('@')) e.email = 'Ingresa un correo válido.'
-    if (!fields.password) e.password = 'La contraseña es requerida.'
+    if (!fields.email || !fields.email.includes('@')) e.email = t('auth.validacion.correoInvalido')
+    if (!fields.password) e.password = t('auth.validacion.contrasenaRequerida')
     setErrs(e)
     return !Object.keys(e).length
   }
@@ -31,25 +33,25 @@ export default function LoginModal({ onClose, onSwitchToRegister, onForgotPasswo
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <button className={styles.close} onClick={onClose} aria-label="Cerrar">✕</button>
+        <button className={styles.close} onClick={onClose} aria-label={t('comun.cerrar')}>✕</button>
 
         <div className={styles.topBar}>
           <img src={logoImg} alt="LegalFam" />
           <span className={styles.logo}>LEGALFAM</span>
         </div>
 
-        <h2 className={styles.title}>Iniciar sesión</h2>
-        <p className={styles.subtitle}>Accede a tu cuenta para continuar</p>
+        <h2 className={styles.title}>{t('auth.login.titulo')}</h2>
+        <p className={styles.subtitle}>{t('auth.login.subtitulo')}</p>
 
         {error && <div className="api-err">{error}</div>}
         {needsVerification && <ResendVerificationButton email={fields.email} />}
 
         <form onSubmit={handleSubmit} noValidate>
           <div className={styles.fg}>
-            <label htmlFor="li-email">Correo electrónico</label>
+            <label htmlFor="li-email">{t('auth.campos.correo')}</label>
             <input
               id="li-email" type="email"
-              placeholder="tucorreo@ejemplo.com"
+              placeholder={t('auth.campos.correoPlaceholder')}
               value={fields.email}
               onChange={(e) => set('email', e.target.value)}
               className={errs.email ? styles.hasError : ''}
@@ -59,11 +61,11 @@ export default function LoginModal({ onClose, onSwitchToRegister, onForgotPasswo
           </div>
 
           <div className={styles.fg}>
-            <label htmlFor="li-pass">Contraseña</label>
+            <label htmlFor="li-pass">{t('auth.campos.contrasena')}</label>
             <div className={styles.passwordWrap}>
               <input
                 id="li-pass" type={showPassword ? 'text' : 'password'}
-                placeholder="••••••••"
+                placeholder={t('auth.campos.contrasenaPlaceholder')}
                 value={fields.password}
                 onChange={(e) => set('password', e.target.value)}
                 className={errs.password ? styles.hasError : ''}
@@ -73,7 +75,7 @@ export default function LoginModal({ onClose, onSwitchToRegister, onForgotPasswo
                 type="button"
                 className={styles.passwordToggle}
                 onClick={() => setShowPassword((p) => !p)}
-                aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                aria-label={showPassword ? t('auth.campos.ocultarContrasena') : t('auth.campos.mostrarContrasena')}
                 tabIndex={-1}
               >
                 {showPassword ? (
@@ -95,16 +97,16 @@ export default function LoginModal({ onClose, onSwitchToRegister, onForgotPasswo
               className={styles.forgotLink}
               onClick={() => onForgotPassword?.(fields.email)}
             >
-              ¿Olvidaste tu contraseña?
+              {t('auth.login.olvidaste')}
             </button>
           </div>
 
           <button type="submit" className={styles.submitBtn} disabled={loading}>
             {loading ? (
-              <>Ingresando...</>
+              <>{t('auth.login.entrando')}</>
             ) : (
               <>
-                Ingresar
+                {t('auth.login.entrar')}
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
                   <path d="M5 12h14M12 5l7 7-7 7"/>
                 </svg>
@@ -114,8 +116,8 @@ export default function LoginModal({ onClose, onSwitchToRegister, onForgotPasswo
         </form>
 
         <p className={styles.switchText}>
-          ¿No tienes cuenta?{' '}
-          <span onClick={onSwitchToRegister}>Regístrate gratis</span>
+          {t('auth.login.sinCuenta')}{' '}
+          <span onClick={onSwitchToRegister}>{t('auth.login.registrate')}</span>
         </p>
       </div>
     </div>

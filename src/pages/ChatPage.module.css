@@ -202,3 +202,11 @@
   /* Sin el título, el chip ocuparía el hueco de la izquierda. */
   .tokenControl { margin-left: auto; }
 }
+
+/* La nota sobre por qué los nombres jurídicos siguen en español, bajo la definición. */
+.glossaryNote {
+  margin-top: 0.75rem;
+  font-size: 13px;
+  color: var(--text-tertiary, var(--text-secondary));
+  line-height: 1.5;
+}

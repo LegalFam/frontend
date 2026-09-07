@@ -1,11 +1,18 @@
 import { useEffect, useState } from 'react'
 import { useEdgeSafeTooltip } from '@/hooks/useEdgeSafeTooltip'
+import { useT } from '@/i18n/traducir'
 import styles from './HeroSection.module.css'
 
 const stats = [
-  { num: '+90%', label: 'Precisión validada' },
-  { num: '24/7', label: 'Disponibilidad'     },
-  { num: '100%', label: 'Gratuito', info: 'Se incluyen compras dentro de la aplicación' },
+  { num: '+90%', clave: 'stat1' },
+  { num: '24/7', clave: 'stat2' },
+  { num: '100%', clave: 'stat3', info: 'landing.hero.stat3Info' },
+]
+
+const trustItems = [
+  { icon: 'shield', clave: 'landing.hero.sello1' },
+  { icon: 'lock',   clave: 'landing.hero.sello2' },
+  { icon: 'check',  clave: 'landing.hero.sello3' },
 ]
 
 function StatInfo({ text }) {
@@ -31,6 +38,7 @@ function StatInfo({ text }) {
 }
 
 export default function HeroSection({ isAuthenticated, onPrimaryClick, onScrollComo }) {
+  const t = useT()
   const [loaded, setLoaded] = useState(false)
   useEffect(() => { const t = setTimeout(() => setLoaded(true), 60); return () => clearTimeout(t) }, [])
 
@@ -47,46 +55,41 @@ export default function HeroSection({ isAuthenticated, onPrimaryClick, onScrollC
         <div className={styles.contentLeft}>
           <div className={`${styles.pill} ${loaded ? 'anim-fade-up' : ''}`}>
             <span className={styles.pillDot} />
-            Derecho de Familia en el Perú
+            {t('landing.hero.pill')}
           </div>
 
           <h1 className={`${styles.headline} ${loaded ? 'anim-fade-up delay-1' : ''}`}>
-            Tu derecho a la<br />
-            <em className={styles.italic}>justicia</em> no<br />
-            tiene precio.
+            {t('landing.hero.titulo1')}<br />
+            <em className={styles.italic}>{t('landing.hero.tituloEnfasis')}</em> {t('landing.hero.titulo2')}<br />
+            {t('landing.hero.titulo3')}
           </h1>
 
           <p className={`${styles.desc} ${loaded ? 'anim-fade-up delay-2' : ''}`}>
-            Orientación jurídica en Derecho de Familia automatizada, clara y accesible para alimentos,
-            tenencia, filiación y medidas de protección, disponible las 24 horas.
+            {t('landing.hero.descripcion')}
           </p>
 
           <div className={`${styles.heroBtns} ${loaded ? 'anim-fade-up delay-3' : ''}`}>
             <button className={styles.btnPrimary} onClick={onPrimaryClick}>
-              {isAuthenticated ? 'Ir al chat' : 'Comenzar'}
+              {isAuthenticated ? t('landing.hero.irAlChat') : t('landing.hero.comenzar')}
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="15" height="15">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
               </svg>
             </button>
             <button className={styles.btnSecondary} onClick={onScrollComo}>
-              Ver cómo funciona
+              {t('landing.hero.verComo')}
             </button>
           </div>
 
           <div className={`${styles.trustBar} ${loaded ? 'anim-fade-up delay-4' : ''}`}>
-            {[
-              { icon: 'shield', label: 'ISO/IEC 27001'    },
-              { icon: 'lock',   label: 'Ley N. 29733'     },
-              { icon: 'check',  label: 'Proyecto UPC 2026' },
-            ].map((t, i) => (
+            {trustItems.map((item, i) => (
               <span key={i} className={styles.trustItem}>
                 {i > 0 && <span className={styles.trustDot} />}
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="12" height="12">
-                  {t.icon === 'shield' && <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>}
-                  {t.icon === 'lock'   && <><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></>}
-                  {t.icon === 'check'  && <polyline points="20 6 9 17 4 12"/>}
+                  {item.icon === 'shield' && <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>}
+                  {item.icon === 'lock'   && <><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></>}
+                  {item.icon === 'check'  && <polyline points="20 6 9 17 4 12"/>}
                 </svg>
-                {t.label}
+                {t(item.clave)}
               </span>
             ))}
           </div>
@@ -98,8 +101,8 @@ export default function HeroSection({ isAuthenticated, onPrimaryClick, onScrollC
               <div className={styles.statNum}>{s.num}</div>
               <div className={styles.statLabel}>
                 <span className={styles.statLabelText}>
-                  {s.label}
-                  {s.info && <StatInfo text={s.info} />}
+                  {t(`landing.hero.${s.clave}`)}
+                  {s.info && <StatInfo text={t(s.info)} />}
                 </span>
               </div>
             </div>
@@ -107,7 +110,7 @@ export default function HeroSection({ isAuthenticated, onPrimaryClick, onScrollC
         </div>
       </div>
 
-      <div className={styles.scrollHint} onClick={onScrollComo} aria-label="Ver cómo funciona">
+      <div className={styles.scrollHint} onClick={onScrollComo} aria-label={t('landing.hero.verComo')}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="20" height="20">
           <path d="M12 5v14M5 12l7 7 7-7"/>
         </svg>

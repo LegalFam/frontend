@@ -4,6 +4,7 @@ import { paymentService } from '@/services/api'
 import { usePaymentStore } from '@/store/paymentStore'
 import {
   PLANS_BY_SLUG,
+  formatPlanFeature,
   formatPlanName,
   formatPlanPeriod,
   formatPlanPrice,
@@ -11,10 +12,12 @@ import {
   mergePlanWithStatic,
 } from '@/utils/plans'
 import { normalizeApiError } from '@/utils/apiError'
+import { useT } from '@/i18n/traducir'
 import logoImg from '@/assets/logo-transparent.png'
 import styles from './PaymentPage.module.css'
 
 export default function PaymentPage() {
+  const t = useT()
   const { plan } = useParams()
   const navigate = useNavigate()
   const { plans, loadPlans, refreshBilling } = usePaymentStore()
@@ -45,7 +48,7 @@ export default function PaymentPage() {
       })
       window.location.assign(data.url)
     } catch (err) {
-      setError(normalizeApiError(err, 'No se pudo iniciar el checkout. Intenta nuevamente.').message)
+      setError(normalizeApiError(err, t('pago.errorCheckout')).message)
       setLoading(false)
     }
   }
@@ -59,9 +62,9 @@ export default function PaymentPage() {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="16" height="16">
             <path d="M19 12H5M12 5l-7 7 7 7"/>
           </svg>
-          Volver
+          {t('comun.volver')}
         </button>
-        <Link to="/" className={styles.logo} aria-label="Ir al inicio">
+        <Link to="/" className={styles.logo} aria-label={t('pago.irAlInicio')}>
           <img src={logoImg} alt="LegalFam" />
           <span>LEGALFAM</span>
         </Link>
@@ -70,7 +73,7 @@ export default function PaymentPage() {
 
       <div className={styles.body}>
         <aside className={styles.summary}>
-          <p className={styles.summaryLabel}>Resumen del plan</p>
+          <p className={styles.summaryLabel}>{t('pago.resumen')}</p>
           <p className={styles.planName}>{formatPlanName(planData)}</p>
           <p className={styles.planPrice}>
             {formatPlanPrice(planData)} <span>{formatPlanPeriod(planData)}</span>
@@ -78,7 +81,7 @@ export default function PaymentPage() {
           <p className={styles.planTokens}>{formatPlanTokens(planData)}</p>
           <ul className={styles.features}>
             {(planData.features || []).map((feature) => (
-              <li key={feature}>{feature}</li>
+              <li key={feature}>{formatPlanFeature(feature)}</li>
             ))}
           </ul>
           <div className={styles.securityNote}>
@@ -86,23 +89,19 @@ export default function PaymentPage() {
               <rect x="3" y="11" width="18" height="11" rx="2"/>
               <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
             </svg>
-            Pago procesado por Mercado Pago
+            {t('pago.procesadoPor')}
           </div>
         </aside>
 
         <div className={styles.formCard}>
-          <h2 className={styles.formTitle}>Checkout externo</h2>
-          <p className={styles.formSub}>
-            LegalFam no captura datos de tarjeta. Te enviaremos a Mercado Pago para completar la suscripción y volverás aquí al terminar.
-          </p>
+          <h2 className={styles.formTitle}>{t('pago.checkoutTitulo')}</h2>
+          <p className={styles.formSub}>{t('pago.checkoutSub')}</p>
 
           {error && <div className="api-err">{error}</div>}
 
           <div className={styles.checkoutBox}>
             <p className={styles.checkoutTitle}>{formatPlanName(planData)}</p>
-            <p className={styles.checkoutText}>
-              Al continuar, Mercado Pago gestionará el pago recurrente. Al volver, actualizaremos tu plan y tokens.
-            </p>
+            <p className={styles.checkoutText}>{t('pago.checkoutTexto')}</p>
           </div>
 
           <button
@@ -114,11 +113,11 @@ export default function PaymentPage() {
             {loading ? (
               <span className={styles.loadingText}>
                 <span className={styles.spinner} />
-                Abriendo Mercado Pago...
+                {t('pago.abriendo')}
               </span>
             ) : (
               <>
-                Continuar a Mercado Pago
+                {t('pago.continuar')}
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
                   <path d="M5 12h14M12 5l7 7-7 7"/>
                 </svg>
@@ -131,7 +130,7 @@ export default function PaymentPage() {
             className={styles.secondaryBtn}
             onClick={() => refreshBilling().finally(() => navigate('/chat'))}
           >
-            Volver al chat
+            {t('pago.volverAlChat')}
           </button>
         </div>
       </div>

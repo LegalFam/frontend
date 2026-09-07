@@ -3,9 +3,11 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import logoImg from '@/assets/logo-transparent.png'
 import { authService } from '@/services/api'
 import { normalizeApiError } from '@/utils/apiError'
+import { useT } from '@/i18n/traducir'
 import styles from './AuthActionPage.module.css'
 
 export default function ResetPasswordPage() {
+  const t = useT()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const token = searchParams.get('token')
@@ -21,8 +23,8 @@ export default function ResetPasswordPage() {
 
   const validate = () => {
     const e = {}
-    if (!fields.newPassword || fields.newPassword.length < 8) e.newPassword = 'Mínimo 8 caracteres.'
-    if (fields.newPassword !== fields.confirm) e.confirm = 'Las contraseñas no coinciden.'
+    if (!fields.newPassword || fields.newPassword.length < 8) e.newPassword = t('auth.validacion.contrasenaCorta')
+    if (fields.newPassword !== fields.confirm) e.confirm = t('auth.validacion.contrasenaNoCoincide')
     setErrs(e)
     return !Object.keys(e).length
   }
@@ -31,7 +33,7 @@ export default function ResetPasswordPage() {
     ev.preventDefault()
     if (!token) {
       setTokenExpired(true)
-      setError('El enlace no incluye un código válido. Solicita uno nuevo.')
+      setError(t('auth.restablecer.sinToken'))
       return
     }
     if (!validate()) return
@@ -42,7 +44,7 @@ export default function ResetPasswordPage() {
       await authService.resetPassword({ token, newPassword: fields.newPassword })
       setDone(true)
     } catch (e) {
-      const { code, message } = normalizeApiError(e, 'No se pudo actualizar tu contraseña.')
+      const { code, message } = normalizeApiError(e, t('auth.restablecer.errorGenerico'))
       setTokenExpired(code === 'reset_token_invalid' || code === 'token_required')
       setError(message)
     } finally {
@@ -61,25 +63,21 @@ export default function ResetPasswordPage() {
         {done ? (
           <>
             <div className={styles.icon}>✅</div>
-            <h1 className={styles.title}>Contraseña actualizada</h1>
-            <p className={styles.text}>
-              Ya puedes iniciar sesión con tu contraseña nueva.
-            </p>
-            <p className={styles.hint}>
-              Por seguridad cerramos todas las sesiones abiertas en otros dispositivos.
-            </p>
+            <h1 className={styles.title}>{t('auth.restablecer.listo')}</h1>
+            <p className={styles.text}>{t('auth.restablecer.listoTexto')}</p>
+            <p className={styles.hint}>{t('auth.restablecer.listoHint')}</p>
             <button
               type="button"
               className={styles.primaryBtn}
               onClick={() => navigate('/?auth=login')}
             >
-              Iniciar sesión
+              {t('auth.login.titulo')}
             </button>
           </>
         ) : (
           <>
-            <h1 className={styles.title}>Crea una contraseña nueva</h1>
-            <p className={styles.text}>Elige una contraseña de al menos 8 caracteres.</p>
+            <h1 className={styles.title}>{t('auth.restablecer.titulo')}</h1>
+            <p className={styles.text}>{t('auth.restablecer.subtitulo')}</p>
 
             {error && <div className="api-err" style={{ marginTop: '1.25rem' }}>{error}</div>}
 
@@ -89,15 +87,15 @@ export default function ResetPasswordPage() {
                 className={styles.primaryBtn}
                 onClick={() => navigate('/?auth=forgot')}
               >
-                Solicitar un enlace nuevo
+                {t('auth.restablecer.pedirNuevo')}
               </button>
             ) : (
               <form className={styles.form} onSubmit={handleSubmit} noValidate>
                 <div className={styles.fg}>
-                  <label htmlFor="rp-pass">Contraseña nueva</label>
+                  <label htmlFor="rp-pass">{t('auth.campos.contrasenaNueva')}</label>
                   <input
                     id="rp-pass" type="password"
-                    placeholder="Mínimo 8 caracteres"
+                    placeholder={t('auth.campos.minimoPlaceholder')}
                     value={fields.newPassword}
                     onChange={(e) => set('newPassword', e.target.value)}
                     className={errs.newPassword ? styles.hasError : ''}
@@ -107,10 +105,10 @@ export default function ResetPasswordPage() {
                 </div>
 
                 <div className={styles.fg}>
-                  <label htmlFor="rp-confirm">Confirmar contraseña</label>
+                  <label htmlFor="rp-confirm">{t('auth.campos.confirmar')}</label>
                   <input
                     id="rp-confirm" type="password"
-                    placeholder="Repite tu contraseña"
+                    placeholder={t('auth.campos.confirmarPlaceholder')}
                     value={fields.confirm}
                     onChange={(e) => set('confirm', e.target.value)}
                     className={errs.confirm ? styles.hasError : ''}
@@ -120,7 +118,7 @@ export default function ResetPasswordPage() {
                 </div>
 
                 <button type="submit" className={styles.primaryBtn} disabled={loading}>
-                  {loading ? 'Guardando...' : 'Guardar contraseña'}
+                  {loading ? t('auth.restablecer.guardando') : t('auth.restablecer.guardar')}
                 </button>
               </form>
             )}

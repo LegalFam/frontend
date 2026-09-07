@@ -1,9 +1,11 @@
 import { useNavigate } from 'react-router-dom'
 import {
-  SHARED_PLAN_FEATURES,
+  SHARED_PLAN_FEATURE_KEYS,
   STATIC_PLANS,
+  formatPlanButtonLabel,
   formatPlanCapacity,
   formatPlanContextMessages,
+  formatPlanFeature,
   formatPlanHistoryWindow,
   formatPlanName,
   formatPlanPeriod,
@@ -11,10 +13,11 @@ import {
   planSlug,
 } from '@/utils/plans'
 import { setPendingAuthRedirect } from '@/hooks/useAuth'
+import { useT } from '@/i18n/traducir'
 import styles from './PreciosSection.module.css'
 
-const Check = () => (
-  <span className={styles.check} role="img" aria-label="Incluido">
+const Check = ({ etiqueta }) => (
+  <span className={styles.check} role="img" aria-label={etiqueta}>
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" aria-hidden="true">
       <polyline points="20 6 9 17 4 12" />
     </svg>
@@ -25,27 +28,28 @@ const Check = () => (
 // vistas: la tabla de escritorio y las tarjetas apiladas de móvil.
 const PLAN_SPECS = [
   {
-    label: 'Capacidad',
-    hint: 'respecto al plan gratuito',
+    clave: 'capacidad',
+    hint: 'capacidadHint',
     value: formatPlanCapacity,
     key: true,
   },
   {
-    label: 'Tokens mensuales',
+    clave: 'tokens',
     value: (plan) => new Intl.NumberFormat('es-PE').format(plan.monthlyTokenLimit),
   },
   {
-    label: 'Memoria de la conversación',
-    hint: 'contexto que recuerda el asistente',
+    clave: 'memoria',
+    hint: 'memoriaHint',
     value: formatPlanContextMessages,
   },
   {
-    label: 'Historial disponible',
+    clave: 'historial',
     value: formatPlanHistoryWindow,
   },
 ]
 
 export default function PreciosSection({ isAuthenticated, currentPlanCode, onRegisterClick }) {
+  const t = useT()
   const navigate = useNavigate()
 
   const handlePlanClick = (plan) => {
@@ -65,32 +69,27 @@ export default function PreciosSection({ isAuthenticated, currentPlanCode, onReg
   }
 
   const buttonLabelFor = (plan, isCurrent) => {
-    if (!isAuthenticated) return plan.buttonLabel
-    if (isCurrent) return 'Plan actual'
-    return plan.code === 'FREE' ? 'Ir al chat' : 'Cambiar plan'
+    if (!isAuthenticated) return formatPlanButtonLabel(plan)
+    if (isCurrent) return t('planes.seccion.planActual')
+    return plan.code === 'FREE' ? t('planes.seccion.irAlChat') : t('planes.seccion.cambiarPlan')
   }
 
   return (
     <section id="precios" className={styles.section}>
       <div className="container">
         <div className={styles.header}>
-          <span className="section-eyebrow">Planes</span>
-          <h2 className="section-title">Elige tu plan</h2>
-          <p className="section-sub">
-            El asistente es el mismo en todos los planes. Cambian la capacidad mensual,
-            la memoria de la conversación y el historial disponible.
-          </p>
+          <span className="section-eyebrow">{t('planes.seccion.eyebrow')}</span>
+          <h2 className="section-title">{t('planes.seccion.titulo')}</h2>
+          <p className="section-sub">{t('planes.seccion.sub')}</p>
         </div>
 
         <div className={styles.tableWrap}>
           <table className={styles.table}>
-            <caption className="sr-only">
-              Comparación de precios, capacidad mensual y funciones incluidas en cada plan
-            </caption>
+            <caption className="sr-only">{t('planes.seccion.tablaResumen')}</caption>
             <thead>
               <tr>
                 <th scope="col">
-                  <span className="sr-only">Característica</span>
+                  <span className="sr-only">{t('planes.seccion.caracteristica')}</span>
                 </th>
                 {STATIC_PLANS.map((plan) => (
                   <th
@@ -98,7 +97,7 @@ export default function PreciosSection({ isAuthenticated, currentPlanCode, onReg
                     scope="col"
                     className={plan.featured ? styles.featuredCol : undefined}
                   >
-                    {plan.featured && <span className={styles.tag}>Más popular</span>}
+                    {plan.featured && <span className={styles.tag}>{t('planes.seccion.masPopular')}</span>}
                     <span className={styles.planName}>{formatPlanName(plan)}</span>
                     <span className={styles.planPrice}>
                       {formatPlanPrice(plan)}
@@ -111,10 +110,12 @@ export default function PreciosSection({ isAuthenticated, currentPlanCode, onReg
 
             <tbody>
               {PLAN_SPECS.map((spec) => (
-                <tr key={spec.label} className={spec.key ? styles.keyRow : undefined}>
+                <tr key={spec.clave} className={spec.key ? styles.keyRow : undefined}>
                   <th scope="row">
-                    {spec.label}
-                    {spec.hint && <span className={styles.rowHint}>{spec.hint}</span>}
+                    {t(`planes.seccion.${spec.clave}`)}
+                    {spec.hint && (
+                      <span className={styles.rowHint}>{t(`planes.seccion.${spec.hint}`)}</span>
+                    )}
                   </th>
                   {STATIC_PLANS.map((plan) => (
                     <td
@@ -130,12 +131,12 @@ export default function PreciosSection({ isAuthenticated, currentPlanCode, onReg
                 </tr>
               ))}
 
-              {SHARED_PLAN_FEATURES.map((feature) => (
+              {SHARED_PLAN_FEATURE_KEYS.map((feature) => (
                 <tr key={feature}>
-                  <th scope="row">{feature}</th>
+                  <th scope="row">{formatPlanFeature(feature)}</th>
                   {STATIC_PLANS.map((plan) => (
                     <td key={plan.code} className={plan.featured ? styles.featuredCol : undefined}>
-                      <Check />
+                      <Check etiqueta={t('planes.seccion.incluido')} />
                     </td>
                   ))}
                 </tr>
@@ -175,7 +176,7 @@ export default function PreciosSection({ isAuthenticated, currentPlanCode, onReg
                 key={plan.code}
                 className={`${styles.card} ${plan.featured ? styles.cardFeatured : ''}`}
               >
-                {plan.featured && <span className={styles.tag}>Más popular</span>}
+                {plan.featured && <span className={styles.tag}>{t('planes.seccion.masPopular')}</span>}
                 <span className={styles.planName}>{formatPlanName(plan)}</span>
                 <span className={styles.planPrice}>
                   {formatPlanPrice(plan)}
@@ -184,10 +185,12 @@ export default function PreciosSection({ isAuthenticated, currentPlanCode, onReg
 
                 <dl className={styles.cardSpecs}>
                   {PLAN_SPECS.map((spec) => (
-                    <div key={spec.label} className={styles.cardSpec}>
+                    <div key={spec.clave} className={styles.cardSpec}>
                       <dt>
-                        {spec.label}
-                        {spec.hint && <span className={styles.rowHint}>{spec.hint}</span>}
+                        {t(`planes.seccion.${spec.clave}`)}
+                        {spec.hint && (
+                          <span className={styles.rowHint}>{t(`planes.seccion.${spec.hint}`)}</span>
+                        )}
                       </dt>
                       <dd className={spec.key ? styles.figure : undefined}>
                         {spec.value(plan)}
@@ -197,10 +200,10 @@ export default function PreciosSection({ isAuthenticated, currentPlanCode, onReg
                 </dl>
 
                 <ul className={styles.cardFeatures}>
-                  {SHARED_PLAN_FEATURES.map((feature) => (
+                  {SHARED_PLAN_FEATURE_KEYS.map((feature) => (
                     <li key={feature}>
-                      <Check />
-                      {feature}
+                      <Check etiqueta={t('planes.seccion.incluido')} />
+                      {formatPlanFeature(feature)}
                     </li>
                   ))}
                 </ul>
@@ -217,9 +220,7 @@ export default function PreciosSection({ isAuthenticated, currentPlanCode, onReg
           })}
         </div>
 
-        <p className={styles.note}>
-          Los precios incluyen IGV. Puedes cancelar tu suscripción en cualquier momento.
-        </p>
+        <p className={styles.note}>{t('planes.seccion.nota')}</p>
       </div>
     </section>
   )

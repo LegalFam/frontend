@@ -10,18 +10,16 @@ import ChatInput          from '@/components/chat/ChatInput'
 import BillingDialog      from '@/components/billing/BillingDialog'
 import TypingIndicator    from '@/components/chat/TypingIndicator'
 import logoImg            from '@/assets/logo-transparent.png'
+import TextoLegalBilingue from '@/components/common/TextoLegalBilingue'
+import { useT }           from '@/i18n/traducir'
 import styles             from './ChatPage.module.css'
 
-const TOKEN_COST_HINT = 'Cada consulta descuenta tokens cuando la respuesta queda lista: 1 token para consultas simples y hasta 3 tokens cuando la respuesta se apoya en fuentes legales.'
-
-const CONVERSATION_PRESETS = [
-  { label: 'Alimentos', question: '¿Cómo solicito una pensión de alimentos para mi hijo?' },
-  { label: 'Tenencia', question: '¿Qué necesito para pedir la tenencia de mi hijo?' },
-  { label: 'Filiación', question: '¿Cómo puedo reconocer legalmente a mi hijo o iniciar un proceso de filiación?' },
-  { label: 'Medidas de protección', question: '¿Cómo solicito medidas de protección por violencia familiar?' },
-]
+// Se traducen tanto el rótulo como la pregunta: la pregunta se envía tal cual como mensaje
+// del usuario, así que tiene que estar en la lengua en la que el usuario la habría escrito.
+const CONVERSATION_PRESETS = ['alimentos', 'tenencia', 'filiacion', 'proteccion']
 
 export default function ChatPage() {
+  const t = useT()
   const { signout } = useAuth()
   const { sessionId: routeSessionId } = useParams()
   const isMobile = () => window.innerWidth <= 960
@@ -87,12 +85,16 @@ export default function ChatPage() {
 
   const showConnectionNotice = Boolean(error || (activeSessionId && connectionState === 'reconnecting'))
   const sessionTitle   = glossaryTerm
-    ? `Glosario · ${glossaryTerm.term}`
+    ? `${t('chat.glosario.titulo')} · ${t(`glosario.${glossaryTerm}.termino`)}`
     : activeSessionId
-      ? sessions.find((s) => s.id === activeSessionId)?.title || sessions.find((s) => s.id === activeSessionId)?.name || 'Consulta'
-      : 'Consulta Actual'
+      ? sessions.find((s) => s.id === activeSessionId)?.title || sessions.find((s) => s.id === activeSessionId)?.name || t('chat.consulta')
+      : t('chat.consultaActual')
   const tokenLabel = subscription
-    ? `${subscription.planCode} · ${subscription.remainingTokens}/${subscription.monthlyTokenLimit} tokens`
+    ? t('chat.tokensBadge', {
+        plan: subscription.planCode,
+        restantes: subscription.remainingTokens,
+        limite: subscription.monthlyTokenLimit,
+      })
     : null
   const showPresets = !activeSessionId &&
     activeMessages.length === 1 &&
@@ -100,8 +102,8 @@ export default function ChatPage() {
   const inputDisabled = Boolean(loading || processingStatus?.processing)
   const inputDisabledReason = inputDisabled
     ? activeSessionProcessing
-      ? 'Estamos preparando la respuesta de esta consulta. Cuando termine, se actualizarán tus tokens y podrás enviar otra.'
-      : 'Hay otra consulta en proceso. Puedes revisar tus sesiones, pero espera a que termine para enviar una nueva.'
+      ? t('chat.esperandoRespuesta')
+      : t('chat.otraEnProceso')
     : null
 
 
@@ -136,7 +138,7 @@ export default function ChatPage() {
   return (
     <div className={styles.app}>
       <header className={styles.topbar}>
-        <button className="icon-btn" onClick={() => setSidebarOpen((p) => !p)} aria-label="Abrir o cerrar historial">
+        <button className="icon-btn" onClick={() => setSidebarOpen((p) => !p)} aria-label={t('chat.abrirHistorial')}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
             <line x1="3" y1="6"  x2="21" y2="6"  />
             <line x1="3" y1="12" x2="21" y2="12" />
@@ -144,7 +146,7 @@ export default function ChatPage() {
           </svg>
         </button>
 
-        <Link to="/" className={styles.topbarLogo} aria-label="Ir al inicio">
+        <Link to="/" className={styles.topbarLogo} aria-label={t('chat.irAlInicio')}>
           <img src={logoImg} alt="LegalFam" className={styles.topbarLogoImg} />
           <span className={styles.topbarLogoText}>LEGALFAM</span>
         </Link>
@@ -160,7 +162,7 @@ export default function ChatPage() {
               type="button"
               className={styles.tokenBadge}
               onClick={() => setBillingOpen(true)}
-              title="Ver plan y tokens"
+              title={t('chat.verPlanYTokens')}
               aria-describedby="token-cost-hint"
             >
               {tokenLabel}
@@ -184,12 +186,12 @@ export default function ChatPage() {
               role="note"
               ref={tokenTooltipRef}
             >
-              {TOKEN_COST_HINT}
+              {t('facturacion.costeTokens')}
             </span>
           </span>
         )}
 
-        <button className="icon-btn" onClick={signout} title="Cerrar sesión" style={{ marginLeft: 'auto' }}>
+        <button className="icon-btn" onClick={signout} title={t('chat.cerrarSesion')} style={{ marginLeft: 'auto' }}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
             <polyline points="16 17 21 12 16 7"/>
@@ -225,9 +227,16 @@ export default function ChatPage() {
           {glossaryTerm ? (
             <div className={styles.glossaryView}>
               <article className={styles.glossaryCard}>
-                <span className={styles.glossaryEyebrow}>Glosario legal</span>
-                <h1>{glossaryTerm.term}</h1>
-                <p>{glossaryTerm.definition}</p>
+                <span className={styles.glossaryEyebrow}>{t('chat.glosario.titulo')}</span>
+                <h1>{t(`glosario.${glossaryTerm}.termino`)}</h1>
+                <TextoLegalBilingue>
+                  {(tLegal) => (
+                    <>
+                      <p>{tLegal(`glosario.${glossaryTerm}.definicion`)}</p>
+                      <p className={styles.glossaryNote}>{tLegal('chat.glosario.nombresEnEspanol')}</p>
+                    </>
+                  )}
+                </TextoLegalBilingue>
                 <div className={styles.glossaryActions}>
                   <button
                     type="button"
@@ -237,7 +246,7 @@ export default function ChatPage() {
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="15" height="15">
                       <path d="M19 12H5M12 5l-7 7 7 7" />
                     </svg>
-                    Volver al chat
+                    {t('chat.glosario.volver')}
                   </button>
                 </div>
               </article>
@@ -246,7 +255,7 @@ export default function ChatPage() {
           <>
           {showConnectionNotice && (
             <div className={styles.notice}>
-              {error || 'Reconectando con el chat...'}
+              {error || t('chat.reconectando')}
             </div>
           )}
           <div
@@ -256,7 +265,7 @@ export default function ChatPage() {
           >
             <div className={styles.messagesInner}>
               {messagesLoadingMoreForActive && (
-                <div className={styles.historyLoader}>Cargando mensajes anteriores...</div>
+                <div className={styles.historyLoader}>{t('chat.cargandoAnteriores')}</div>
               )}
               {activeMessages.map((msg, index) => {
                 const isLastMessage = index === activeMessages.length - 1
@@ -281,18 +290,18 @@ export default function ChatPage() {
               })}
               {showPresets && (
                 <div className={styles.presets}>
-                  <p className={styles.presetsLabel}>Empieza con una consulta frecuente</p>
+                  <p className={styles.presetsLabel}>{t('chat.presetsLabel')}</p>
                   <div className={styles.presetsGrid}>
                     {CONVERSATION_PRESETS.map((preset) => (
                       <button
-                        key={preset.label}
+                        key={preset}
                         type="button"
                         className={styles.presetBtn}
-                        onClick={() => sendMessage(preset.question)}
+                        onClick={() => sendMessage(t(`chat.presets.${preset}Pregunta`))}
                         disabled={inputDisabled}
                       >
-                        <strong>{preset.label}</strong>
-                        <span>{preset.question}</span>
+                        <strong>{t(`chat.presets.${preset}Label`)}</strong>
+                        <span>{t(`chat.presets.${preset}Pregunta`)}</span>
                       </button>
                     ))}
                   </div>

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { usePaymentStore } from '@/store/paymentStore'
+import { useT } from '@/i18n/traducir'
 import logoImg from '@/assets/logo-transparent.png'
 import styles from './PaymentPage.module.css'
 
@@ -8,6 +9,7 @@ const POLL_INTERVAL_MS = 3000
 const POLL_TIMEOUT_MS = 45000
 
 export default function BillingReturnPage() {
+  const t = useT()
   const { result } = useParams()
   const navigate = useNavigate()
   const { subscription, refreshBilling, error } = usePaymentStore()
@@ -53,9 +55,9 @@ export default function BillingReturnPage() {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="16" height="16">
             <path d="M19 12H5M12 5l-7 7 7 7"/>
           </svg>
-          Chat
+          {t('pago.retorno.chat')}
         </button>
-        <Link to="/" className={styles.logo} aria-label="Ir al inicio">
+        <Link to="/" className={styles.logo} aria-label={t('pago.irAlInicio')}>
           <img src={logoImg} alt="LegalFam" />
           <span>LEGALFAM</span>
         </Link>
@@ -84,34 +86,32 @@ export default function BillingReturnPage() {
           </div>
           <h2>
             {canceled
-              ? 'Checkout cancelado'
+              ? t('pago.retorno.cancelado')
               : waiting
-                ? 'Confirmando tu pago...'
+                ? t('pago.retorno.confirmando')
                 : upgraded
-                  ? '¡Listo! Tu plan está activo.'
-                  : 'Estamos verificando tu suscripción'}
+                  ? t('pago.retorno.listo')
+                  : t('pago.retorno.verificando')}
           </h2>
           <p>
             {canceled
-              ? 'No se realizó ningún cobro.'
+              ? t('pago.retorno.canceladoTexto')
               : error || (subscription
-                ? `Plan actual: ${subscription.planCode}. Tokens disponibles: ${subscription.remainingTokens}/${subscription.monthlyTokenLimit}.`
-                : 'Confirmando con Mercado Pago...')}
+                ? t('pago.retorno.estado', {
+                    plan: subscription.planCode,
+                    restantes: subscription.remainingTokens,
+                    limite: subscription.monthlyTokenLimit,
+                  })
+                : t('pago.retorno.confirmandoMP'))}
           </p>
           {waiting && (
-            <p className={styles.pollingHint}>
-              Esto puede tardar hasta un minuto. No te preocupes, tu pago ya quedó registrado en Mercado Pago —
-              solo estamos esperando la confirmación para activar tu plan.
-            </p>
+            <p className={styles.pollingHint}>{t('pago.retorno.esperaHint')}</p>
           )}
           {timedOut && !canceled && !upgraded && (
-            <p className={styles.pollingHint}>
-              La confirmación está tardando más de lo habitual. Tu pago no se pierde: en cuanto la recibamos,
-              tu plan se activa solo. Si en unos minutos sigues viendo el plan anterior, contáctanos.
-            </p>
+            <p className={styles.pollingHint}>{t('pago.retorno.tardaHint')}</p>
           )}
           <button className={styles.btnAccent} onClick={() => navigate('/chat')}>
-            Ir al chat
+            {t('pago.retorno.irAlChat')}
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
               <path d="M5 12h14M12 5l7 7-7 7"/>
             </svg>

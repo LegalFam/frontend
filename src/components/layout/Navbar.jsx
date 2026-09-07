@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import logoImg from '@/assets/logo-transparent.png'
+import SelectorIdioma from '@/components/common/SelectorIdioma'
+import { useT } from '@/i18n/traducir'
 import styles from './Navbar.module.css'
 
 export default function Navbar({
@@ -10,6 +12,7 @@ export default function Navbar({
   onChatClick,
   onSignoutClick,
 }) {
+  const t = useT()
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [active, setActive] = useState('')
@@ -26,58 +29,58 @@ export default function Navbar({
     setActive(id)
   }
 
-  const links = [
-    { id: 'sobre', label: 'Sobre nosotros' },
-    { id: 'como', label: 'Cómo funciona' },
-    { id: 'precios', label: 'Precios' },
-    { id: 'seguridad', label: 'Seguridad' },
-    { id: 'privacidad', label: 'Privacidad' },
-  ]
+  // Solo los identificadores de sección: el rótulo sale del catálogo en el render, para que
+  // cambie al cambiar de idioma.
+  const links = ['sobre', 'como', 'precios', 'seguridad', 'privacidad']
 
   return (
     <>
       <nav className={`${styles.nav} ${scrolled ? styles.scrolled : ''}`}>
-        <Link to="/" className={styles.logo} aria-label="LegalFam inicio">
+        <Link to="/" className={styles.logo} aria-label={t('nav.inicio')}>
           <img src={logoImg} alt="LegalFam" className={styles.logoImg} />
           <span className={styles.logoText}>LEGALFAM</span>
         </Link>
 
         <div className={`${styles.links} ${menuOpen ? styles.open : ''}`}>
-          {links.map(({ id, label }) => (
+          {links.map((id) => (
             <a
               key={id}
               className={`${styles.link} ${active === id ? styles.linkActive : ''}`}
               onClick={() => scrollTo(id)}
             >
-              {label}
+              {t(`nav.${id}`)}
             </a>
           ))}
 
           <div className={styles.mobileBtns}>
+            <SelectorIdioma className={styles.mobileIdioma} />
             {isAuthenticated ? (
               <>
-                <button className={`btn-accent ${styles.mobileAuthBtn}`} onClick={() => { setMenuOpen(false); onChatClick() }}>Ir al chat</button>
-                <button className={`${styles.signoutBtn} ${styles.mobileAuthBtn}`} onClick={() => { setMenuOpen(false); onSignoutClick() }}>Cerrar sesión</button>
+                <button className={`btn-accent ${styles.mobileAuthBtn}`} onClick={() => { setMenuOpen(false); onChatClick() }}>{t('nav.irAlChat')}</button>
+                <button className={`${styles.signoutBtn} ${styles.mobileAuthBtn}`} onClick={() => { setMenuOpen(false); onSignoutClick() }}>{t('nav.cerrarSesion')}</button>
               </>
             ) : (
               <>
-                <button className={`btn-ghost ${styles.mobileAuthBtn}`} onClick={() => { setMenuOpen(false); onLoginClick() }}>Iniciar sesión</button>
-                <button className={`btn-accent ${styles.mobileAuthBtn}`} onClick={() => { setMenuOpen(false); onRegisterClick() }}>Registrarse</button>
+                <button className={`btn-ghost ${styles.mobileAuthBtn}`} onClick={() => { setMenuOpen(false); onLoginClick() }}>{t('nav.iniciarSesion')}</button>
+                <button className={`btn-accent ${styles.mobileAuthBtn}`} onClick={() => { setMenuOpen(false); onRegisterClick() }}>{t('nav.registrarse')}</button>
               </>
             )}
           </div>
         </div>
 
         <div className={styles.btns}>
+          {/* El selector va antes que los botones de sesión: quien no lee español tiene que
+              poder cambiar de lengua antes de decidir si entra. */}
+          <SelectorIdioma />
           {isAuthenticated ? (
             <>
-              <button className="btn-accent" onClick={onChatClick}>Ir al chat</button>
-              <button className={styles.signoutBtn} onClick={onSignoutClick}>Cerrar sesión</button>
+              <button className="btn-accent" onClick={onChatClick}>{t('nav.irAlChat')}</button>
+              <button className={styles.signoutBtn} onClick={onSignoutClick}>{t('nav.cerrarSesion')}</button>
             </>
           ) : (
             <>
-              <button className="btn-ghost" onClick={onLoginClick}>Iniciar sesión</button>
-              <button className="btn-accent" onClick={onRegisterClick}>Registrarse</button>
+              <button className="btn-ghost" onClick={onLoginClick}>{t('nav.iniciarSesion')}</button>
+              <button className="btn-accent" onClick={onRegisterClick}>{t('nav.registrarse')}</button>
             </>
           )}
         </div>
@@ -85,7 +88,7 @@ export default function Navbar({
         <button
           className={`${styles.hamburger} ${menuOpen ? styles.open : ''}`}
           onClick={() => setMenuOpen((p) => !p)}
-          aria-label="Menú"
+          aria-label={t('nav.menu')}
           aria-expanded={menuOpen}
         >
           <span /><span /><span />

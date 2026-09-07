@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { LEGAL_GLOSSARY } from './legalGlossary'
+import { useT } from '@/i18n/traducir'
 import styles from './ChatSidebar.module.css'
 
 const normalize = (value) =>
@@ -10,13 +11,14 @@ const normalize = (value) =>
     .normalize('NFD')
     .replace(/\p{Diacritic}/gu, '')
 
-const formatDate = (iso) => {
-  if (!iso) return 'Consulta'
+// La fecha se formatea en es-PE: Intl no tiene datos de quechua ni de aymara.
+const formatDate = (iso, textoPorDefecto) => {
+  if (!iso) return textoPorDefecto
   return new Date(iso).toLocaleDateString('es-PE', { day: '2-digit', month: 'short' })
 }
 
-const sessionLabel = (session) =>
-  session.title || session.name || formatDate(session.createdAt)
+const sessionLabel = (session, textoPorDefecto) =>
+  session.title || session.name || formatDate(session.createdAt, textoPorDefecto)
 
 export default function ChatSidebar({
   open,
@@ -34,6 +36,7 @@ export default function ChatSidebar({
   activeGlossaryTerm,
   onClose,
 }) {
+  const t = useT()
   const { user, signout } = useAuth()
   const [editingId, setEditingId] = useState(null)
   const [editValue, setEditValue] = useState('')
@@ -44,8 +47,9 @@ export default function ChatSidebar({
   const filteredSessions = useMemo(() => {
     const term = normalize(query).trim()
     if (!term) return sessions
-    return sessions.filter((s) => normalize(sessionLabel(s)).includes(term))
-  }, [sessions, query])
+    return sessions.filter((s) => normalize(sessionLabel(s, t('chat.consulta'))).includes(term))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessions, query, t.idioma])
 
   const initials = user?.name
     ? user.name.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase()
@@ -62,7 +66,7 @@ export default function ChatSidebar({
   }
 
   const saveEdit = (sessionId) => {
-    onRenameSession(sessionId, editValue.trim() || 'Consulta')
+    onRenameSession(sessionId, editValue.trim() || t('chat.consulta'))
     setEditingId(null)
   }
 
@@ -103,10 +107,10 @@ export default function ChatSidebar({
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M12 5v14M5 12h14"/>
         </svg>
-        Nueva consulta
+        {t('chat.sidebar.nueva')}
       </button>
 
-      <div className={styles.listLabel}>Historial</div>
+      <div className={styles.listLabel}>{t('chat.sidebar.historial')}</div>
 
       {sessions.length > 0 && (
         <div className={styles.searchWrap}>
@@ -120,16 +124,16 @@ export default function ChatSidebar({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleSearchKeyDown}
-            placeholder="Buscar consulta..."
-            aria-label="Buscar en el historial"
+            placeholder={t('chat.sidebar.buscar')}
+            aria-label={t('chat.sidebar.buscarAria')}
           />
           {query && (
             <button
               type="button"
               className={styles.clearSearchBtn}
               onClick={() => setQuery('')}
-              title="Limpiar búsqueda"
-              aria-label="Limpiar búsqueda"
+              title={t('chat.sidebar.limpiarBusqueda')}
+              aria-label={t('chat.sidebar.limpiarBusqueda')}
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="18" y1="6" x2="6" y2="18"/>
@@ -142,13 +146,15 @@ export default function ChatSidebar({
 
       <div className={styles.list}>
         {loadingSessions && sessions.length === 0 && (
-          <p className={styles.emptyMsg}>Cargando historial...</p>
+          <p className={styles.emptyMsg}>{t('chat.sidebar.cargandoHistorial')}</p>
         )}
         {!loadingSessions && sessions.length === 0 && (
-          <p className={styles.emptyMsg}>No hay consultas aún.<br/>Haz tu primera pregunta.</p>
+          <p className={styles.emptyMsg}>
+            {t('chat.sidebar.sinConsultas')}<br/>{t('chat.sidebar.primeraPregunta')}
+          </p>
         )}
         {sessions.length > 0 && filteredSessions.length === 0 && (
-          <p className={styles.emptyMsg}>No se encontraron consultas.</p>
+          <p className={styles.emptyMsg}>{t('chat.sidebar.sinResultados')}</p>
         )}
         {filteredSessions.map((s) => (
           <div
@@ -171,17 +177,17 @@ export default function ChatSidebar({
                 autoFocus
               />
             ) : (
-              <span className={styles.name}>{sessionLabel(s)}</span>
+              <span className={styles.name}>{sessionLabel(s, t('chat.consulta'))}</span>
             )}
 
             <div className={styles.actions}>
-              <button className={styles.actionBtn} onClick={(e) => startEdit(e, s)} title="Renombrar">
+              <button className={styles.actionBtn} onClick={(e) => startEdit(e, s)} title={t('chat.sidebar.renombrar')}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                   <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                 </svg>
               </button>
-              <button className={styles.actionBtn} onClick={(e) => askDeleteSession(e, s)} title="Eliminar">
+              <button className={styles.actionBtn} onClick={(e) => askDeleteSession(e, s)} title={t('chat.sidebar.eliminar')}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <polyline points="3 6 5 6 21 6"/>
                   <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
@@ -198,7 +204,7 @@ export default function ChatSidebar({
             onClick={onLoadMoreSessions}
             disabled={loadingMoreSessions}
           >
-            {loadingMoreSessions ? 'Cargando...' : 'Cargar más'}
+            {loadingMoreSessions ? t('comun.cargando') : t('chat.sidebar.cargarMas')}
           </button>
         )}
       </div>
@@ -208,9 +214,9 @@ export default function ChatSidebar({
         className={styles.glossaryHeader}
         onClick={() => setGlossaryOpen((v) => !v)}
         aria-expanded={glossaryOpen}
-        title={glossaryOpen ? 'Ocultar glosario' : 'Mostrar glosario'}
+        title={glossaryOpen ? t('chat.sidebar.ocultarGlosario') : t('chat.sidebar.mostrarGlosario')}
       >
-        <span>Glosario legal</span>
+        <span>{t('chat.glosario.titulo')}</span>
         <svg
           className={`${styles.glossaryChevron} ${glossaryOpen ? styles.glossaryChevronOpen : ''}`}
           viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
@@ -221,18 +227,18 @@ export default function ChatSidebar({
 
       {glossaryOpen && (
         <div className={styles.glossary}>
-          {LEGAL_GLOSSARY.map((entry) => (
+          {LEGAL_GLOSSARY.map((clave) => (
             <button
-              key={entry.term}
+              key={clave}
               type="button"
-              className={`${styles.glossaryItem} ${activeGlossaryTerm?.term === entry.term ? styles.glossaryItemActive : ''}`}
-              onClick={() => handleSelectGlossaryTerm(entry)}
+              className={`${styles.glossaryItem} ${activeGlossaryTerm === clave ? styles.glossaryItemActive : ''}`}
+              onClick={() => handleSelectGlossaryTerm(clave)}
             >
               <svg className={styles.itemIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
               </svg>
-              {entry.term}
+              {t(`glosario.${clave}.termino`)}
             </button>
           ))}
         </div>
@@ -243,15 +249,15 @@ export default function ChatSidebar({
           to="/configuracion"
           className={styles.userLink}
           onClick={onClose}
-          title="Ir a configuración"
+          title={t('chat.sidebar.irAConfiguracion')}
         >
           <div className={styles.avatar}>{initials}</div>
           <div className={styles.userInfo}>
-            <span className={styles.userName}>{user?.name || 'Usuario'}</span>
+            <span className={styles.userName}>{user?.name || t('chat.sidebar.usuario')}</span>
             <span className={styles.userEmail}>{user?.email || ''}</span>
           </div>
         </Link>
-        <button className={styles.logoutBtn} onClick={signout} title="Cerrar sesión">
+        <button className={styles.logoutBtn} onClick={signout} title={t('chat.cerrarSesion')}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
             <polyline points="16 17 21 12 16 7"/>
@@ -269,16 +275,14 @@ export default function ChatSidebar({
             aria-labelledby="delete-session-title"
             onMouseDown={(e) => e.stopPropagation()}
           >
-            <h2 id="delete-session-title">Eliminar consulta</h2>
-            <p>
-              Se eliminará "{sessionLabel(deleteTarget)}" del historial.
-            </p>
+            <h2 id="delete-session-title">{t('chat.sidebar.eliminarTitulo')}</h2>
+            <p>{t('chat.sidebar.eliminarTexto', { titulo: sessionLabel(deleteTarget, t('chat.consulta')) })}</p>
             <div className={styles.confirmActions}>
               <button className={styles.cancelBtn} onClick={() => setDeleteTarget(null)}>
-                Cancelar
+                {t('comun.cancelar')}
               </button>
               <button className={styles.deleteBtn} onClick={confirmDeleteSession}>
-                Eliminar
+                {t('chat.sidebar.eliminar')}
               </button>
             </div>
           </section>

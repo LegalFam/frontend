@@ -1,3 +1,4 @@
+import { useT } from '@/i18n/traducir'
 import styles from './PrivacidadSection.module.css'
 
 const items = [
@@ -8,8 +9,7 @@ const items = [
         <circle cx="12" cy="7" r="4"/>
       </svg>
     ),
-    title: 'Datos bajo tu control',
-    desc: 'Eres el titular de tu información. Puedes consultar, rectificar o eliminar tus datos personales en cualquier momento.',
+    clave: 'control',
   },
   {
     icon: (
@@ -18,8 +18,7 @@ const items = [
         <path d="M5.6 5.6l12.8 12.8"/>
       </svg>
     ),
-    title: 'Sin venta de datos',
-    desc: 'Nunca compartimos ni vendemos tu información personal a terceros con fines comerciales o publicitarios.',
+    clave: 'sinVenta',
   },
   {
     icon: (
@@ -28,8 +27,7 @@ const items = [
         <path d="M16 2v4M8 2v4M3 10h18"/>
       </svg>
     ),
-    title: 'Retención limitada',
-    desc: 'Conservamos tu historial de consultas solo el tiempo necesario para brindarte el servicio. Puedes solicitar la eliminación de tu cuenta en todo momento.',
+    clave: 'retencion',
   },
   {
     icon: (
@@ -38,8 +36,7 @@ const items = [
         <path d="M14 2v6h6M8 13h8M8 17h8M8 9h2"/>
       </svg>
     ),
-    title: 'Transparencia total',
-    desc: 'Te informamos con claridad qué datos recopilamos, para qué los usamos y con quién los compartimos cuando sea necesario.',
+    clave: 'transparencia',
   },
   {
     icon: (
@@ -48,40 +45,40 @@ const items = [
         <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24M1 1l22 22"/>
       </svg>
     ),
-    title: 'Anonimización de consultas',
-    desc: 'Las consultas legales se procesan de forma anonimizada. Ningún abogado externo tiene acceso a tu historial de conversaciones.',
+    clave: 'anonimizacion',
   },
 ]
 
 export default function PrivacidadSection() {
+  const t = useT()
+
   return (
     <section id="privacidad" className={styles.section}>
       <div className="container">
         <div className={styles.split}>
           <div className={styles.intro}>
             <div className={styles.header}>
-              <span className="section-eyebrow">Privacidad</span>
-              <h2 className="section-title">Tu privacidad es nuestra prioridad</h2>
-              <p className="section-sub">
-                Tratamos tus datos conforme a la Ley N.° 29733 de Protección de Datos Personales
-                y las mejores prácticas internacionales de privacidad.
-              </p>
+              <span className="section-eyebrow">{t('landing.privacidad.eyebrow')}</span>
+              <h2 className="section-title">{t('landing.privacidad.titulo')}</h2>
+              <p className="section-sub">{t('landing.privacidad.sub')}</p>
             </div>
             <div className={styles.contact}>
-              <h3>Contacto de privacidad</h3>
+              <h3>{t('landing.privacidad.contactoTitulo')}</h3>
+              {/* El correo es un nodo hermano, no va a mitad de frase: así el orden de las
+                  palabras puede cambiar en cada lengua sin romper el enlace. */}
               <p>
-                Para ejercer tus derechos ARCO (Acceso, Rectificación, Cancelación,
-                Oposición) escríbenos a <a href="mailto:privacidad@legalfam.pe">privacidad@legalfam.pe</a>
+                {t('landing.privacidad.contactoTexto')}{' '}
+                <a href="mailto:privacidad@legalfam.pe">privacidad@legalfam.pe</a>
               </p>
             </div>
           </div>
           <ul className={styles.list}>
             {items.map((item) => (
-              <li key={item.title} className={styles.item}>
+              <li key={item.clave} className={styles.item}>
                 <div className={styles.icon}>{item.icon}</div>
                 <div className={styles.body}>
-                  <h3>{item.title}</h3>
-                  <p>{item.desc}</p>
+                  <h3>{t(`landing.privacidad.${item.clave}`)}</h3>
+                  <p>{t(`landing.privacidad.${item.clave}Desc`)}</p>
                 </div>
               </li>
             ))}

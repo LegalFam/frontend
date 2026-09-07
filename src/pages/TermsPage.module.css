@@ -147,3 +147,8 @@
   .main { padding: 2.1875rem 1.25rem 3.125rem; }
   .card { padding: 1.375rem 1.4375rem; }
 }
+
+/* El aviso de traducción del documento entero: alineado con las tarjetas. */
+.aviso {
+  margin-top: 1.5rem;
+}

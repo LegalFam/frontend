@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { authService } from '@/services/api'
 import { normalizeApiError } from '@/utils/apiError'
+import { useT } from '@/i18n/traducir'
 import styles from './AuthModal.module.css'
 
 const COOLDOWN_SECONDS = 60
@@ -10,6 +11,7 @@ const COOLDOWN_SECONDS = 60
  * cannot be used to probe who is registered; the confirmation copy is neutral to match.
  */
 export default function ResendVerificationButton({ email, className }) {
+  const t = useT()
   const [sending, setSending] = useState(false)
   const [cooldown, setCooldown] = useState(0)
   const [feedback, setFeedback] = useState(null)
@@ -37,10 +39,10 @@ export default function ResendVerificationButton({ email, className }) {
     setFeedback(null)
     try {
       await authService.resendVerification({ email })
-      setFeedback({ ok: true, message: 'Te reenviamos el enlace. Revisa tu bandeja de entrada y la carpeta de spam.' })
+      setFeedback({ ok: true, message: t('auth.reenvio.exito') })
       startCooldown()
     } catch (e) {
-      setFeedback({ ok: false, message: normalizeApiError(e, 'No se pudo reenviar el correo.').message })
+      setFeedback({ ok: false, message: normalizeApiError(e, t('auth.reenvio.error')).message })
     } finally {
       setSending(false)
     }
@@ -55,10 +57,10 @@ export default function ResendVerificationButton({ email, className }) {
         disabled={sending || cooldown > 0 || !email}
       >
         {sending
-          ? 'Reenviando...'
+          ? t('auth.reenvio.reenviando')
           : cooldown > 0
-            ? `Reenviar en ${cooldown}s`
-            : 'Reenviar correo de verificación'}
+            ? t('auth.reenvio.espera', { segundos: cooldown })
+            : t('auth.reenvio.boton')}
       </button>
       {feedback && (
         <p className={feedback.ok ? styles.noticeHint : 'field-err'}>{feedback.message}</p>

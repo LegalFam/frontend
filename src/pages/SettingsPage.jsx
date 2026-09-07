@@ -8,12 +8,17 @@ import { normalizeApiError } from '@/utils/apiError'
 import { TEMAS_PUBLICOS, aplicarTema, temaActual } from '@/theme'
 import { STATIC_PLANS, formatPlanName, formatPlanTokens } from '@/utils/plans'
 import BillingDialog from '@/components/billing/BillingDialog'
+import SelectorIdioma from '@/components/common/SelectorIdioma'
+import { useT } from '@/i18n/traducir'
 import styles from './SettingsPage.module.css'
 
-const formatPeriodEnd = (iso) => {
-  if (!iso) return 'final del periodo actual'
+// La fecha se formatea siempre en es-PE: Intl no tiene datos de quechua ni de aymara, y
+// pedirle 'qu-PE' caería en el idioma por defecto del navegador, peor que el español. Lo que
+// sí se traduce es el texto que la rodea.
+const formatPeriodEnd = (iso, textoPorDefecto) => {
+  if (!iso) return textoPorDefecto
   const date = new Date(iso)
-  if (Number.isNaN(date.getTime())) return 'final del periodo actual'
+  if (Number.isNaN(date.getTime())) return textoPorDefecto
   return date.toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
@@ -29,6 +34,7 @@ const splitName = (fullName) => {
 }
 
 export default function SettingsPage() {
+  const t = useT()
   const navigate = useNavigate()
   const user = useAuthStore((s) => s.user)
   const setUser = useAuthStore((s) => s.setUser)
@@ -65,7 +71,7 @@ export default function SettingsPage() {
         setUser({ ...(useAuthStore.getState().user || {}), ...data })
       })
       .catch((e) => {
-        if (!disposed) setProfileError(normalizeApiError(e, 'No se pudo cargar tu perfil.').message)
+        if (!disposed) setProfileError(normalizeApiError(e, t('config.errorPerfil')).message)
       })
 
     refreshBilling().catch(() => {})
@@ -94,8 +100,8 @@ export default function SettingsPage() {
     setProfileError(null)
 
     const errs = {}
-    if (!profile.nombre.trim()) errs.nombre = 'Campo requerido.'
-    if (!profile.apellido.trim()) errs.apellido = 'Campo requerido.'
+    if (!profile.nombre.trim()) errs.nombre = t('auth.validacion.requerido')
+    if (!profile.apellido.trim()) errs.apellido = t('auth.validacion.requerido')
     setProfileErrs(errs)
     if (Object.keys(errs).length) return
 
@@ -107,7 +113,7 @@ export default function SettingsPage() {
       setUser({ ...(useAuthStore.getState().user || {}), ...data })
       setProfileSaved(true)
     } catch (e) {
-      setProfileError(normalizeApiError(e, 'No se pudieron guardar tus datos.').message)
+      setProfileError(normalizeApiError(e, t('config.datos.error')).message)
     } finally {
       setProfileSaving(false)
     }
@@ -119,9 +125,9 @@ export default function SettingsPage() {
     setPasswordError(null)
 
     const errs = {}
-    if (!passwords.current) errs.current = 'Campo requerido.'
-    if (!passwords.next || passwords.next.length < 8) errs.next = 'Mínimo 8 caracteres.'
-    if (passwords.next !== passwords.confirm) errs.confirm = 'Las contraseñas no coinciden.'
+    if (!passwords.current) errs.current = t('auth.validacion.requerido')
+    if (!passwords.next || passwords.next.length < 8) errs.next = t('auth.validacion.contrasenaCorta')
+    if (passwords.next !== passwords.confirm) errs.confirm = t('auth.validacion.contrasenaNoCoincide')
     setPasswordErrs(errs)
     if (Object.keys(errs).length) return
 
@@ -134,9 +140,9 @@ export default function SettingsPage() {
       setPasswords({ current: '', next: '', confirm: '' })
       setPasswordSaved(true)
     } catch (e) {
-      const normalized = normalizeApiError(e, 'No se pudo cambiar la contraseña.')
+      const normalized = normalizeApiError(e, t('config.contrasena.error'))
       if (normalized.code === 'current_password_invalid') {
-        setPasswordErrs({ current: 'La contraseña actual es incorrecta.' })
+        setPasswordErrs({ current: t('config.contrasena.actualIncorrecta') })
       } else {
         setPasswordError(normalized.message)
       }
@@ -157,7 +163,7 @@ export default function SettingsPage() {
       await cancelSubscription()
       setBillingDone(true)
     } catch (e) {
-      setBillingError(normalizeApiError(e, 'No se pudo dar de baja la suscripción.').message)
+      setBillingError(normalizeApiError(e, t('config.suscripcion.errorBaja')).message)
     }
   }
 
@@ -168,9 +174,9 @@ export default function SettingsPage() {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="16" height="16">
             <path d="M19 12H5M12 5l-7 7 7 7" />
           </svg>
-          Volver
+          {t('comun.volver')}
         </button>
-        <Link to="/chat" className={styles.logo} aria-label="Ir al chat">
+        <Link to="/chat" className={styles.logo} aria-label={t('config.volverAlChat')}>
           <img src={logoImg} alt="LegalFam" />
           <span>LEGALFAM</span>
         </Link>
@@ -179,18 +185,18 @@ export default function SettingsPage() {
 
       <main className={styles.main}>
         <section className={styles.hero}>
-          <span className={styles.eyebrow}>Cuenta</span>
-          <h1>Configuración</h1>
-          <p>Actualiza tus datos personales, tu contraseña y tu suscripción.</p>
+          <span className={styles.eyebrow}>{t('config.eyebrow')}</span>
+          <h1>{t('config.titulo')}</h1>
+          <p>{t('config.subtitulo')}</p>
         </section>
 
         <section className={styles.card}>
-          <h2>Datos personales</h2>
+          <h2>{t('config.datos.titulo')}</h2>
           {profileError && <div className="api-err">{profileError}</div>}
           <form onSubmit={submitProfile} noValidate>
             <div className={styles.row}>
               <div className={styles.fg}>
-                <label htmlFor="st-nombre">Nombre</label>
+                <label htmlFor="st-nombre">{t('auth.campos.nombre')}</label>
                 <input
                   id="st-nombre"
                   type="text"
@@ -202,7 +208,7 @@ export default function SettingsPage() {
                 {profileErrs.nombre && <span className="field-err">{profileErrs.nombre}</span>}
               </div>
               <div className={styles.fg}>
-                <label htmlFor="st-apellido">Apellido</label>
+                <label htmlFor="st-apellido">{t('auth.campos.apellido')}</label>
                 <input
                   id="st-apellido"
                   type="text"
@@ -216,29 +222,26 @@ export default function SettingsPage() {
             </div>
 
             <div className={styles.fg}>
-              <label htmlFor="st-email">Correo electrónico</label>
+              <label htmlFor="st-email">{t('auth.campos.correo')}</label>
               <input id="st-email" type="email" value={email} disabled readOnly autoComplete="email" />
-              <p className={styles.fieldNote}>
-                Para cambiar tu correo necesitamos verificar la nueva dirección. Esta opción estará
-                disponible pronto.
-              </p>
+              <p className={styles.fieldNote}>{t('config.datos.correoNota')}</p>
             </div>
 
             <div className={styles.formFooter}>
               <button type="submit" className={styles.primaryBtn} disabled={profileSaving}>
-                {profileSaving ? 'Guardando...' : 'Guardar cambios'}
+                {profileSaving ? t('auth.restablecer.guardando') : t('config.datos.guardar')}
               </button>
-              {profileSaved && <span className={styles.savedMsg}>Datos actualizados.</span>}
+              {profileSaved && <span className={styles.savedMsg}>{t('config.datos.guardado')}</span>}
             </div>
           </form>
         </section>
 
         <section className={styles.card}>
-          <h2>Contraseña</h2>
+          <h2>{t('config.contrasena.titulo')}</h2>
           {passwordError && <div className="api-err">{passwordError}</div>}
           <form onSubmit={submitPassword} noValidate>
             <div className={styles.fg}>
-              <label htmlFor="st-current">Contraseña actual</label>
+              <label htmlFor="st-current">{t('config.contrasena.actual')}</label>
               <input
                 id="st-current"
                 type="password"
@@ -252,11 +255,11 @@ export default function SettingsPage() {
 
             <div className={styles.row}>
               <div className={styles.fg}>
-                <label htmlFor="st-next">Nueva contraseña</label>
+                <label htmlFor="st-next">{t('config.contrasena.nueva')}</label>
                 <input
                   id="st-next"
                   type="password"
-                  placeholder="Mínimo 8 caracteres"
+                  placeholder={t('auth.campos.minimoPlaceholder')}
                   value={passwords.next}
                   onChange={(e) => setPasswords((p) => ({ ...p, next: e.target.value }))}
                   className={passwordErrs.next ? styles.hasError : ''}
@@ -265,11 +268,11 @@ export default function SettingsPage() {
                 {passwordErrs.next && <span className="field-err">{passwordErrs.next}</span>}
               </div>
               <div className={styles.fg}>
-                <label htmlFor="st-confirm">Confirmar contraseña</label>
+                <label htmlFor="st-confirm">{t('auth.campos.confirmar')}</label>
                 <input
                   id="st-confirm"
                   type="password"
-                  placeholder="Repite la nueva contraseña"
+                  placeholder={t('config.contrasena.confirmarPlaceholder')}
                   value={passwords.confirm}
                   onChange={(e) => setPasswords((p) => ({ ...p, confirm: e.target.value }))}
                   className={passwordErrs.confirm ? styles.hasError : ''}
@@ -281,33 +284,37 @@ export default function SettingsPage() {
 
             <div className={styles.formFooter}>
               <button type="submit" className={styles.primaryBtn} disabled={passwordSaving}>
-                {passwordSaving ? 'Guardando...' : 'Cambiar contraseña'}
+                {passwordSaving ? t('auth.restablecer.guardando') : t('config.contrasena.cambiar')}
               </button>
-              {passwordSaved && <span className={styles.savedMsg}>Contraseña actualizada.</span>}
+              {passwordSaved && <span className={styles.savedMsg}>{t('config.contrasena.guardado')}</span>}
             </div>
           </form>
         </section>
 
         <section className={styles.card}>
-          <h2>Apariencia</h2>
-          <p className={styles.themeIntro}>
-            Elige la paleta con la que quieres ver LegalFam. El cambio se aplica al instante y
-            queda guardado en este navegador.
-          </p>
-          <div className={styles.themeGrid} role="radiogroup" aria-label="Apariencia">
-            {TEMAS_PUBLICOS.map((t) => (
+          <h2>{t('config.idioma.titulo')}</h2>
+          <p className={styles.themeIntro}>{t('config.idioma.intro')}</p>
+          <SelectorIdioma className={styles.idiomaPicker} />
+          <p className={styles.fieldNote}>{t('config.idioma.nota')}</p>
+        </section>
+
+        <section className={styles.card}>
+          <h2>{t('config.apariencia.titulo')}</h2>
+          <p className={styles.themeIntro}>{t('config.apariencia.intro')}</p>
+          <div className={styles.themeGrid} role="radiogroup" aria-label={t('config.apariencia.titulo')}>
+            {TEMAS_PUBLICOS.map((opcion) => (
               <button
-                key={t.id}
+                key={opcion.id}
                 type="button"
                 role="radio"
-                className={`${styles.themeOption} ${tema === t.id ? styles.themeActive : ''}`}
-                onClick={() => cambiarTema(t.id)}
-                aria-checked={tema === t.id}
+                className={`${styles.themeOption} ${tema === opcion.id ? styles.themeActive : ''}`}
+                onClick={() => cambiarTema(opcion.id)}
+                aria-checked={tema === opcion.id}
               >
                 <span className={styles.themeRadio} aria-hidden="true" />
                 <span className={styles.themeText}>
-                  <strong>{t.nombre}</strong>
-                  <small>{t.descripcion}</small>
+                  <strong>{opcion.nombre}</strong>
+                  <small>{opcion.descripcion}</small>
                 </span>
               </button>
             ))}
@@ -315,17 +322,17 @@ export default function SettingsPage() {
         </section>
 
         <section className={styles.card}>
-          <h2>Suscripción</h2>
+          <h2>{t('config.suscripcion.titulo')}</h2>
           {billingError && <div className="api-err">{billingError}</div>}
           {subscription ? (
             <>
               <div className={styles.summary}>
                 <div>
-                  <span>Plan actual</span>
+                  <span>{t('config.suscripcion.planActual')}</span>
                   <strong>{formatPlanName(currentPlan) || subscription.planCode}</strong>
                 </div>
                 <div>
-                  <span>Tokens disponibles</span>
+                  <span>{t('config.suscripcion.tokensDisponibles')}</span>
                   <strong>{remainingTokens}/{tokenLimit}</strong>
                 </div>
               </div>
@@ -333,19 +340,20 @@ export default function SettingsPage() {
               {subscription.provider === 'MERCADO_PAGO' && subscription.cancelAtPeriodEnd ? (
                 <>
                   {billingDone && (
-                    <p className={styles.savedMsg}>Suscripción dada de baja.</p>
+                    <p className={styles.savedMsg}>{t('config.suscripcion.dadaDeBaja')}</p>
                   )}
                   <p className={styles.fieldNote}>
-                    No se renovará. Conservas tu plan y tus tokens hasta el{' '}
-                    {formatPeriodEnd(subscription.currentPeriodEnd)}; después pasarás
-                    automáticamente al plan gratuito.
+                    {t('config.suscripcion.noRenovara', {
+                      fecha: formatPeriodEnd(subscription.currentPeriodEnd, t('config.suscripcion.finPeriodo')),
+                    })}
                   </p>
                 </>
               ) : subscription.provider === 'MERCADO_PAGO' ? (
                 <>
                   <p className={styles.fieldNote}>
-                    Al dar de baja no se renovará el próximo mes, pero conservas tu plan y tus
-                    tokens hasta el {formatPeriodEnd(subscription.currentPeriodEnd)}.
+                    {t('config.suscripcion.alDarDeBaja', {
+                      fecha: formatPeriodEnd(subscription.currentPeriodEnd, t('config.suscripcion.finPeriodo')),
+                    })}
                   </p>
                   <button
                     type="button"
@@ -353,26 +361,24 @@ export default function SettingsPage() {
                     onClick={() => setCancelOpen(true)}
                     disabled={billingLoading}
                   >
-                    {billingLoading ? 'Dando de baja...' : 'Dar de baja la suscripción'}
+                    {billingLoading ? t('config.suscripcion.dandoDeBaja') : t('config.suscripcion.darDeBaja')}
                   </button>
                 </>
               ) : (
                 <>
-                  <p className={styles.fieldNote}>
-                    {'Tu plan actual es gratuito, no hay ninguna suscripción que dar de baja.'}
-                  </p>
+                  <p className={styles.fieldNote}>{t('config.suscripcion.esGratuito')}</p>
                   <button
                     type="button"
                     className={`${styles.primaryBtn} ${styles.plansBtn}`}
                     onClick={() => setPlansOpen(true)}
                   >
-                    Ver planes y tokens
+                    {t('config.suscripcion.verPlanes')}
                   </button>
                 </>
               )}
             </>
           ) : (
-            <p className={styles.fieldNote}>Cargando información de tu suscripción...</p>
+            <p className={styles.fieldNote}>{t('config.suscripcion.cargando')}</p>
           )}
         </section>
       </main>
@@ -388,23 +394,22 @@ export default function SettingsPage() {
             aria-labelledby="cancel-subscription-title"
             onMouseDown={(e) => e.stopPropagation()}
           >
-            <h2 id="cancel-subscription-title">Dar de baja la suscripción</h2>
+            <h2 id="cancel-subscription-title">{t('config.suscripcion.confirmarTitulo')}</h2>
+            {/* Las cifras van interpoladas y no como <strong> intercalado: el orden de las
+                palabras cambia entre lenguas y un trozo de JSX a mitad de frase no sobrevive. */}
             <p>
-              Tu suscripción dejará de renovarse, pero conservas tu plan y tus{' '}
-              <strong>{remainingTokens}</strong> tokens hasta el{' '}
-              <strong>{formatPeriodEnd(subscription?.currentPeriodEnd)}</strong>.
+              {t('config.suscripcion.confirmarTexto1', {
+                tokens: remainingTokens,
+                fecha: formatPeriodEnd(subscription?.currentPeriodEnd, t('config.suscripcion.finPeriodo')),
+              })}
             </p>
-            <p>
-              Al terminar ese periodo pasarás al plan gratuito, con{' '}
-              <strong>{freeTokenLimit}</strong> tokens mensuales. Para volver a un plan de pago
-              tendrás que contratarlo de nuevo.
-            </p>
+            <p>{t('config.suscripcion.confirmarTexto2', { tokens: freeTokenLimit })}</p>
             <div className={styles.confirmActions}>
               <button type="button" className={styles.cancelBtn} onClick={() => setCancelOpen(false)}>
-                Volver
+                {t('comun.volver')}
               </button>
               <button type="button" className={styles.deleteBtn} onClick={confirmCancelSubscription}>
-                Dar de baja
+                {t('config.suscripcion.confirmarBoton')}
               </button>
             </div>
           </section>

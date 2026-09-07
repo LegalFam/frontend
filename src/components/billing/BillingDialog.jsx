@@ -8,10 +8,10 @@ import {
   planSlug,
 } from '@/utils/plans'
 import { usePaymentStore } from '@/store/paymentStore'
+import { useT } from '@/i18n/traducir'
 import styles from './BillingDialog.module.css'
 
-const TOKEN_COST_HINT = 'Cada consulta descuenta tokens cuando la respuesta queda lista: 1 token para consultas simples y hasta 3 tokens cuando la respuesta se apoya en fuentes legales.'
-
+// Fecha siempre en es-PE, como en SettingsPage: Intl no tiene datos de quechua ni de aymara.
 const formatRenewDate = (iso) => {
   if (!iso) return null
   const date = new Date(iso)
@@ -22,6 +22,7 @@ const formatRenewDate = (iso) => {
 // Diálogo compartido de plan y tokens. Lo usan el chat (badge de tokens / aviso
 // de "sin tokens") y la página de configuración (usuarios del plan gratuito).
 export default function BillingDialog({ onClose }) {
+  const t = useT()
   const navigate = useNavigate()
   const { plans, subscription, cancelSubscription, loading: billingLoading } = usePaymentStore()
 
@@ -56,10 +57,10 @@ export default function BillingDialog({ onClose }) {
       >
         <div className={styles.dialogHeader}>
           <div>
-            <p className={styles.dialogEyebrow}>Suscripción</p>
-            <h2 id="billing-title">Plan y tokens</h2>
+            <p className={styles.dialogEyebrow}>{t('facturacion.eyebrow')}</p>
+            <h2 id="billing-title">{t('facturacion.titulo')}</h2>
           </div>
-          <button className="icon-btn" onClick={onClose} aria-label="Cerrar">
+          <button className="icon-btn" onClick={onClose} aria-label={t('comun.cerrar')}>
             <svg viewBox="0 0 24 24">
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
@@ -69,19 +70,19 @@ export default function BillingDialog({ onClose }) {
 
         <div className={styles.billingSummary}>
           <div>
-            <span>Plan actual</span>
+            <span>{t('facturacion.planActual')}</span>
             <strong>{formatPlanName(currentPlan) || subscription.planCode}</strong>
           </div>
           <div>
-            <span>Tokens disponibles</span>
+            <span>{t('facturacion.tokensDisponibles')}</span>
             <strong>{remainingTokens}/{tokenLimit}</strong>
           </div>
         </div>
 
         <div className={styles.tokenMeterBlock}>
           <div className={styles.tokenMeterLabels}>
-            <span>{usedTokens} usados</span>
-            <span>{remainingTokens} restantes</span>
+            <span>{t('facturacion.usados', { cantidad: usedTokens })}</span>
+            <span>{t('facturacion.restantes', { cantidad: remainingTokens })}</span>
           </div>
           <div className={styles.tokenMeter} aria-hidden="true">
             <span style={{ width: `${tokenPercent}%` }} />
@@ -89,11 +90,11 @@ export default function BillingDialog({ onClose }) {
           {renewDate && (
             <p className={styles.tokenRenew}>
               {subscription.cancelAtPeriodEnd
-                ? `Tu plan y tus tokens vencen el ${renewDate}; después pasarás al plan gratuito.`
-                : `Tus tokens se renuevan el ${renewDate}.`}
+                ? t('facturacion.vencen', { fecha: renewDate })
+                : t('facturacion.renuevan', { fecha: renewDate })}
             </p>
           )}
-          <p className={styles.tokenHint}>{TOKEN_COST_HINT}</p>
+          <p className={styles.tokenHint}>{t('facturacion.costeTokens')}</p>
         </div>
 
         <div className={styles.planGrid}>
@@ -110,7 +111,7 @@ export default function BillingDialog({ onClose }) {
                 <span>{formatPlanName(plan)}</span>
                 <strong>{formatPlanPrice(plan)} {formatPlanPeriod(plan)}</strong>
                 <small>{formatPlanTokens(plan)}</small>
-                <em>{isCurrent ? 'Plan activo' : 'Cambiar plan'}</em>
+                <em>{isCurrent ? t('facturacion.planActivo') : t('facturacion.cambiarPlan')}</em>
               </button>
             )
           })}
@@ -122,7 +123,7 @@ export default function BillingDialog({ onClose }) {
             onClick={handleCancelSubscription}
             disabled={billingLoading}
           >
-            {billingLoading ? 'Cancelando...' : 'Cancelar suscripción'}
+            {billingLoading ? t('facturacion.cancelando') : t('facturacion.cancelar')}
           </button>
         )}
       </section>

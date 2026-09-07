@@ -5,17 +5,22 @@ import { useChatStore } from '@/store/chatStore'
 import { useAuthStore } from '@/store/authStore'
 import { usePaymentStore } from '@/store/paymentStore'
 import { normalizeApiError, normalizeAssistantErrorMessage } from '@/utils/apiError'
-import { leerIdioma } from '@/i18n/languages'
+import { t } from '@/i18n/traducir'
+import { useIdiomaStore } from '@/store/idiomaStore'
 
 const BACKOFF_MS = [1000, 2000, 5000, 10000, 30000]
 
 const titleFromText = (text) =>
   text.slice(0, 40) + (text.length > 40 ? '...' : '')
 
+// Guarda la clave y no el texto: así la bienvenida sigue al idioma que esté activo en cada
+// momento, y no al que hubiera al abrir el chat. Lo mismo vale para los avisos de sistema de
+// más abajo. El idioma de un mensaje ya enviado, en cambio, es inmutable: vive en el servidor.
 const welcomeMessage = (name) => ({
   id: 'welcome',
   role: 'ASSISTANT',
-  content: `Hola, **${name || 'Usuario'}**. Bienvenido/a a **LegalFam**.\n\nEstoy aquí para orientarte en temas de **Derecho de Familia** peruano: alimentos, tenencia, filiación y medidas de protección.\n\n¿Sobre qué situación legal deseas consultar hoy?`,
+  messageKey: 'chat.bienvenida',
+  messageVars: { nombre: name || t('chat.usuario') },
   citations: [],
   createdAt: new Date().toISOString(),
 })
@@ -234,7 +239,7 @@ export function useChat() {
       const { data } = await chatService.getSessions()
       store.setSessionsPage(cursorContent(data), cursorNext(data))
     } catch (e) {
-      store.setError(normalizeApiError(e, 'No se pudieron cargar las sesiones.').message)
+      store.setError(normalizeApiError(e, t('chat.errorSesiones')).message)
       if (e.response?.status === 401) navigate('/')
     } finally {
       store.setSessionsLoading(false)
@@ -250,7 +255,7 @@ export function useChat() {
       const { data } = await chatService.getSessions({ params: { cursor } })
       store.setSessionsPage(cursorContent(data), cursorNext(data), true)
     } catch (e) {
-      store.setError(normalizeApiError(e, 'No se pudieron cargar más sesiones.').message)
+      store.setError(normalizeApiError(e, t('chat.errorMasSesiones')).message)
     } finally {
       store.setSessionsLoadingMore(false)
     }
@@ -276,7 +281,7 @@ export function useChat() {
         navigate('/chat', { replace: true })
         return
       }
-      store.setError(normalizeApiError(e, 'No se pudieron cargar los mensajes.').message)
+      store.setError(normalizeApiError(e, t('chat.errorMensajes')).message)
     } finally {
       if (messagesAbortRef.current?.controller === controller) {
         messagesAbortRef.current = null
@@ -297,7 +302,7 @@ export function useChat() {
       store.setMessagesPage(sessionId, messages, cursorNext(data), 'prepend')
       confirmUnreadAssistantReceipts(sessionId, messages).catch(() => {})
     } catch (e) {
-      store.setError(normalizeApiError(e, 'No se pudieron cargar más mensajes.').message)
+      store.setError(normalizeApiError(e, t('chat.errorMasMensajes')).message)
     } finally {
       store.setMessagesLoadingMore(sessionId, false)
     }
@@ -342,7 +347,7 @@ export function useChat() {
       return data.id
     }, [navigate, store])
 
-  const sendMessage = useCallback(async (text, language = leerIdioma()) => {
+  const sendMessage = useCallback(async (text, language = useIdiomaStore.getState().idioma) => {
     const trimmed = text.trim()
     if (!trimmed || sendingTextRef.current === trimmed) return
 
@@ -388,7 +393,7 @@ export function useChat() {
         status: data.status,
       })
     } catch (e) {
-      const normalizedError = normalizeApiError(e, 'No se pudo enviar tu consulta. Intenta nuevamente.')
+      const normalizedError = normalizeApiError(e, t('chat.errorEnviar'))
       const status = normalizedError.status
 
       if (!status) {
@@ -418,7 +423,7 @@ export function useChat() {
           store.addMessage(sessionId || 'new', {
             id: `err_${Date.now()}`,
             role: 'SYSTEM',
-            content: 'Te has quedado sin tokens para enviar consultas. Recarga tu plan para continuar.',
+            messageKey: 'chat.sinTokens',
             errorCode: 'insufficient_tokens',
             citations: [],
             createdAt: new Date().toISOString(),
@@ -440,7 +445,11 @@ export function useChat() {
       store.addMessage(sessionId || 'new', {
         id: `err_${Date.now()}`,
         role: 'SYSTEM',
+        // Se guarda también el código: cuando existe, ChatMessage lo vuelve a traducir al
+        // renderizar. El texto queda como respaldo para los errores que sólo traen mensaje
+        // del servidor, que no hay forma de traducir después.
         content: normalizedError.message,
+        errorCode: normalizedError.code,
         citations: [],
         createdAt: new Date().toISOString(),
         isError: true,
@@ -460,7 +469,7 @@ export function useChat() {
       await chatService.rateMessage(messageId, rating, comment)
     } catch (e) {
       await loadMessages(sessionId, { force: true })
-      store.setError(normalizeApiError(e, 'No se pudo guardar la calificación.').message)
+      store.setError(normalizeApiError(e, t('chat.errorCalificacion')).message)
       throw e
     }
   }, [loadMessages, store])
@@ -471,7 +480,7 @@ export function useChat() {
       store.removeSession(sessionId)
       if (useChatStore.getState().activeSessionId === sessionId) startNewChat()
     } catch (e) {
-      store.setError(normalizeApiError(e, 'No se pudo eliminar la consulta.').message)
+      store.setError(normalizeApiError(e, t('chat.errorEliminar')).message)
     }
   }, [startNewChat, store])
 
@@ -483,7 +492,7 @@ export function useChat() {
       store.upsertSession(data)
     } catch (e) {
       if (previous) store.upsertSession(previous)
-      store.setError(normalizeApiError(e, 'No se pudo renombrar la consulta.').message)
+      store.setError(normalizeApiError(e, t('chat.errorRenombrar')).message)
     }
   }, [store])
 

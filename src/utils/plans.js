@@ -1,3 +1,12 @@
+// Los planes son datos (códigos, precios, límites); el texto que los acompaña vive en el
+// catálogo de idiomas. Las funciones de formato de este módulo resuelven ese texto al ser
+// llamadas, así que devuelven el idioma activo en ese momento y no hace falta un hook.
+//
+// Nota para quien las use: como leen el idioma sin suscribirse, el componente que las llama
+// tiene que suscribirse por su cuenta (useT()) para volver a renderizar al cambiar de lengua.
+// En la práctica todos lo hacen, porque también tienen texto propio.
+import { t, tOpcional } from '@/i18n/traducir'
+
 export const PLAN_SLUGS = {
   FREE: 'gratis',
   BASIC: 'basico',
@@ -12,11 +21,11 @@ export const PLAN_CODES_BY_SLUG = Object.entries(PLAN_SLUGS).reduce(
 // Estas capacidades no dependen del plan: el backend no las restringe por tier.
 // Lo que sí cambia entre planes son los tokens mensuales, la ventana de contexto
 // del asistente y la ventana de historial visible.
-export const SHARED_PLAN_FEATURES = [
-  'Asistente de Derecho de Familia',
-  'Fuentes legales citadas',
-  'Calificación de respuestas',
-]
+//
+// Sólo los identificadores: el texto sale de planes.incluye.* al renderizar.
+export const SHARED_PLAN_FEATURE_KEYS = ['asistente', 'fuentes', 'calificacion']
+
+export const formatPlanFeature = (clave) => t(`planes.incluye.${clave}`)
 
 // Estos valores replican los del backend en payment.properties (app.payment.plans.*),
 // que es la fuente de verdad: si cambian allí, hay que actualizarlos aquí.
@@ -24,7 +33,6 @@ export const STATIC_PLANS = [
   {
     code: 'FREE',
     slug: PLAN_SLUGS.FREE,
-    displayName: 'Plan gratuito',
     monthlyPriceCents: null,
     currency: 'pen',
     billingInterval: 'once',
@@ -32,13 +40,11 @@ export const STATIC_PLANS = [
     contextMessageLimit: 10,
     historyWindowDays: 30,
     featured: false,
-    buttonLabel: 'Empezar gratis',
-    features: SHARED_PLAN_FEATURES,
+    features: SHARED_PLAN_FEATURE_KEYS,
   },
   {
     code: 'BASIC',
     slug: PLAN_SLUGS.BASIC,
-    displayName: 'Plan Básico',
     monthlyPriceCents: 1499,
     currency: 'pen',
     billingInterval: 'month',
@@ -46,13 +52,11 @@ export const STATIC_PLANS = [
     contextMessageLimit: 15,
     historyWindowDays: null,
     featured: true,
-    buttonLabel: 'Suscribirse',
-    features: SHARED_PLAN_FEATURES,
+    features: SHARED_PLAN_FEATURE_KEYS,
   },
   {
     code: 'PREMIUM',
     slug: PLAN_SLUGS.PREMIUM,
-    displayName: 'Plan Premium',
     monthlyPriceCents: 4999,
     currency: 'pen',
     billingInterval: 'month',
@@ -60,8 +64,7 @@ export const STATIC_PLANS = [
     contextMessageLimit: 25,
     historyWindowDays: null,
     featured: false,
-    buttonLabel: 'Suscribirse',
-    features: SHARED_PLAN_FEATURES,
+    features: SHARED_PLAN_FEATURE_KEYS,
   },
 ]
 
@@ -83,14 +86,22 @@ export const mergePlanWithStatic = (plan) => {
     ...plan,
     slug: staticPlan.slug || plan.slug || planSlug(plan),
     featured: staticPlan.featured || false,
-    buttonLabel: staticPlan.buttonLabel || 'Suscribirse',
     contextMessageLimit: plan.contextMessageLimit ?? staticPlan.contextMessageLimit ?? null,
     historyWindowDays: plan.historyWindowDays ?? staticPlan.historyWindowDays ?? null,
     features: staticPlan.features || [],
   }
 }
 
-export const formatPlanName = (plan) => plan?.displayName || plan?.code || 'Plan'
+// El catálogo manda sobre el displayName que llega del servidor, que siempre viene en
+// español; si aparece un plan cuyo código no está en el catálogo, se usa el del servidor.
+export const formatPlanName = (plan) =>
+  (plan?.code && tOpcional(`planes.nombre.${plan.code}`)) ||
+  plan?.displayName ||
+  plan?.code ||
+  t('planes.generico')
+
+export const formatPlanButtonLabel = (plan) =>
+  (plan?.code && tOpcional(`planes.boton.${plan.code}`)) || t('planes.boton.generico')
 
 export const formatPlanPrice = (plan) => {
   if (!plan || plan.monthlyPriceCents == null) return 'S/ 0'
@@ -101,10 +112,12 @@ export const formatPlanPrice = (plan) => {
 }
 
 export const formatPlanPeriod = (plan) =>
-  plan?.billingInterval === 'month' ? '/ mes' : ''
+  plan?.billingInterval === 'month' ? t('planes.porMes') : ''
 
 export const formatPlanTokens = (plan) =>
-  `${new Intl.NumberFormat('es-PE').format(plan?.monthlyTokenLimit || 0)} tokens mensuales`
+  t('planes.tokensMensuales', {
+    cantidad: new Intl.NumberFormat('es-PE').format(plan?.monthlyTokenLimit || 0),
+  })
 
 // La capacidad se expresa como múltiplo del plan gratuito para que las tres
 // columnas compartan la misma referencia. Se deriva de los límites reales, así
@@ -123,9 +136,11 @@ export const formatPlanCapacity = (plan) => {
 }
 
 export const formatPlanContextMessages = (plan) =>
-  `${plan?.contextMessageLimit || 0} mensajes`
+  t('planes.mensajes', { cantidad: plan?.contextMessageLimit || 0 })
 
 export const formatPlanHistoryWindow = (plan) =>
-  plan?.historyWindowDays == null ? 'Completo' : `${plan.historyWindowDays} días`
+  plan?.historyWindowDays == null
+    ? t('planes.historialCompleto')
+    : t('planes.dias', { cantidad: plan.historyWindowDays })
 
 export const planSlug = (plan) => PLAN_SLUGS[plan?.code] || String(plan?.code || '').toLowerCase()

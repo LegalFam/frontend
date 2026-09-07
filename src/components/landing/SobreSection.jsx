@@ -1,3 +1,4 @@
+import { useT } from '@/i18n/traducir'
 import styles from './SobreSection.module.css'
 
 const features = [
@@ -7,8 +8,7 @@ const features = [
         <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
       </svg>
     ),
-    title: 'Tecnología RAG',
-    desc: 'Recuperamos normativa y jurisprudencia peruana vigente para garantizar respuestas precisas y fundamentadas en cada consulta.',
+    clave: 'rag',
   },
   {
     icon: (
@@ -17,8 +17,7 @@ const features = [
         <path d="M12 16v-4M12 8h.01" />
       </svg>
     ),
-    title: 'Explicabilidad XAI',
-    desc: 'Mostramos siempre las fuentes legales que respaldan cada respuesta para que entiendas el razonamiento detrás de la orientación.',
+    clave: 'xai',
   },
   {
     icon: (
@@ -27,12 +26,13 @@ const features = [
         <circle cx="9" cy="7" r="4" />
       </svg>
     ),
-    title: 'Para todos',
-    desc: 'Lenguaje claro y accesible, sin tecnicismos legales. Diseñado para personas de bajos recursos y poblaciones vulnerables del Perú.',
+    clave: 'todos',
   },
 ]
 
 export default function SobreSection() {
+  const t = useT()
+
   return (
     <section id="sobre" className={styles.section}>
       <div className={`container ${styles.grid}`}>
@@ -40,39 +40,31 @@ export default function SobreSection() {
           <img
             className={styles.imgMain}
             src="https://images.unsplash.com/photo-1521791136064-7986c2920216?w=800&q=80"
-            alt="Asesoría legal"
+            alt={t('landing.sobre.imgPrincipal')}
             loading="lazy"
           />
           <img
             className={styles.imgAccent}
             src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=600&q=80"
-            alt="Documentos legales"
+            alt={t('landing.sobre.imgSecundaria')}
             loading="lazy"
           />
           <div className={styles.badge}>
             <div className={styles.badgeNum}>UPC</div>
-            <div className={styles.badgeLbl}>
-              Universidad Peruana de<br />Ciencias Aplicadas
-            </div>
+            <div className={styles.badgeLbl}>{t('landing.sobre.badge')}</div>
           </div>
         </div>
 
         <div className={styles.text}>
-          <span className="section-eyebrow">Sobre nosotros</span>
-          <h2 className="section-title">
-            Democratizando el acceso a la justicia en el Perú
-          </h2>
-          <p className={styles.intro}>
-            LegalFam nació en la UPC para eliminar las barreras económicas,
-            geográficas y de comprensión que impiden a miles de peruanos
-            ejercer sus derechos fundamentales en temas de familia.
-          </p>
+          <span className="section-eyebrow">{t('landing.sobre.eyebrow')}</span>
+          <h2 className="section-title">{t('landing.sobre.titulo')}</h2>
+          <p className={styles.intro}>{t('landing.sobre.intro')}</p>
           <div className={styles.features}>
             {features.map((f) => (
-              <div key={f.title} className={styles.featureItem}>
+              <div key={f.clave} className={styles.featureItem}>
                 <div className={styles.featureIcon}>{f.icon}</div>
                 <p>
-                  <strong>{f.title}:</strong> {f.desc}
+                  <strong>{t(`landing.sobre.${f.clave}`)}:</strong> {t(`landing.sobre.${f.clave}Desc`)}
                 </p>
               </div>
             ))}

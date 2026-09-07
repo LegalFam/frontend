@@ -1,0 +1,36 @@
+.aviso {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.625rem;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-top: 0.5rem;
+  color: var(--text-tertiary, var(--text-secondary));
+  font-size: 13px;
+  line-height: 1.4;
+}
+.avisoTexto {
+  display: flex;
+  flex-direction: column;
+  gap: 0.0625rem;
+}
+/* La línea en español queda un paso atrás: acompaña y respalda al aviso en la lengua del
+   usuario, que es el que tiene que leerse primero. */
+.avisoEspanol {
+  opacity: 0.72;
+  font-size: 12.5px;
+}
+.toggle {
+  flex-shrink: 0;
+  border: 0.5px solid var(--accent-border);
+  border-radius: 999px;
+  background: transparent;
+  padding: 0.1875rem 0.625rem;
+  color: var(--accent);
+  font-size: 12.5px;
+  cursor: pointer;
+}
+.toggle:hover {
+  background: rgba(var(--accent-rgb), 0.1);
+}

@@ -262,3 +262,9 @@
 @media (max-width: 800px) {
   .themeGrid { grid-template-columns: 1fr; }
 }
+
+/* El selector de idioma dentro de la tarjeta: mismo ancho de contenido que el resto. */
+.idiomaPicker {
+  width: fit-content;
+  margin-bottom: 0.75rem;
+}

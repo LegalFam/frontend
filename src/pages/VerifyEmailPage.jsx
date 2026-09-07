@@ -4,9 +4,11 @@ import logoImg from '@/assets/logo-transparent.png'
 import ResendVerificationButton from '@/components/auth/ResendVerificationButton'
 import { authService } from '@/services/api'
 import { normalizeApiError } from '@/utils/apiError'
+import { useT } from '@/i18n/traducir'
 import styles from './AuthActionPage.module.css'
 
 export default function VerifyEmailPage() {
+  const t = useT()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const token = searchParams.get('token')
@@ -23,7 +25,7 @@ export default function VerifyEmailPage() {
     attempted.current = true
 
     if (!token) {
-      setError('El enlace no incluye un código de verificación. Solicita uno nuevo.')
+      setError(t('auth.verificar.sinToken'))
       setStatus('error')
       return
     }
@@ -32,7 +34,7 @@ export default function VerifyEmailPage() {
       .verifyEmail({ token })
       .then(() => setStatus('success'))
       .catch((e) => {
-        setError(normalizeApiError(e, 'No se pudo verificar tu correo.').message)
+        setError(normalizeApiError(e, t('auth.verificar.errorGenerico')).message)
         setStatus('error')
       })
   }, [token])
@@ -48,24 +50,22 @@ export default function VerifyEmailPage() {
         {status === 'verifying' && (
           <>
             <div className={styles.spinner} />
-            <h1 className={styles.title}>Verificando tu correo</h1>
-            <p className={styles.text}>Esto toma solo unos segundos.</p>
+            <h1 className={styles.title}>{t('auth.verificar.verificando')}</h1>
+            <p className={styles.text}>{t('auth.verificar.espera')}</p>
           </>
         )}
 
         {status === 'success' && (
           <>
             <div className={styles.icon}>✅</div>
-            <h1 className={styles.title}>¡Correo verificado!</h1>
-            <p className={styles.text}>
-              Tu cuenta está activa. Ya puedes iniciar sesión y empezar a consultar.
-            </p>
+            <h1 className={styles.title}>{t('auth.verificar.exito')}</h1>
+            <p className={styles.text}>{t('auth.verificar.exitoTexto')}</p>
             <button
               type="button"
               className={styles.primaryBtn}
               onClick={() => navigate('/?auth=login')}
             >
-              Iniciar sesión
+              {t('auth.login.titulo')}
             </button>
           </>
         )}
@@ -73,15 +73,15 @@ export default function VerifyEmailPage() {
         {status === 'error' && (
           <>
             <div className={styles.icon}>⚠️</div>
-            <h1 className={styles.title}>No pudimos verificar tu correo</h1>
+            <h1 className={styles.title}>{t('auth.verificar.error')}</h1>
             <p className={styles.text}>{error}</p>
 
             <div className={styles.form}>
               <div className={styles.fg}>
-                <label htmlFor="ve-email">Correo electrónico</label>
+                <label htmlFor="ve-email">{t('auth.campos.correo')}</label>
                 <input
                   id="ve-email" type="email"
-                  placeholder="tucorreo@ejemplo.com"
+                  placeholder={t('auth.campos.correoPlaceholder')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   autoComplete="email"
@@ -95,7 +95,7 @@ export default function VerifyEmailPage() {
               className={styles.ghostBtn}
               onClick={() => navigate('/?auth=login')}
             >
-              Volver a iniciar sesión
+              {t('auth.recuperar.volverIniciar')}
             </button>
           </>
         )}

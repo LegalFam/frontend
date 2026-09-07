@@ -2,9 +2,11 @@ import { useState } from 'react'
 import logoImg from '@/assets/logo-transparent.png'
 import { authService } from '@/services/api'
 import { normalizeApiError } from '@/utils/apiError'
+import { useT } from '@/i18n/traducir'
 import styles from './AuthModal.module.css'
 
 export default function ForgotPasswordModal({ onClose, onSwitchToLogin, initialEmail = '' }) {
+  const t = useT()
   const [email, setEmail] = useState(initialEmail)
   const [fieldErr, setFieldErr] = useState(null)
   const [error, setError] = useState(null)
@@ -14,7 +16,7 @@ export default function ForgotPasswordModal({ onClose, onSwitchToLogin, initialE
   const handleSubmit = async (ev) => {
     ev.preventDefault()
     if (!email || !email.includes('@')) {
-      setFieldErr('Ingresa un correo válido.')
+      setFieldErr(t('auth.validacion.correoInvalido'))
       return
     }
     setFieldErr(null)
@@ -25,7 +27,7 @@ export default function ForgotPasswordModal({ onClose, onSwitchToLogin, initialE
       // The response is identical for registered and unknown addresses.
       setSent(true)
     } catch (e) {
-      setError(normalizeApiError(e, 'No se pudo enviar el correo.').message)
+      setError(normalizeApiError(e, t('auth.recuperar.errorEnvio')).message)
     } finally {
       setLoading(false)
     }
@@ -34,7 +36,7 @@ export default function ForgotPasswordModal({ onClose, onSwitchToLogin, initialE
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <button className={styles.close} onClick={onClose} aria-label="Cerrar">✕</button>
+        <button className={styles.close} onClick={onClose} aria-label={t('comun.cerrar')}>✕</button>
 
         <div className={styles.topBar}>
           <img src={logoImg} alt="LegalFam" />
@@ -43,36 +45,29 @@ export default function ForgotPasswordModal({ onClose, onSwitchToLogin, initialE
 
         {sent ? (
           <>
-            <h2 className={styles.title}>Revisa tu correo</h2>
+            <h2 className={styles.title}>{t('auth.recuperar.revisaCorreo')}</h2>
             <div className={styles.notice}>
               <div className={styles.noticeIcon}>✉️</div>
-              <p className={styles.noticeText}>
-                Si <strong>{email}</strong> está registrado, te enviamos un enlace para
-                restablecer tu contraseña.
-              </p>
-              <p className={styles.noticeHint}>
-                Revisa también la carpeta de spam. El enlace vence en 1 hora.
-              </p>
+              <p className={styles.noticeText}>{t('auth.recuperar.siRegistrado', { correo: email })}</p>
+              <p className={styles.noticeHint}>{t('auth.recuperar.revisaSpam')}</p>
             </div>
             <p className={styles.switchText}>
-              <span onClick={onSwitchToLogin}>Volver a iniciar sesión</span>
+              <span onClick={onSwitchToLogin}>{t('auth.recuperar.volverIniciar')}</span>
             </p>
           </>
         ) : (
           <>
-            <h2 className={styles.title}>¿Olvidaste tu contraseña?</h2>
-            <p className={styles.subtitle}>
-              Ingresa tu correo y te enviaremos un enlace para crear una nueva.
-            </p>
+            <h2 className={styles.title}>{t('auth.recuperar.titulo')}</h2>
+            <p className={styles.subtitle}>{t('auth.recuperar.subtitulo')}</p>
 
             {error && <div className="api-err">{error}</div>}
 
             <form onSubmit={handleSubmit} noValidate>
               <div className={styles.fg}>
-                <label htmlFor="fp-email">Correo electrónico</label>
+                <label htmlFor="fp-email">{t('auth.campos.correo')}</label>
                 <input
                   id="fp-email" type="email"
-                  placeholder="tucorreo@ejemplo.com"
+                  placeholder={t('auth.campos.correoPlaceholder')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className={fieldErr ? styles.hasError : ''}
@@ -82,12 +77,12 @@ export default function ForgotPasswordModal({ onClose, onSwitchToLogin, initialE
               </div>
 
               <button type="submit" className={styles.submitBtn} disabled={loading}>
-                {loading ? 'Enviando...' : 'Enviar enlace'}
+                {loading ? t('auth.recuperar.enviando') : t('auth.recuperar.enviar')}
               </button>
             </form>
 
             <p className={styles.switchText}>
-              ¿Recordaste tu contraseña? <span onClick={onSwitchToLogin}>Inicia sesión</span>
+              {t('auth.recuperar.recordaste')} <span onClick={onSwitchToLogin}>{t('auth.recuperar.inicia')}</span>
             </p>
           </>
         )}
