@@ -19,7 +19,12 @@ export default function ChatInput({ onSend, disabled, disabledReason, draft = nu
     const el = ref.current
     if (!el) return
     el.style.height = 'auto'
-    el.style.height = Math.min(el.scrollHeight, 150) + 'px'
+    // La caja es border-box y scrollHeight no cuenta los bordes: sin sumarlos el
+    // contenido desborda por 1px y sale la barra de scroll con una sola línea.
+    const bordes = el.offsetHeight - el.clientHeight
+    const alto = el.scrollHeight + bordes
+    el.style.height = Math.min(alto, 150) + 'px'
+    el.style.overflowY = alto > 150 ? 'auto' : 'hidden'
   }
 
   // Recupera en el input un envío que no llegó a cursar (p. ej. sin tokens). Solo
@@ -53,7 +58,7 @@ export default function ChatInput({ onSend, disabled, disabledReason, draft = nu
     setPrivacyError(null)
     onSend(text, idioma)
     ref.current.value = ''
-    ref.current.style.height = 'auto'
+    autoResize()
   }
 
   return (
