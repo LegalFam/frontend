@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -59,6 +59,52 @@ function groupCitationsByDocument(citations) {
   }
 
   return groups
+}
+
+// El pasaje literal puede ocupar varias lineas y empuja el resumen fuera de la vista.
+// Se muestra recortado a dos lineas y se despliega a pedido.
+function CitationQuote({ text }) {
+  const [expanded, setExpanded] = useState(false)
+  const [clamped, setClamped] = useState(false)
+  const textRef = useRef(null)
+
+  // El boton solo aparece si el pasaje realmente se corta, y eso depende del ancho, no del
+  // largo del texto: se mide contra el alto real del elemento recortado. Mientras esta
+  // desplegado no se vuelve a medir, porque sin recorte no habria nada que detectar.
+  useLayoutEffect(() => {
+    const node = textRef.current
+    if (!node || expanded) return undefined
+
+    const measure = () => setClamped(node.scrollHeight - node.clientHeight > 1)
+    measure()
+
+    if (typeof ResizeObserver === 'undefined') return undefined
+    const observer = new ResizeObserver(measure)
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [text, expanded])
+
+  return (
+    <blockquote className={styles.citationQuote}>
+      <span className={styles.citationLabel}>Texto de la fuente</span>
+      <div
+        ref={textRef}
+        className={`${styles.citationQuoteText} ${expanded ? styles.citationQuoteTextExpanded : ''}`}
+      >
+        {text}
+      </div>
+      {clamped && (
+        <button
+          type="button"
+          className={styles.citationQuoteToggle}
+          onClick={() => setExpanded((open) => !open)}
+          aria-expanded={expanded}
+        >
+          {expanded ? 'Ver menos' : 'Ver más'}
+        </button>
+      )}
+    </blockquote>
+  )
 }
 
 export default function ChatMessage({ message, onRate, onRetry, retryText, onUpgrade }) {
@@ -233,10 +279,7 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
                         </div>
                       )}
                       {entry.sourceOriginalSnippet && (
-                        <blockquote className={styles.citationQuote}>
-                          <span className={styles.citationLabel}>Texto de la fuente</span>
-                          {entry.sourceOriginalSnippet}
-                        </blockquote>
+                        <CitationQuote text={entry.sourceOriginalSnippet} />
                       )}
                       {entry.sourceSnippet && (
                         <div className={styles.citationSnippet}>
