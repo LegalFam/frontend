@@ -143,6 +143,25 @@ export function useChat() {
   const messagesRequestRef = useRef(new Map())
   const messagesAbortRef = useRef(null)
   const receiptRequestRef = useRef(new Map())
+  const reconcileRef = useRef(null)
+
+  // Sesión cuyo emisor SSE está registrado en el servidor ahora mismo. El backend crea el
+  // emisor y manda `connected` de forma síncrona al atender /chat/subscribe, así que haber
+  // recibido la cabecera de esa respuesta garantiza que ya hay a quién despachar.
+  const openStreamRef = useRef(null)
+
+  // Un envío que se adelanta a la suscripción se queda sin red: si el agente falla al
+  // instante, el backend despacha el error sin emisor y lo descarta sin reintento, a
+  // diferencia de la respuesta del asistente, que sí pasa por el outbox. Esperar aquí unos
+  // segundos cuesta nada en el caso normal (la suscripción tarda milisegundos) y evita el
+  // agujero en el estreno de un chat nuevo, que es cuando la carrera se pierde siempre.
+  const waitForOpenStream = useCallback(async (sessionId, timeoutMs = 5000) => {
+    if (!sessionId) return
+    const deadline = Date.now() + timeoutMs
+    while (openStreamRef.current !== sessionId && Date.now() < deadline) {
+      await new Promise((resolve) => window.setTimeout(resolve, 50))
+    }
+  }, [])
 
   const loadProcessingStatus = useCallback(async () => {
     try {
@@ -232,6 +251,10 @@ export function useChat() {
     messagesRequestRef.current.set(sessionId, request)
     return request
   }, [confirmUnreadAssistantReceipts, store])
+
+  // El vigilante de abajo no puede depender de reconcileMessages: su identidad cambia con
+  // cada actualización del store y reiniciaría el intervalo en bucle.
+  reconcileRef.current = reconcileMessages
 
   const loadSessions = useCallback(async () => {
     store.setSessionsLoading(true)
@@ -378,6 +401,7 @@ export function useChat() {
         sessionId,
         useChatStore.getState().messages[sessionId] || []
       )
+      await waitForOpenStream(sessionId)
 
       const { data } = await chatService.sendMessage({ message: trimmed, sessionId, language })
       store.clearDraft(sessionId)
@@ -459,7 +483,7 @@ export function useChat() {
     } finally {
       sendingTextRef.current = null
     }
-  }, [confirmUnreadAssistantReceipts, ensureSession, loadMessages, loadProcessingStatus, store])
+  }, [confirmUnreadAssistantReceipts, ensureSession, loadMessages, loadProcessingStatus, store, waitForOpenStream])
 
   const rateMessage = useCallback(async (messageId, rating, comment = '') => {
     const sessionId = useChatStore.getState().activeSessionId
@@ -512,6 +536,7 @@ export function useChat() {
     let disposed = false
 
     const stop = () => {
+      if (openStreamRef.current === sessionId) openStreamRef.current = null
       if (timerRef.current) window.clearTimeout(timerRef.current)
       abortRef.current?.abort()
       timerRef.current = null
@@ -525,7 +550,11 @@ export function useChat() {
       store.setConnectionState('reconnecting')
 
       try {
-        await loadMessages(sessionId, { force: true })
+        // La suscripción va primero y la reconciliación después: entre que se pide el
+        // historial y el emisor queda registrado en el servidor hay una ventana en la que
+        // cualquier evento (respuesta o error) se despacha sin nadie escuchando y se pierde
+        // sin reintento. Abriendo antes el stream, esos eventos quedan en el flujo y se leen
+        // en cuanto arranca el bucle de lectura.
         let token = useAuthStore.getState().accessToken
         let response = await fetch(apiStreamUrl(`/chat/subscribe/${sessionId}`), {
           headers: { Authorization: `Bearer ${token}` },
@@ -558,7 +587,12 @@ export function useChat() {
         if (!response.ok || !response.body) throw new Error('SSE connection failed')
 
         store.setConnectionState('connected')
+        openStreamRef.current = sessionId
         retryRef.current = 0
+
+        // Sin await: el historial se reconcilia mientras el bucle ya está leyendo. La mezcla
+        // es por id, así que un mensaje que llegue por SSE en ese intervalo no se pisa.
+        loadMessages(sessionId, { force: true }).catch(() => {})
 
         const reader = response.body.getReader()
         const decoder = new TextDecoder()
@@ -596,6 +630,7 @@ export function useChat() {
 
         throw new Error('SSE disconnected')
       } catch (e) {
+        if (openStreamRef.current === sessionId) openStreamRef.current = null
         if (disposed || controller.signal.aborted) return
         store.setConnectionState('reconnecting')
         const delay = BACKOFF_MS[Math.min(retryRef.current, BACKOFF_MS.length - 1)]
@@ -628,24 +663,31 @@ export function useChat() {
 
     const processing = store.processingStatus
     const processingSessionId = processing?.chatSessionId
-    const cannotObserveProcessingViaSse =
-      processing?.processing &&
-      processingSessionId &&
-      processingSessionId !== store.activeSessionId
+    if (!processing?.processing || !processingSessionId) return undefined
 
-    if (!cannotObserveProcessingViaSse) return undefined
+    // La entrega por SSE es de un solo intento: si el emisor no está registrado en el
+    // instante exacto del despacho (reconexión, cambio de sesión, la carrera del primer
+    // mensaje de un chat nuevo), el evento se pierde y no se reintenta. El error es el caso
+    // sensible, porque no pasa por el outbox como sí lo hace la respuesta del asistente.
+    // Por eso se vigila el estado de procesamiento también en la sesión activa: cuando el
+    // servidor deja de estar procesando y el hilo sigue en espera, se relee el historial,
+    // que ya tiene persistido el mensaje de error o la respuesta.
+    const isActiveSession = processingSessionId === store.activeSessionId
+    const pollIntervalMs = isActiveSession ? 10000 : 5000
 
     let disposed = false
 
-    const refreshOffSessionProcessing = async () => {
+    const refreshProcessing = async () => {
       const nextStatus = await loadProcessingStatus().catch(() => null)
-      if (!disposed && nextStatus && !nextStatus.processing) {
-        usePaymentStore.getState().loadSubscription().catch(() => {})
+      if (disposed || !nextStatus || nextStatus.processing) return
+      usePaymentStore.getState().loadSubscription().catch(() => {})
+      if (isActiveSession) {
+        await reconcileRef.current?.(processingSessionId).catch(() => {})
       }
     }
 
-    refreshOffSessionProcessing()
-    const intervalId = window.setInterval(refreshOffSessionProcessing, 5000)
+    refreshProcessing()
+    const intervalId = window.setInterval(refreshProcessing, pollIntervalMs)
 
     return () => {
       disposed = true
