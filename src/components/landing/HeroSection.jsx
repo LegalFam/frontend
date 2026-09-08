@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useEdgeSafeTooltip } from '@/hooks/useEdgeSafeTooltip'
-import { useT } from '@/i18n/traducir'
+import { useT } from '@/i18n/translate'
 import styles from './HeroSection.module.css'
 
 const stats = [

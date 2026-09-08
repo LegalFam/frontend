@@ -5,8 +5,8 @@ import { useChatStore } from '@/store/chatStore'
 import { useAuthStore } from '@/store/authStore'
 import { usePaymentStore } from '@/store/paymentStore'
 import { normalizeApiError, normalizeAssistantErrorMessage } from '@/utils/apiError'
-import { t } from '@/i18n/traducir'
-import { useIdiomaStore } from '@/store/idiomaStore'
+import { t } from '@/i18n/translate'
+import { useLanguageStore } from '@/store/languageStore'
 
 const BACKOFF_MS = [1000, 2000, 5000, 10000, 30000]
 
@@ -370,7 +370,7 @@ export function useChat() {
       return data.id
     }, [navigate, store])
 
-  const sendMessage = useCallback(async (text, language = useIdiomaStore.getState().idioma) => {
+  const sendMessage = useCallback(async (text, language = useLanguageStore.getState().idioma) => {
     const trimmed = text.trim()
     if (!trimmed || sendingTextRef.current === trimmed) return
 

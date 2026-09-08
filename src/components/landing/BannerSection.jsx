@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import logoImg from '@/assets/logo-transparent.png'
-import { useT } from '@/i18n/traducir'
+import { useT } from '@/i18n/translate'
 import styles from './BannerSection.module.css'
 
 const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })

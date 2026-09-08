@@ -26,7 +26,7 @@
 }
 
 /* Forma compacta: un solo botón con el idioma activo, que despliega las tres opciones.
-   Ver el comentario de SelectorIdioma.jsx para por qué no se abrevian las etiquetas. */
+   Ver el comentario de LanguageSelector.jsx para por qué no se abrevian las etiquetas. */
 .compacto {
   position: relative;
   flex-shrink: 0;

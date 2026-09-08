@@ -17,7 +17,7 @@ src/
 ├── components/
 │   ├── auth/          # LoginModal, RegisterModal, ProtectedRoute
 │   ├── chat/          # ChatSidebar, ChatMessage, ChatInput, TypingIndicator
-│   ├── landing/       # HeroSection, SobreSection, ComoSection, PreciosSection, SeguridadSection, BannerSection
+│   ├── landing/       # HeroSection, AboutSection, HowSection, PricingSection, SecuritySection, PrivacySection, BannerSection
 │   └── layout/        # Navbar
 ├── hooks/             # useAuth, useChat
 ├── pages/             # LandingPage, ChatPage

@@ -1,15 +1,12 @@
-// Selector de tema. DORADO es el de siempre (no lleva atributo); el resto
-// son variantes de evaluación que se activan con data-theme en <html>:
-//   - dorado-lighter : mismo acento dorado, fondos más claros
-//   - marino         : acento azul marino, fondos azul acero
-//   - toga           : estética abogado — marino de sala de juntas, acento latón champagne
+// Selector de tema. DORADO es el de siempre (no lleva atributo); TOGA se activa
+// con data-theme en <html>:
+//   - toga : estética abogado — marino de sala de juntas, acento latón champagne
 //
-// Cómo probar durante la evaluación:
-//   - abrir la app con ?tema=marino  (o ?tema=dorado para volver)
-//   - o desde la consola:  setTema('marino')  /  setTema('dorado')
-// La elección queda guardada en localStorage.
+// Además de Configuración, se puede alternar con ?tema=toga (o ?tema=dorado para
+// volver) o desde la consola con setTema('toga').
+// La elección queda guardada en localStorage; un tema desconocido cae en dorado.
 
-const TEMAS = ['dorado', 'dorado-lighter', 'marino', 'toga']
+const TEMAS = ['dorado', 'toga']
 const KEY = 'legalfam-tema'
 
 export function aplicarTema(tema) {
@@ -35,8 +32,7 @@ export function initTema() {
   return aplicarTema(inicial)
 }
 
-// Temas ofrecidos al usuario en Configuración (los demás quedan sólo para
-// evaluación interna vía ?tema= o setTema()).
+// Temas ofrecidos al usuario en Configuración: hoy son todos los que existen.
 export const TEMAS_PUBLICOS = [
   {
     id: 'dorado',

@@ -8,7 +8,7 @@ import {
   planSlug,
 } from '@/utils/plans'
 import { usePaymentStore } from '@/store/paymentStore'
-import { useT } from '@/i18n/traducir'
+import { useT } from '@/i18n/translate'
 import styles from './BillingDialog.module.css'
 
 // Fecha siempre en es-PE, como en SettingsPage: Intl no tiene datos de quechua ni de aymara.

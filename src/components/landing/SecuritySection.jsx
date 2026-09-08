@@ -1,5 +1,5 @@
-import { useT } from '@/i18n/traducir'
-import styles from './SeguridadSection.module.css'
+import { useT } from '@/i18n/translate'
+import styles from './SecuritySection.module.css'
 
 const items = [
   {
@@ -28,7 +28,7 @@ const items = [
   },
 ]
 
-export default function SeguridadSection() {
+export default function SecuritySection() {
   const t = useT()
 
   return (

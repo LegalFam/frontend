@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { usePaymentStore } from '@/store/paymentStore'
-import { useT } from '@/i18n/traducir'
+import { useT } from '@/i18n/translate'
 import logoImg from '@/assets/logo-transparent.png'
 import styles from './PaymentPage.module.css'
 

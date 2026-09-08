@@ -13,8 +13,8 @@ import {
   planSlug,
 } from '@/utils/plans'
 import { setPendingAuthRedirect } from '@/hooks/useAuth'
-import { useT } from '@/i18n/traducir'
-import styles from './PreciosSection.module.css'
+import { useT } from '@/i18n/translate'
+import styles from './PricingSection.module.css'
 
 const Check = ({ etiqueta }) => (
   <span className={styles.check} role="img" aria-label={etiqueta}>
@@ -48,7 +48,7 @@ const PLAN_SPECS = [
   },
 ]
 
-export default function PreciosSection({ isAuthenticated, currentPlanCode, onRegisterClick }) {
+export default function PricingSection({ isAuthenticated, currentPlanCode, onRegisterClick }) {
   const t = useT()
   const navigate = useNavigate()
 

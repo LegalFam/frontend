@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
 import logoImg from '@/assets/logo-transparent.png'
-import { useT } from '@/i18n/traducir'
+import { useT } from '@/i18n/translate'
 import styles from './SpecialistAssistancePage.module.css'
 
 // Sólo los datos que no se traducen nunca: la sigla con la que se conoce a la institución y

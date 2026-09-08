@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import logoImg from '@/assets/logo-transparent.png'
 import { useAuth } from '@/hooks/useAuth'
 import ResendVerificationButton from './ResendVerificationButton'
-import { useT } from '@/i18n/traducir'
+import { useT } from '@/i18n/translate'
 import styles from './AuthModal.module.css'
 
 export default function RegisterModal({ onClose, onSwitchToLogin }) {

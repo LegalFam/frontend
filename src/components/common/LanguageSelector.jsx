@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { IDIOMAS, idiomaPorCodigo } from '@/i18n/languages'
-import { useT } from '@/i18n/traducir'
-import { useIdiomaStore } from '@/store/idiomaStore'
-import styles from './SelectorIdioma.module.css'
+import { useT } from '@/i18n/translate'
+import { useLanguageStore } from '@/store/languageStore'
+import styles from './LanguageSelector.module.css'
 
 // Control unico de idioma. Aparece en la barra de la portada, en la del chat y en
 // Configuracion; todos escriben en el mismo store, asi que la eleccion es una sola venga de
@@ -13,10 +13,10 @@ import styles from './SelectorIdioma.module.css'
 // tokens. Lo que no se hace nunca es abreviar las etiquetas a "ES / QU / AY": el nombre en la
 // propia lengua es justo lo que hace reconocible el control para quien no lee espanol, asi que
 // el boton muestra el idioma activo con su nombre completo.
-export default function SelectorIdioma({ className = '', compacto = false }) {
+export default function LanguageSelector({ className = '', compacto = false }) {
   const t = useT()
-  const idioma = useIdiomaStore((estado) => estado.idioma)
-  const cambiarIdioma = useIdiomaStore((estado) => estado.cambiarIdioma)
+  const idioma = useLanguageStore((estado) => estado.idioma)
+  const cambiarIdioma = useLanguageStore((estado) => estado.cambiarIdioma)
   const [abierto, setAbierto] = useState(false)
   const cajaRef = useRef(null)
 

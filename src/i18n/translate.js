@@ -16,7 +16,7 @@
 // se quedaria congelado en el idioma de arranque. Las constantes de modulo guardan claves y se
 // resuelven con t() dentro del render.
 
-import { useIdiomaStore } from '@/store/idiomaStore'
+import { useLanguageStore } from '@/store/languageStore'
 import catalogos from './locales'
 
 const POR_DEFECTO = 'es'
@@ -78,7 +78,7 @@ export function tEn(idioma, clave, vars) {
 // Traduce en el idioma activo. Para usar fuera de React; dentro de componentes va useT(), que
 // ademas suscribe al cambio de idioma.
 export function t(clave, vars) {
-  return tEn(useIdiomaStore.getState().idioma, clave, vars)
+  return tEn(useLanguageStore.getState().idioma, clave, vars)
 }
 
 // Variante que devuelve undefined cuando la clave no existe en ningun catalogo, en vez de una
@@ -86,7 +86,7 @@ export function t(clave, vars) {
 // `clientMessage || serverMessage || fallbackMessage`: si devolviera la clave, esa cadena se
 // cortaria y el usuario veria "errores.algun_codigo" en pantalla.
 export function tOpcional(clave, vars) {
-  const idioma = useIdiomaStore.getState().idioma
+  const idioma = useLanguageStore.getState().idioma
   const texto = crudo(idioma, clave) ?? crudo(POR_DEFECTO, clave)
   return texto === undefined ? undefined : interpolar(texto, vars)
 }
@@ -94,7 +94,7 @@ export function tOpcional(clave, vars) {
 // Plurales con par explicito de claves (`_one` / `_other`). No hace falta un motor de reglas:
 // el espanol distingue una forma de otra y el quechua y el aymara aportan solo `_other`.
 export function tPlural(base, n, vars) {
-  const idioma = useIdiomaStore.getState().idioma
+  const idioma = useLanguageStore.getState().idioma
   const sufijo = n === 1 && idioma === POR_DEFECTO ? '_one' : '_other'
   return tEn(idioma, `${base}${sufijo}`, { n, ...vars })
 }
@@ -102,7 +102,7 @@ export function tPlural(base, n, vars) {
 // Hook para componentes: devuelve un t() ligado al idioma suscrito, de modo que el componente
 // se vuelve a renderizar al cambiar de idioma.
 export function useT() {
-  const idioma = useIdiomaStore((estado) => estado.idioma)
+  const idioma = useLanguageStore((estado) => estado.idioma)
   const traducir = (clave, vars) => tEn(idioma, clave, vars)
   traducir.idioma = idioma
   traducir.plural = (base, n, vars) =>

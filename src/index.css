@@ -1,8 +1,6 @@
 /* ── TEMAS ── un archivo por tema en src/themes/. El activo se elige con
    el atributo data-theme en <html> (ver src/theme.js). */
 @import './themes/dorado.css';           /* por defecto (:root) */
-@import './themes/dorado-lighter.css';   /* :root[data-theme="dorado-lighter"] */
-@import './themes/marino.css';           /* :root[data-theme="marino"] */
 @import './themes/toga.css';             /* :root[data-theme="toga"] */
 
 /* ── RESET ── */

@@ -8,8 +8,8 @@ import { normalizeApiError } from '@/utils/apiError'
 import { TEMAS_PUBLICOS, aplicarTema, temaActual } from '@/theme'
 import { STATIC_PLANS, formatPlanName, formatPlanTokens } from '@/utils/plans'
 import BillingDialog from '@/components/billing/BillingDialog'
-import SelectorIdioma from '@/components/common/SelectorIdioma'
-import { useT } from '@/i18n/traducir'
+import LanguageSelector from '@/components/common/LanguageSelector'
+import { useT } from '@/i18n/translate'
 import styles from './SettingsPage.module.css'
 
 // La fecha se formatea siempre en es-PE: Intl no tiene datos de quechua ni de aymara, y
@@ -294,7 +294,7 @@ export default function SettingsPage() {
         <section className={styles.card}>
           <h2>{t('config.idioma.titulo')}</h2>
           <p className={styles.themeIntro}>{t('config.idioma.intro')}</p>
-          <SelectorIdioma className={styles.idiomaPicker} />
+          <LanguageSelector className={styles.idiomaPicker} />
           <p className={styles.fieldNote}>{t('config.idioma.nota')}</p>
         </section>
 

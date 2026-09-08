@@ -10,9 +10,9 @@ import ChatInput          from '@/components/chat/ChatInput'
 import BillingDialog      from '@/components/billing/BillingDialog'
 import TypingIndicator    from '@/components/chat/TypingIndicator'
 import logoImg            from '@/assets/logo-transparent.png'
-import SelectorIdioma from '@/components/common/SelectorIdioma'
-import TextoLegalBilingue from '@/components/common/TextoLegalBilingue'
-import { useT }           from '@/i18n/traducir'
+import LanguageSelector from '@/components/common/LanguageSelector'
+import BilingualLegalText from '@/components/common/BilingualLegalText'
+import { useT }           from '@/i18n/translate'
 import styles             from './ChatPage.module.css'
 
 // Se traducen tanto el rótulo como la pregunta: la pregunta se envía tal cual como mensaje
@@ -194,8 +194,8 @@ export default function ChatPage() {
 
         {/* El mismo control en sus dos formas: ancha cuando la barra da de sí, compacta
             cuando no. El CSS decide cuál se ve; ambas escriben en el mismo store. */}
-        <SelectorIdioma className={styles.topbarIdioma} />
-        <SelectorIdioma compacto className={styles.topbarIdiomaCompacto} />
+        <LanguageSelector className={styles.topbarIdioma} />
+        <LanguageSelector compacto className={styles.topbarIdiomaCompacto} />
 
         {/* En móvil este botón se oculta: el cajón ya tiene uno en la fila de usuario. */}
         <button className={`icon-btn ${styles.topbarSignout}`} onClick={signout} title={t('chat.cerrarSesion')}>
@@ -236,14 +236,14 @@ export default function ChatPage() {
               <article className={styles.glossaryCard}>
                 <span className={styles.glossaryEyebrow}>{t('chat.glosario.titulo')}</span>
                 <h1>{t(`glosario.${glossaryTerm}.termino`)}</h1>
-                <TextoLegalBilingue>
+                <BilingualLegalText>
                   {(tLegal) => (
                     <>
                       <p>{tLegal(`glosario.${glossaryTerm}.definicion`)}</p>
                       <p className={styles.glossaryNote}>{tLegal('chat.glosario.nombresEnEspanol')}</p>
                     </>
                   )}
-                </TextoLegalBilingue>
+                </BilingualLegalText>
                 <div className={styles.glossaryActions}>
                   <button
                     type="button"

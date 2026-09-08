@@ -1,12 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom'
 import logoImg from '@/assets/logo-transparent.png'
-import TextoLegalBilingue from '@/components/common/TextoLegalBilingue'
-import { useT } from '@/i18n/traducir'
+import BilingualLegalText from '@/components/common/BilingualLegalText'
+import { useT } from '@/i18n/translate'
 import styles from './TermsPage.module.css'
 
 // Sólo la estructura: cuántas secciones hay y cuántos párrafos tiene cada una. El texto vive
 // en el catálogo (terminos.sNtitulo / terminos.sNpM) y se muestra a través de
-// TextoLegalBilingue, que deja el español a un clic: es un documento normativo y la versión
+// BilingualLegalText, que deja el español a un clic: es un documento normativo y la versión
 // en español es la que prevalece.
 const SECCIONES = [
   { clave: 's1', parrafos: 3 },
@@ -46,7 +46,7 @@ export default function TermsPage() {
       </header>
 
       <main className={styles.main}>
-        <TextoLegalBilingue avisoClassName={styles.aviso}>
+        <BilingualLegalText avisoClassName={styles.aviso}>
           {(tLegal) => (
             <>
               <section className={styles.hero}>
@@ -74,7 +74,7 @@ export default function TermsPage() {
               </section>
             </>
           )}
-        </TextoLegalBilingue>
+        </BilingualLegalText>
       </main>
     </div>
   )

@@ -5,7 +5,7 @@
 // Nota para quien las use: como leen el idioma sin suscribirse, el componente que las llama
 // tiene que suscribirse por su cuenta (useT()) para volver a renderizar al cambiar de lengua.
 // En la práctica todos lo hacen, porque también tienen texto propio.
-import { t, tOpcional } from '@/i18n/traducir'
+import { t, tOpcional } from '@/i18n/translate'
 
 export const PLAN_SLUGS = {
   FREE: 'gratis',

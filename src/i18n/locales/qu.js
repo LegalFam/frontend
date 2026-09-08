@@ -1,4 +1,4 @@
-// Catalogo de interfaz — qu. Ver i18n/traducir.js para las reglas de uso.
+// Catalogo de interfaz — qu. Ver i18n/translate.js para las reglas de uso.
 // Las claves siguen el patron <superficie>.<bloque>.<slot>. La paridad con los otros catalogos
 // se comprueba con `npm run i18n:check`.
 

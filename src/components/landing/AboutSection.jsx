@@ -1,5 +1,5 @@
-import { useT } from '@/i18n/traducir'
-import styles from './SobreSection.module.css'
+import { useT } from '@/i18n/translate'
+import styles from './AboutSection.module.css'
 
 const features = [
   {
@@ -30,7 +30,7 @@ const features = [
   },
 ]
 
-export default function SobreSection() {
+export default function AboutSection() {
   const t = useT()
 
   return (

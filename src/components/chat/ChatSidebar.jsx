@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import logoImg from '@/assets/logo-transparent.png'
 import { useAuth } from '@/hooks/useAuth'
 import { LEGAL_GLOSSARY } from './legalGlossary'
-import { useT } from '@/i18n/traducir'
+import { useT } from '@/i18n/translate'
 import styles from './ChatSidebar.module.css'
 
 const normalize = (value) =>

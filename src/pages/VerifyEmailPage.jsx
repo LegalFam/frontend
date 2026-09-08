@@ -4,7 +4,7 @@ import logoImg from '@/assets/logo-transparent.png'
 import ResendVerificationButton from '@/components/auth/ResendVerificationButton'
 import { authService } from '@/services/api'
 import { normalizeApiError } from '@/utils/apiError'
-import { useT } from '@/i18n/traducir'
+import { useT } from '@/i18n/translate'
 import styles from './AuthActionPage.module.css'
 
 export default function VerifyEmailPage() {

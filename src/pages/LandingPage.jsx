@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import Navbar           from '@/components/layout/Navbar'
 import HeroSection      from '@/components/landing/HeroSection'
-import SobreSection     from '@/components/landing/SobreSection'
-import ComoSection      from '@/components/landing/ComoSection'
-import PreciosSection   from '@/components/landing/PreciosSection'
+import AboutSection     from '@/components/landing/AboutSection'
+import HowSection      from '@/components/landing/HowSection'
+import PricingSection   from '@/components/landing/PricingSection'
 import { BannerSection, Footer } from '@/components/landing/BannerSection'
-import SeguridadSection from '@/components/landing/SeguridadSection'
-import PrivacidadSection from '@/components/landing/PrivacidadSection'
+import SecuritySection from '@/components/landing/SecuritySection'
+import PrivacySection from '@/components/landing/PrivacySection'
 import LoginModal       from '@/components/auth/LoginModal'
 import RegisterModal    from '@/components/auth/RegisterModal'
 import ForgotPasswordModal from '@/components/auth/ForgotPasswordModal'
@@ -60,16 +60,16 @@ export default function LandingPage() {
           onPrimaryClick={() => isAuthenticated ? navigate('/chat') : setModal('register')}
           onScrollComo={scrollComo}
         />
-        <SobreSection />
-        <ComoSection />
-        <PreciosSection
+        <AboutSection />
+        <HowSection />
+        <PricingSection
           isAuthenticated={isAuthenticated}
           currentPlanCode={subscription?.planCode}
           onRegisterClick={() => setModal('register')}
         />
         <BannerSection />
-        <SeguridadSection />
-        <PrivacidadSection />
+        <SecuritySection />
+        <PrivacySection />
       </main>
 
       <Footer />

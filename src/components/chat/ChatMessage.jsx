@@ -2,8 +2,8 @@ import { useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import { AvisoTraduccion } from '@/components/common/TextoLegalBilingue'
-import { tOpcional, useT } from '@/i18n/traducir'
+import { TranslationNotice } from '@/components/common/BilingualLegalText'
+import { tOpcional, useT } from '@/i18n/translate'
 import styles from './ChatMessage.module.css'
 
 const normalizeMarkdownContent = (content) => {
@@ -154,10 +154,15 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
   // Ojo: esto sigue a message.language, que es inmutable, y NO al idioma de la interfaz.
   // Cambiar de idioma no reescribe una conversación pasada; sólo cambia el texto de alrededor.
   const translated = normalizeTextField(message.contentLocalized)
-  const isTranslated = Boolean(translated) && message.language && message.language !== 'es'
+  const hasTranslation = Boolean(translated) && message.language && message.language !== 'es'
+  // El mensaje del usuario es la excepción: ahí `contentLocalized` no es una traducción sino
+  // lo que él mismo escribió, y el español es lo traducido a máquina. No hay nada que
+  // advertir ni que contrastar, así que se muestra siempre su texto y sin conmutador.
+  const isTranslated = hasTranslation && !isUser
   const [showSpanish, setShowSpanish] = useState(false)
+  const showTranslated = hasTranslation && (isUser || !showSpanish)
   const markdownContent = normalizeMarkdownContent(
-    isTranslated && !showSpanish ? translated : contenidoBase
+    showTranslated ? translated : contenidoBase
   )
 
   const nextStepsTranslated = Array.isArray(message.nextStepsLocalized)
@@ -248,6 +253,17 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
         </div>
       )}
 
+      {/* Antes del texto, no después: el aviso dice cómo hay que leer lo que sigue, y quien
+          lee una orientación legal traducida a máquina tiene que saberlo antes de leerla. */}
+      {isTranslated && (
+        <TranslationNotice
+          idioma={message.language}
+          mostrandoEspanol={showSpanish}
+          onToggle={() => setShowSpanish((open) => !open)}
+          above
+        />
+      )}
+
       <div className={styles.bubble}>
         {isBot || isSystem ? (
           <ReactMarkdown
@@ -264,18 +280,9 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
             {markdownContent}
           </ReactMarkdown>
         ) : (
-          isTranslated && !showSpanish ? translated : contenidoBase
+          showTranslated ? translated : contenidoBase
         )}
       </div>
-
-      {isTranslated && (
-        <AvisoTraduccion
-          idioma={message.language}
-          mostrandoEspanol={showSpanish}
-          onToggle={() => setShowSpanish((open) => !open)}
-        />
-      )}
-
 
       {message.state === 'sending' && <span className={styles.status}>{t('chat.mensaje.enviando')}</span>}
       {message.state === 'processing' && <span className={styles.status}>{t('chat.mensaje.procesando')}</span>}

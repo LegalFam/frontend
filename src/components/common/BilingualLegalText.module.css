@@ -10,6 +10,10 @@
   font-size: 13px;
   line-height: 1.4;
 }
+.avisoAbove {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
 .avisoTexto {
   display: flex;
   flex-direction: column;

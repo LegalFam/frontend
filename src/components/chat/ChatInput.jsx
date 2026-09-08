@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { useT } from '@/i18n/traducir'
-import { useIdiomaStore } from '@/store/idiomaStore'
+import { useT } from '@/i18n/translate'
+import { useLanguageStore } from '@/store/languageStore'
 import styles from './ChatInput.module.css'
 
 const personalDataPattern = /(\b[\w.%+-]+@[\w.-]+\.[A-Za-z]{2,}\b)|((?:\+?51\s*)?(?:9\d{2}|0?1|[2-8]\d)(?:[\s.-]*\d){6,8})|(\b\d{8}\b)|(\b(?:av\.?|avenida|jr\.?|jiron|calle|pasaje|mz\.?|manzana|lote)\b)/i
@@ -12,7 +12,7 @@ export default function ChatInput({ onSend, disabled, disabledReason, draft = nu
   // El idioma vive en el store; el control para cambiarlo está en la barra superior y en
   // Configuración, no aquí. Lo que sí queda en la base de datos es el idioma de cada mensaje
   // ya enviado, que no cambia después aunque se cambie de lengua.
-  const idioma = useIdiomaStore((estado) => estado.idioma)
+  const idioma = useLanguageStore((estado) => estado.idioma)
   const appliedDraftTsRef = useRef(0)
 
   const autoResize = () => {

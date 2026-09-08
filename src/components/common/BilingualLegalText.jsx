@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { AVISO_TRADUCCION, avisoTraduccion, idiomaPorCodigo } from '@/i18n/languages'
-import { tEn, useT } from '@/i18n/traducir'
-import styles from './TextoLegalBilingue.module.css'
+import { tEn, useT } from '@/i18n/translate'
+import styles from './BilingualLegalText.module.css'
 
 // Tira de aviso + conmutador que acompana a todo texto traducido a maquina. Estaba escrita a
 // mano dentro de ChatMessage; vive aqui para que la convencion tenga una sola implementacion,
 // porque ahora la usan tambien los terminos, el glosario y los avisos legales de la interfaz.
-export function AvisoTraduccion({ idioma, mostrandoEspanol, onToggle, className = '' }) {
+// `above` invierte el margen para cuando la tira precede al texto que advierte en lugar de
+// seguirlo, como pasa en el chat.
+export function TranslationNotice({ idioma, mostrandoEspanol, onToggle, className = '', above = false }) {
   const t = useT()
   if (!idioma || idioma === 'es') return null
 
@@ -14,7 +16,7 @@ export function AvisoTraduccion({ idioma, mostrandoEspanol, onToggle, className 
   const etiqueta = idiomaPorCodigo(idioma).etiqueta
 
   return (
-    <div className={`${styles.aviso} ${className}`}>
+    <div className={`${styles.aviso} ${above ? styles.avisoAbove : ''} ${className}`}>
       <div className={styles.avisoTexto}>
         {/* El aviso en la lengua del usuario primero: uno en espanol no cumple su funcion con
             quien eligio no leer en espanol. */}
@@ -37,10 +39,10 @@ export function AvisoTraduccion({ idioma, mostrandoEspanol, onToggle, className 
 // avisos legales. Muestra la traduccion y deja el espanol a un clic, porque el espanol es la
 // version que prevalece y quien lea la traduccion tiene que poder contrastarla.
 //
-// Uso: <TextoLegalBilingue>{(t) => <p>{t('terminos.uso.texto')}</p>}</TextoLegalBilingue>
+// Uso: <BilingualLegalText>{(t) => <p>{t('terminos.uso.texto')}</p>}</BilingualLegalText>
 // El `t` que recibe resuelve en espanol mientras el conmutador este activo; el resto de la
 // interfaz alrededor sigue en el idioma elegido.
-export default function TextoLegalBilingue({ children, className = '', avisoClassName = '' }) {
+export default function BilingualLegalText({ children, className = '', avisoClassName = '' }) {
   const t = useT()
   const [mostrandoEspanol, setMostrandoEspanol] = useState(false)
   const esTraducido = t.idioma !== 'es'
@@ -51,7 +53,7 @@ export default function TextoLegalBilingue({ children, className = '', avisoClas
     <div className={className} lang={idiomaTexto}>
       {children(tLegal)}
       {esTraducido && (
-        <AvisoTraduccion
+        <TranslationNotice
           idioma={t.idioma}
           mostrandoEspanol={mostrandoEspanol}
           onToggle={() => setMostrandoEspanol((abierto) => !abierto)}

@@ -12,7 +12,7 @@ import {
   mergePlanWithStatic,
 } from '@/utils/plans'
 import { normalizeApiError } from '@/utils/apiError'
-import { useT } from '@/i18n/traducir'
+import { useT } from '@/i18n/translate'
 import logoImg from '@/assets/logo-transparent.png'
 import styles from './PaymentPage.module.css'
 

@@ -5,7 +5,7 @@
 // código no existe en el catálogo tiene que salir undefined, para que siga funcionando la
 // cadena clientMessage || serverMessage || fallbackMessage de normalizeApiError. Un t()
 // normal devolvería la clave y el usuario acabaría leyendo "errores.algun_codigo".
-import { t, tOpcional } from '@/i18n/traducir'
+import { t, tOpcional } from '@/i18n/translate'
 
 const RETRYABLE_STATUS = new Set([408, 502, 503, 504])
 const RETRYABLE_CODES = new Set([

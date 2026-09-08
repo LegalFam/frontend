@@ -1,5 +1,5 @@
-import { useT } from '@/i18n/traducir'
-import styles from './ComoSection.module.css'
+import { useT } from '@/i18n/translate'
+import styles from './HowSection.module.css'
 
 const steps = [
   {
@@ -42,7 +42,7 @@ const steps = [
   },
 ]
 
-export default function ComoSection() {
+export default function HowSection() {
   const t = useT()
 
   return (

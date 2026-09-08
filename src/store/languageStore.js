@@ -21,7 +21,7 @@ export function aplicarIdiomaDocumento(codigo) {
   return idioma
 }
 
-export const useIdiomaStore = create((set) => ({
+export const useLanguageStore = create((set) => ({
   idioma: aplicarIdiomaDocumento(leerIdioma()),
   cambiarIdioma: (codigo) => {
     if (!esIdiomaSoportado(codigo)) return
@@ -31,10 +31,10 @@ export const useIdiomaStore = create((set) => ({
 
 // Lectura fuera de React (utils/apiError.js, utils/plans.js, hooks/useChat.js): son funciones
 // planas que se llaman desde bloques catch, no componentes, y necesitan el idioma del momento.
-export const idiomaActual = () => useIdiomaStore.getState().idioma
+export const idiomaActual = () => useLanguageStore.getState().idioma
 
 // Se llama desde main.jsx junto a initTema(): fuerza la creacion del store antes del primer
 // render para que <html lang> ya sea correcto cuando se pinta la pagina.
-export function initIdioma() {
-  return useIdiomaStore.getState().idioma
+export function initLanguage() {
+  return useLanguageStore.getState().idioma
 }

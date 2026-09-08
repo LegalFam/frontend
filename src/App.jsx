@@ -10,7 +10,7 @@ import SettingsPage from '@/pages/SettingsPage'
 import VerifyEmailPage from '@/pages/VerifyEmailPage'
 import ResetPasswordPage from '@/pages/ResetPasswordPage'
 import ProtectedRoute from '@/components/auth/ProtectedRoute'
-import { useT } from '@/i18n/traducir'
+import { useT } from '@/i18n/translate'
 
 export default function App() {
   const t = useT()

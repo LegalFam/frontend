@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import logoImg from '@/assets/logo-transparent.png'
-import SelectorIdioma from '@/components/common/SelectorIdioma'
-import { useT } from '@/i18n/traducir'
+import LanguageSelector from '@/components/common/LanguageSelector'
+import { useT } from '@/i18n/translate'
 import styles from './Navbar.module.css'
 
 export default function Navbar({
@@ -53,7 +53,7 @@ export default function Navbar({
           ))}
 
           <div className={styles.mobileBtns}>
-            <SelectorIdioma className={styles.mobileIdioma} />
+            <LanguageSelector className={styles.mobileIdioma} />
             {isAuthenticated ? (
               <>
                 <button className={`btn-accent ${styles.mobileAuthBtn}`} onClick={() => { setMenuOpen(false); onChatClick() }}>{t('nav.irAlChat')}</button>
@@ -71,7 +71,7 @@ export default function Navbar({
         <div className={styles.btns}>
           {/* El selector va antes que los botones de sesión: quien no lee español tiene que
               poder cambiar de lengua antes de decidir si entra. */}
-          <SelectorIdioma />
+          <LanguageSelector />
           {isAuthenticated ? (
             <>
               <button className="btn-accent" onClick={onChatClick}>{t('nav.irAlChat')}</button>
