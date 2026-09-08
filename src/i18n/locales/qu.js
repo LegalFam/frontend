@@ -341,6 +341,16 @@ export default {
       titulo: 'Rikch’ay',
       intro:
         'Ima llimpiwan LegalFamta qhawayta munanki chayta akllay. Tikrayqa kunallanmi ruwakun, hinaspam kay navegadorpi waqaychakun.',
+      temas: {
+        dorado: {
+          nombre: 'Ñawpaq',
+          descripcion: 'Ukhu yana, quri llimpiwan; LegalFampa ñawpaq rikch’aynin.',
+        },
+        toga: {
+          nombre: 'Musuq',
+          descripcion: 'Thak anqas, champagne latón llimpiwan.',
+        },
+      },
     },
 
     suscripcion: {
@@ -582,6 +592,7 @@ export default {
       verPlanes: 'Plankunata, tokenkunatawan qhaway',
       fuenteLegal: 'Kamachiy pukyu',
       fuentesUtilizadas: 'Llamk’achisqa pukyukuna',
+      textoFuente: 'Pukyup qillqan',
       resumenAsistente: 'Yanapaqpa pisichasqan',
       verFuente: 'Pukyuta qhaway',
       siguientesPasos: 'Qatiq ruwaykuna',

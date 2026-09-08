@@ -341,6 +341,16 @@ export default {
       titulo: 'Uñnaqa',
       intro:
         'Kuna samina LegalFam uñjaña munta uk ajlliñma. Mayjt’awixa jichhakiw luraski, aka navegadoranwa imantasi.',
+      temas: {
+        dorado: {
+          nombre: 'Nayra',
+          descripcion: 'Manqha ch’iyara, quri sami; LegalFaman nayra uñnaqapa.',
+        },
+        toga: {
+          nombre: 'Machaqa',
+          descripcion: 'Llamp’u larama, champagne latón samimpi.',
+        },
+      },
     },
 
     suscripcion: {
@@ -582,6 +592,7 @@ export default {
       verPlanes: 'Plananaka ukat tokennaka uñjaña',
       fuenteLegal: 'Kamachi jutuwi',
       fuentesUtilizadas: 'Apnaqat jutuwinaka',
+      textoFuente: 'Jutuwin qillqatapa',
       resumenAsistente: 'Yanapirin jisk’acht’awipa',
       verFuente: 'Jutuwi uñjaña',
       siguientesPasos: 'Arknaqiri lurawinaka',
