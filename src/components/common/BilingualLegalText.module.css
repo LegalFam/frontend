@@ -1,3 +1,6 @@
+/* Banda propia, no texto suelto sobre el fondo: el aviso no es parte de lo que se está
+   leyendo sino algo que se dice sobre ello, y se separa como las demás notas del chat
+   (misma convención que .citationNotice en ChatMessage.module.css). */
 .aviso {
   display: flex;
   align-items: center;
@@ -6,6 +9,10 @@
   flex-wrap: wrap;
   width: 100%;
   margin-top: 0.5rem;
+  border: 0.5px solid var(--accent-border);
+  border-radius: 7.5px;
+  background: var(--accent-bg);
+  padding: 0.5rem 0.75rem;
   color: var(--text-tertiary, var(--text-secondary));
   font-size: 13px;
   line-height: 1.4;
@@ -29,7 +36,8 @@
   flex-shrink: 0;
   border: 0.5px solid var(--accent-border);
   border-radius: 999px;
-  background: transparent;
+  /* Sobre el tinte de la banda, un botón transparente se pierde: se apoya en el fondo. */
+  background: var(--black-2);
   padding: 0.1875rem 0.625rem;
   color: var(--accent);
   font-size: 12.5px;
