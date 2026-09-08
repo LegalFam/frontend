@@ -46,7 +46,7 @@ export default function TermsPage() {
       </header>
 
       <main className={styles.main}>
-        <BilingualLegalText avisoClassName={styles.aviso}>
+        <BilingualLegalText noticeClassName={styles.notice}>
           {(tLegal) => (
             <>
               <section className={styles.hero}>

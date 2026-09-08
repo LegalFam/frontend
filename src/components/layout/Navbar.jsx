@@ -53,7 +53,7 @@ export default function Navbar({
           ))}
 
           <div className={styles.mobileBtns}>
-            <LanguageSelector className={styles.mobileIdioma} />
+            <LanguageSelector className={styles.mobileLanguage} />
             {isAuthenticated ? (
               <>
                 <button className={`btn-accent ${styles.mobileAuthBtn}`} onClick={() => { setMenuOpen(false); onChatClick() }}>{t('nav.irAlChat')}</button>

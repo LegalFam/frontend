@@ -14,68 +14,70 @@
 // queda en la base de datos es el idioma de cada mensaje, para que el
 // historial se siga leyendo igual aunque después se cambie de lengua.
 
+// Ojo: el valor de la clave no se toca aunque el identificador esté en inglés. Cambiarlo
+// dejaría huérfana la preferencia ya guardada de quien tiene la app en quechua o aymara.
 const KEY = 'legalfam-idioma'
-const POR_DEFECTO = 'es'
+const DEFAULT_CODE = 'es'
 
-export const IDIOMAS = [
+export const LANGUAGES = [
   {
-    codigo: 'es',
+    code: 'es',
     // Etiqueta en la propia lengua: quien busca su idioma en la lista lo reconoce así, no
     // por su nombre en español.
-    etiqueta: 'Español',
-    nombre: 'Español',
+    label: 'Español',
+    name: 'Español',
   },
   {
-    codigo: 'qu',
-    etiqueta: 'Runasimi',
+    code: 'qu',
+    label: 'Runasimi',
     // Quechua sureño (Chanka-Collao), que es el de mayor número de hablantes en Perú. Las
     // variantes centrales no son mutuamente inteligibles con esta y no están cubiertas.
-    nombre: 'Quechua sureño',
-    aviso: 'Kay kutichiyqa maquinawan t’ikrasqam. Kastilla simipi kaqmi chiqap.',
+    name: 'Quechua sureño',
+    notice: 'Kay kutichiyqa maquinawan t’ikrasqam. Kastilla simipi kaqmi chiqap.',
   },
   {
-    codigo: 'ay',
-    etiqueta: 'Aymara',
-    nombre: 'Aymara',
-    aviso: 'Aka jaysawixa maquinampi jaqukipatawa. Kastilla arunxa chiqapawa.',
+    code: 'ay',
+    label: 'Aymara',
+    name: 'Aymara',
+    notice: 'Aka jaysawixa maquinampi jaqukipatawa. Kastilla arunxa chiqapawa.',
   },
 ]
 
-const CODIGOS = IDIOMAS.map((idioma) => idioma.codigo)
+const CODES = LANGUAGES.map((language) => language.code)
 
-export const esIdiomaSoportado = (codigo) => CODIGOS.includes(codigo)
+export const isSupportedLanguage = (code) => CODES.includes(code)
 
-export function idiomaPorCodigo(codigo) {
-  return IDIOMAS.find((idioma) => idioma.codigo === codigo) || IDIOMAS[0]
+export function languageByCode(code) {
+  return LANGUAGES.find((language) => language.code === code) || LANGUAGES[0]
 }
 
-export function leerIdioma() {
+export function readLanguage() {
   try {
-    const guardado = localStorage.getItem(KEY)
-    return esIdiomaSoportado(guardado) ? guardado : POR_DEFECTO
+    const stored = localStorage.getItem(KEY)
+    return isSupportedLanguage(stored) ? stored : DEFAULT_CODE
   } catch {
     // Modo privado o almacenamiento bloqueado: se sigue en español.
-    return POR_DEFECTO
+    return DEFAULT_CODE
   }
 }
 
-export function guardarIdioma(codigo) {
-  const idioma = esIdiomaSoportado(codigo) ? codigo : POR_DEFECTO
+export function saveLanguage(code) {
+  const language = isSupportedLanguage(code) ? code : DEFAULT_CODE
   try {
-    localStorage.setItem(KEY, idioma)
+    localStorage.setItem(KEY, language)
   } catch {
     /* modo privado */
   }
-  return idioma
+  return language
 }
 
 // Aviso que acompaña a toda respuesta traducida. Es material de orientación legal: el
 // usuario tiene que poder saber que lee una traducción automática y llegar al original.
-export const AVISO_TRADUCCION = 'Traducción automática. La versión en español es la que prevalece.'
+export const TRANSLATION_NOTICE = 'Traducción automática. La versión en español es la que prevalece.'
 
-export function avisoTraduccion(codigo) {
+export function translationNotice(code) {
   return {
-    propio: idiomaPorCodigo(codigo).aviso || '',
-    espanol: AVISO_TRADUCCION,
+    own: languageByCode(code).notice || '',
+    spanish: TRANSLATION_NOTICE,
   }
 }

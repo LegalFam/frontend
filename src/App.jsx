@@ -21,7 +21,7 @@ export default function App() {
     document.title = t('meta.titulo')
     const meta = document.querySelector('meta[name="description"]')
     if (meta) meta.setAttribute('content', t('meta.descripcion'))
-  }, [t.idioma])
+  }, [t.language])
 
   return (
     <Routes>

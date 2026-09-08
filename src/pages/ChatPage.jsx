@@ -194,8 +194,8 @@ export default function ChatPage() {
 
         {/* El mismo control en sus dos formas: ancha cuando la barra da de sí, compacta
             cuando no. El CSS decide cuál se ve; ambas escriben en el mismo store. */}
-        <LanguageSelector className={styles.topbarIdioma} />
-        <LanguageSelector compacto className={styles.topbarIdiomaCompacto} />
+        <LanguageSelector className={styles.topbarLanguage} />
+        <LanguageSelector compact className={styles.topbarLanguageCompact} />
 
         {/* En móvil este botón se oculta: el cajón ya tiene uno en la fila de usuario. */}
         <button className={`icon-btn ${styles.topbarSignout}`} onClick={signout} title={t('chat.cerrarSesion')}>

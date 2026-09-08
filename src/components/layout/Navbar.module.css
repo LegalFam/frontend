@@ -84,7 +84,7 @@
 }
 
 /* El selector de idioma dentro del menú móvil ocupa la fila entera, como los botones. */
-.mobileIdioma {
+.mobileLanguage {
   align-self: center;
   margin-bottom: 0.25rem;
 }

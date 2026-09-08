@@ -264,7 +264,7 @@
 }
 
 /* El selector de idioma dentro de la tarjeta: mismo ancho de contenido que el resto. */
-.idiomaPicker {
+.languagePicker {
   width: fit-content;
   margin-bottom: 0.75rem;
 }

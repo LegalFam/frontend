@@ -5,7 +5,7 @@
 // Nota para quien las use: como leen el idioma sin suscribirse, el componente que las llama
 // tiene que suscribirse por su cuenta (useT()) para volver a renderizar al cambiar de lengua.
 // En la práctica todos lo hacen, porque también tienen texto propio.
-import { t, tOpcional } from '@/i18n/translate'
+import { t, tOptional } from '@/i18n/translate'
 
 export const PLAN_SLUGS = {
   FREE: 'gratis',
@@ -95,13 +95,13 @@ export const mergePlanWithStatic = (plan) => {
 // El catálogo manda sobre el displayName que llega del servidor, que siempre viene en
 // español; si aparece un plan cuyo código no está en el catálogo, se usa el del servidor.
 export const formatPlanName = (plan) =>
-  (plan?.code && tOpcional(`planes.nombre.${plan.code}`)) ||
+  (plan?.code && tOptional(`planes.nombre.${plan.code}`)) ||
   plan?.displayName ||
   plan?.code ||
   t('planes.generico')
 
 export const formatPlanButtonLabel = (plan) =>
-  (plan?.code && tOpcional(`planes.boton.${plan.code}`)) || t('planes.boton.generico')
+  (plan?.code && tOptional(`planes.boton.${plan.code}`)) || t('planes.boton.generico')
 
 export const formatPlanPrice = (plan) => {
   if (!plan || plan.monthlyPriceCents == null) return 'S/ 0'

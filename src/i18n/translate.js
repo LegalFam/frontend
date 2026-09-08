@@ -17,96 +17,96 @@
 // resuelven con t() dentro del render.
 
 import { useLanguageStore } from '@/store/languageStore'
-import catalogos from './locales'
+import catalogs from './locales'
 
-const POR_DEFECTO = 'es'
-const avisadas = new Set()
+const DEFAULT_CODE = 'es'
+const warned = new Set()
 
 // Camina el objeto anidado con una clave con puntos: 'chat.input.enviar'.
-function buscar(catalogo, clave) {
-  let nodo = catalogo
-  for (const parte of clave.split('.')) {
-    if (nodo == null || typeof nodo !== 'object') return undefined
-    nodo = nodo[parte]
+function lookup(catalog, key) {
+  let node = catalog
+  for (const part of key.split('.')) {
+    if (node == null || typeof node !== 'object') return undefined
+    node = node[part]
   }
-  return typeof nodo === 'string' ? nodo : undefined
+  return typeof node === 'string' ? node : undefined
 }
 
-function interpolar(texto, vars) {
-  if (!vars) return texto
+function interpolate(text, vars) {
+  if (!vars) return text
   // Un placeholder sin valor se queda visible tal cual ({{fecha}}): falla fuerte, no en silencio.
-  return texto.replace(/\{\{(\w+)\}\}/g, (crudo, nombre) =>
-    vars[nombre] === undefined || vars[nombre] === null ? crudo : String(vars[nombre])
+  return text.replace(/\{\{(\w+)\}\}/g, (match, name) =>
+    vars[name] === undefined || vars[name] === null ? match : String(vars[name])
   )
 }
 
 // Resuelve sin red de seguridad. Devuelve undefined si la clave no existe en ese idioma.
-function crudo(idioma, clave) {
-  return buscar(catalogos[idioma] || catalogos[POR_DEFECTO], clave)
+function raw(language, key) {
+  return lookup(catalogs[language] || catalogs[DEFAULT_CODE], key)
 }
 
 // Traduce en un idioma explicito. Lo necesitan el texto legal bilingue (que pide el espanol
 // aunque la interfaz este en otra lengua) y cualquier sitio donde el idioma no sea el ambiental.
-export function tEn(idioma, clave, vars) {
-  const propio = crudo(idioma, clave)
-  if (propio !== undefined) return interpolar(propio, vars)
+export function tIn(language, key, vars) {
+  const own = raw(language, key)
+  if (own !== undefined) return interpolate(own, vars)
 
-  const espanol = crudo(POR_DEFECTO, clave)
-  if (espanol !== undefined) {
+  const spanish = raw(DEFAULT_CODE, key)
+  if (spanish !== undefined) {
     // En produccion se cae al espanol, que es lo correcto en este producto: el espanol
     // prevalece. En desarrollo se marca para que no pase inadvertido.
     if (import.meta.env.DEV) {
-      const marca = `${idioma}:${clave}`
-      if (!avisadas.has(marca)) {
-        avisadas.add(marca)
-        console.warn(`[i18n] falta la clave "${clave}" en "${idioma}"; se muestra el espanol`)
+      const mark = `${language}:${key}`
+      if (!warned.has(mark)) {
+        warned.add(mark)
+        console.warn(`[i18n] falta la clave "${key}" en "${language}"; se muestra el espanol`)
       }
     }
-    return interpolar(espanol, vars)
+    return interpolate(spanish, vars)
   }
 
   if (import.meta.env.DEV) {
-    if (!avisadas.has(clave)) {
-      avisadas.add(clave)
-      console.warn(`[i18n] clave inexistente: "${clave}"`)
+    if (!warned.has(key)) {
+      warned.add(key)
+      console.warn(`[i18n] clave inexistente: "${key}"`)
     }
-    return `⟦${clave}⟧`
+    return `⟦${key}⟧`
   }
   return ''
 }
 
 // Traduce en el idioma activo. Para usar fuera de React; dentro de componentes va useT(), que
 // ademas suscribe al cambio de idioma.
-export function t(clave, vars) {
-  return tEn(useLanguageStore.getState().idioma, clave, vars)
+export function t(key, vars) {
+  return tIn(useLanguageStore.getState().language, key, vars)
 }
 
 // Variante que devuelve undefined cuando la clave no existe en ningun catalogo, en vez de una
 // marca o un string vacio. La usa utils/apiError.js, donde el resultado alimenta la cadena
 // `clientMessage || serverMessage || fallbackMessage`: si devolviera la clave, esa cadena se
 // cortaria y el usuario veria "errores.algun_codigo" en pantalla.
-export function tOpcional(clave, vars) {
-  const idioma = useLanguageStore.getState().idioma
-  const texto = crudo(idioma, clave) ?? crudo(POR_DEFECTO, clave)
-  return texto === undefined ? undefined : interpolar(texto, vars)
+export function tOptional(key, vars) {
+  const language = useLanguageStore.getState().language
+  const text = raw(language, key) ?? raw(DEFAULT_CODE, key)
+  return text === undefined ? undefined : interpolate(text, vars)
 }
 
 // Plurales con par explicito de claves (`_one` / `_other`). No hace falta un motor de reglas:
 // el espanol distingue una forma de otra y el quechua y el aymara aportan solo `_other`.
 export function tPlural(base, n, vars) {
-  const idioma = useLanguageStore.getState().idioma
-  const sufijo = n === 1 && idioma === POR_DEFECTO ? '_one' : '_other'
-  return tEn(idioma, `${base}${sufijo}`, { n, ...vars })
+  const language = useLanguageStore.getState().language
+  const suffix = n === 1 && language === DEFAULT_CODE ? '_one' : '_other'
+  return tIn(language, `${base}${suffix}`, { n, ...vars })
 }
 
 // Hook para componentes: devuelve un t() ligado al idioma suscrito, de modo que el componente
 // se vuelve a renderizar al cambiar de idioma.
 export function useT() {
-  const idioma = useLanguageStore((estado) => estado.idioma)
-  const traducir = (clave, vars) => tEn(idioma, clave, vars)
-  traducir.idioma = idioma
-  traducir.plural = (base, n, vars) =>
-    tEn(idioma, `${base}${n === 1 && idioma === POR_DEFECTO ? '_one' : '_other'}`, { n, ...vars })
-  traducir.en = tEn
-  return traducir
+  const language = useLanguageStore((state) => state.language)
+  const translate = (key, vars) => tIn(language, key, vars)
+  translate.language = language
+  translate.plural = (base, n, vars) =>
+    tIn(language, `${base}${n === 1 && language === DEFAULT_CODE ? '_one' : '_other'}`, { n, ...vars })
+  translate.in = tIn
+  return translate
 }

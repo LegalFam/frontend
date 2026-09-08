@@ -597,6 +597,11 @@ export default {
         'Imayna kasqanrayku, yachaq wasiman riyta yuyaykuy: CEM, PNP icha DEMUNA nisqaman, imaynachus kaptin, yanapayta, amachaytawan chaskinaykipaq.',
       especialistaEnlace: 'Utqay yanapay tinkikunata qhaway',
 
+      idiomaDetectadoTitulo: 'Kutichiypa simin',
+      idiomaDetectadoTexto:
+        '{{idioma}} simipim qillqarqanki, aplicacionmi ichaqa {{interfaz}} simipi kachkan. {{idioma}} simipim kutichirqaykiku.',
+      idiomaDetectadoAccion: 'Aplicacionpi {{idioma}} simita churay',
+
       fuentesDebilesTitulo: 'Sayachiq pukyukunaqa pisim',
       fuentesDebilesTexto:
         'Kay pukyukunaqa yanapanmanmi, ichaqa manam kutichiypa llapan rimasqanta chiqanchanchu.',

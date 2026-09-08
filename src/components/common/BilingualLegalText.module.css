@@ -1,7 +1,7 @@
 /* Banda propia, no texto suelto sobre el fondo: el aviso no es parte de lo que se está
    leyendo sino algo que se dice sobre ello, y se separa como las demás notas del chat
    (misma convención que .citationNotice en ChatMessage.module.css). */
-.aviso {
+.notice {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -17,18 +17,18 @@
   font-size: 13px;
   line-height: 1.4;
 }
-.avisoAbove {
+.noticeAbove {
   margin-top: 0;
   margin-bottom: 0.5rem;
 }
-.avisoTexto {
+.noticeText {
   display: flex;
   flex-direction: column;
   gap: 0.0625rem;
 }
 /* La línea en español queda un paso atrás: acompaña y respalda al aviso en la lengua del
    usuario, que es el que tiene que leerse primero. */
-.avisoEspanol {
+.noticeSpanish {
   opacity: 0.72;
   font-size: 12.5px;
 }

@@ -3,7 +3,9 @@ import { Link } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { TranslationNotice } from '@/components/common/BilingualLegalText'
-import { tOpcional, useT } from '@/i18n/translate'
+import { languageByCode } from '@/i18n/languages'
+import { tIn, tOptional, useT } from '@/i18n/translate'
+import { useLanguageStore } from '@/store/languageStore'
 import styles from './ChatMessage.module.css'
 
 const normalizeMarkdownContent = (content) => {
@@ -144,7 +146,7 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
   // el hilo. El texto guardado sólo se usa cuando el error venía únicamente del servidor.
   const contenidoBase = message.messageKey
     ? t(message.messageKey, message.messageVars)
-    : (isSystem && message.errorCode && tOpcional(`errores.${message.errorCode}`)) || message.content
+    : (isSystem && message.errorCode && tOptional(`errores.${message.errorCode}`)) || message.content
 
   // El español es siempre la versión canónica y nunca se descarta. Cuando la conversación
   // es en quechua o aymara se muestra la traducción, con un conmutador para ver el original:
@@ -159,6 +161,16 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
   // lo que él mismo escribió, y el español es lo traducido a máquina. No hay nada que
   // advertir ni que contrastar, así que se muestra siempre su texto y sin conmutador.
   const isTranslated = hasTranslation && !isUser
+
+  // El idioma del turno lo fija el flujo leyendo el texto; `languageRequested` sólo trae
+  // valor cuando eso no coincidió con lo que tenía puesto la aplicación al enviarlo. Es un
+  // dato del mensaje y no del estado de la sesión, así que el aviso sobrevive a recargar.
+  const languageSwitched = Boolean(
+    message.languageRequested && message.languageRequested !== message.language
+  )
+  const activeLanguage = useLanguageStore((state) => state.language)
+  const changeLanguage = useLanguageStore((state) => state.changeLanguage)
+
   const [showSpanish, setShowSpanish] = useState(false)
   const showTranslated = hasTranslation && (isUser || !showSpanish)
   const markdownContent = normalizeMarkdownContent(
@@ -253,12 +265,46 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
         </div>
       )}
 
+      {/* Se escribió en una lengua distinta de la que tiene puesta la aplicación, así que la
+          respuesta salió en la lengua en que se escribió y hay que decirlo. Se apila con el
+          aviso de especialista cuando ambos aplican.
+
+          Ojo: va con tIn() en el idioma del mensaje y NO con t(). Un aviso que explica "te
+          respondimos en aymara" no cumple su función si sale en quechua, que es justamente la
+          lengua que esta persona no está usando. */}
+      {isBot && languageSwitched && (
+        <div className={styles.languageNotice} role="note" lang={message.language}>
+          <div className={styles.specialistText}>
+            <strong>{tIn(message.language, 'chat.mensaje.idiomaDetectadoTitulo')}</strong>
+            <span>
+              {tIn(message.language, 'chat.mensaje.idiomaDetectadoTexto', {
+                idioma: languageByCode(message.language).label,
+                interfaz: languageByCode(message.languageRequested).label,
+              })}
+            </span>
+          </div>
+          {/* Sólo mientras haya algo que cambiar: si ya se cambió el idioma de la aplicación,
+              el aviso se queda como registro de lo que pasó, pero el botón sobra. */}
+          {activeLanguage !== message.language && (
+            <button
+              type="button"
+              className={styles.languageAction}
+              onClick={() => changeLanguage(message.language)}
+            >
+              {tIn(message.language, 'chat.mensaje.idiomaDetectadoAccion', {
+                idioma: languageByCode(message.language).label,
+              })}
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Antes del texto, no después: el aviso dice cómo hay que leer lo que sigue, y quien
           lee una orientación legal traducida a máquina tiene que saberlo antes de leerla. */}
       {isTranslated && (
         <TranslationNotice
-          idioma={message.language}
-          mostrandoEspanol={showSpanish}
+          language={message.language}
+          showingSpanish={showSpanish}
           onToggle={() => setShowSpanish((open) => !open)}
           above
         />

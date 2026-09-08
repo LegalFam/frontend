@@ -597,6 +597,11 @@ export default {
         'Kunjamas jakasta ukarjama, yatxatat utaru sarañamataki amuyt’am: CEM, PNP jan ukax DEMUNA, kunjamas wakisi ukarjama, yanapt’awi, jark’aqawi katuqañamataki.',
       especialistaEnlace: 'Jank’a yanapt’aw chinunaka uñjaña',
 
+      idiomaDetectadoTitulo: 'Jaysäwina arupa',
+      idiomaDetectadoTexto:
+        '{{idioma}} aruta qillqtawa, ukampisa aplicacionaxa {{interfaz}} arunwa uñstaski. {{idioma}} arutwa jaysapxsma.',
+      idiomaDetectadoAccion: 'Aplicacionana {{idioma}} aru uchaña',
+
       fuentesDebilesTitulo: 'Thaxsintiri jutuwinakaxa juk’akiwa',
       fuentesDebilesTexto:
         'Aka jutuwinakaxa yanapt’aspawa, ukampis janiw jaysawina taqi arunakapa chiqpach thaxsintkiti.',

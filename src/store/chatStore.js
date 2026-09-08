@@ -227,16 +227,36 @@ export const useChatStore = create((set) => ({
       },
     })),
 
-  clearPendingUserMessageStates: (sessionId) =>
+  // Al llegar la respuesta se cierra el estado de los turnos del usuario que estaban en
+  // vuelo. `language` es el que el flujo leyó del texto: se envió el de la interfaz, que es
+  // la única pista disponible antes de responder, y puede no ser la lengua en que se
+  // escribió. Corregirlo aquí evita que la burbuja del usuario quede rotulada en una lengua
+  // que no es la suya y que el conmutador "Ver en español" ofrezca un original que ya era
+  // español.
+  clearPendingUserMessageStates: (sessionId, language = null) =>
     set((state) => ({
       messages: {
         ...state.messages,
-        [sessionId]: (state.messages[sessionId] || []).map((message) =>
-          message.role === 'USER' &&
-          ['sending', 'processing', 'unknown_delivery'].includes(message.state)
-            ? { ...message, state: null }
-            : message
-        ),
+        [sessionId]: (state.messages[sessionId] || []).map((message) => {
+          if (
+            message.role !== 'USER' ||
+            !['sending', 'processing', 'unknown_delivery'].includes(message.state)
+          ) {
+            return message
+          }
+          if (!language || language === message.language) return { ...message, state: null }
+          return {
+            ...message,
+            state: null,
+            language,
+            languageRequested: message.language,
+            // Se deja la misma forma que tendrá al recargar, cuando venga del servidor: en
+            // español no hay nada que conmutar, y en las demás lenguas `contentLocalized` es
+            // lo que la persona escribió. El español canónico lo produce el flujo y este
+            // turno no lo recibe, así que hasta la recarga `content` sigue siendo el original.
+            contentLocalized: language === 'es' ? null : message.contentLocalized || message.content,
+          }
+        }),
       },
     })),
 

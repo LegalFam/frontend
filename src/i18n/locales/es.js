@@ -611,6 +611,13 @@ export default {
         'Por el tipo de situación, considera acudir a una entidad especializada como CEM, PNP o DEMUNA, según corresponda, para recibir orientación y protección directa.',
       especialistaEnlace: 'Ver contactos de emergencia',
 
+      // Se muestra cuando la lengua en que se escribió no es la que tiene puesta la
+      // aplicación. Va siempre en la lengua detectada, no en la de la interfaz.
+      idiomaDetectadoTitulo: 'Idioma de la respuesta',
+      idiomaDetectadoTexto:
+        'Escribiste en {{idioma}} y la aplicación está en {{interfaz}}. Te respondimos en {{idioma}}.',
+      idiomaDetectadoAccion: 'Usar {{idioma}} en la aplicación',
+
       fuentesDebilesTitulo: 'Fuentes de apoyo limitadas',
       fuentesDebilesTexto:
         'Estas fuentes pueden orientar, pero no respaldan de forma directa todos los puntos de la respuesta.',

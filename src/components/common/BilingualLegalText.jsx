@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { AVISO_TRADUCCION, avisoTraduccion, idiomaPorCodigo } from '@/i18n/languages'
-import { tEn, useT } from '@/i18n/translate'
+import { TRANSLATION_NOTICE, translationNotice, languageByCode } from '@/i18n/languages'
+import { tIn, useT } from '@/i18n/translate'
 import styles from './BilingualLegalText.module.css'
 
 // Tira de aviso + conmutador que acompana a todo texto traducido a maquina. Estaba escrita a
@@ -8,28 +8,28 @@ import styles from './BilingualLegalText.module.css'
 // porque ahora la usan tambien los terminos, el glosario y los avisos legales de la interfaz.
 // `above` invierte el margen para cuando la tira precede al texto que advierte en lugar de
 // seguirlo, como pasa en el chat.
-export function TranslationNotice({ idioma, mostrandoEspanol, onToggle, className = '', above = false }) {
+export function TranslationNotice({ language, showingSpanish, onToggle, className = '', above = false }) {
   const t = useT()
-  if (!idioma || idioma === 'es') return null
+  if (!language || language === 'es') return null
 
-  const aviso = avisoTraduccion(idioma)
-  const etiqueta = idiomaPorCodigo(idioma).etiqueta
+  const notice = translationNotice(language)
+  const label = languageByCode(language).label
 
   return (
-    <div className={`${styles.aviso} ${above ? styles.avisoAbove : ''} ${className}`}>
-      <div className={styles.avisoTexto}>
+    <div className={`${styles.notice} ${above ? styles.noticeAbove : ''} ${className}`}>
+      <div className={styles.noticeText}>
         {/* El aviso en la lengua del usuario primero: uno en espanol no cumple su funcion con
             quien eligio no leer en espanol. */}
-        {aviso.propio && <span lang={idioma}>{aviso.propio}</span>}
-        <span className={styles.avisoEspanol}>{AVISO_TRADUCCION}</span>
+        {notice.own && <span lang={language}>{notice.own}</span>}
+        <span className={styles.noticeSpanish}>{TRANSLATION_NOTICE}</span>
       </div>
       <button
         type="button"
         className={styles.toggle}
         onClick={onToggle}
-        aria-pressed={mostrandoEspanol}
+        aria-pressed={showingSpanish}
       >
-        {mostrandoEspanol ? t('comun.verEn', { idioma: etiqueta }) : t('comun.verEnEspanol')}
+        {showingSpanish ? t('comun.verEn', { idioma: label }) : t('comun.verEnEspanol')}
       </button>
     </div>
   )
@@ -42,22 +42,22 @@ export function TranslationNotice({ idioma, mostrandoEspanol, onToggle, classNam
 // Uso: <BilingualLegalText>{(t) => <p>{t('terminos.uso.texto')}</p>}</BilingualLegalText>
 // El `t` que recibe resuelve en espanol mientras el conmutador este activo; el resto de la
 // interfaz alrededor sigue en el idioma elegido.
-export default function BilingualLegalText({ children, className = '', avisoClassName = '' }) {
+export default function BilingualLegalText({ children, className = '', noticeClassName = '' }) {
   const t = useT()
-  const [mostrandoEspanol, setMostrandoEspanol] = useState(false)
-  const esTraducido = t.idioma !== 'es'
-  const idiomaTexto = esTraducido && !mostrandoEspanol ? t.idioma : 'es'
-  const tLegal = (clave, vars) => tEn(idiomaTexto, clave, vars)
+  const [showingSpanish, setShowingSpanish] = useState(false)
+  const isTranslated = t.language !== 'es'
+  const textLanguage = isTranslated && !showingSpanish ? t.language : 'es'
+  const tLegal = (key, vars) => tIn(textLanguage, key, vars)
 
   return (
-    <div className={className} lang={idiomaTexto}>
+    <div className={className} lang={textLanguage}>
       {children(tLegal)}
-      {esTraducido && (
+      {isTranslated && (
         <TranslationNotice
-          idioma={t.idioma}
-          mostrandoEspanol={mostrandoEspanol}
-          onToggle={() => setMostrandoEspanol((abierto) => !abierto)}
-          className={avisoClassName}
+          language={t.language}
+          showingSpanish={showingSpanish}
+          onToggle={() => setShowingSpanish((open) => !open)}
+          className={noticeClassName}
         />
       )}
     </div>

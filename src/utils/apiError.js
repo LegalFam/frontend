@@ -1,11 +1,11 @@
 // Los mensajes de error viven en el catálogo de idiomas, en errores.<código>: la clave es el
 // código que devuelve el backend, así que no hay un segundo mapa que mantener sincronizado.
 //
-// Se resuelven con tOpcional() y no con t(), y eso es lo importante de este módulo: cuando el
+// Se resuelven con tOptional() y no con t(), y eso es lo importante de este módulo: cuando el
 // código no existe en el catálogo tiene que salir undefined, para que siga funcionando la
 // cadena clientMessage || serverMessage || fallbackMessage de normalizeApiError. Un t()
 // normal devolvería la clave y el usuario acabaría leyendo "errores.algun_codigo".
-import { t, tOpcional } from '@/i18n/translate'
+import { t, tOptional } from '@/i18n/translate'
 
 const RETRYABLE_STATUS = new Set([408, 502, 503, 504])
 const RETRYABLE_CODES = new Set([
@@ -52,13 +52,13 @@ const normalizeServerMessage = (message) => {
   const trimmed = message.trim()
   if (!trimmed) return null
   const code = FALLBACK_CODES[trimmed.toLowerCase()]
-  return (code && tOpcional(`errores.${code}`)) || trimmed
+  return (code && tOptional(`errores.${code}`)) || trimmed
 }
 
 export const getApiErrorMessage = (code, fallbackMessage = null) => {
   const normalizedCode = normalizeErrorCode(code)
   if (!normalizedCode) return fallbackMessage
-  return tOpcional(`errores.${normalizedCode}`) || fallbackMessage
+  return tOptional(`errores.${normalizedCode}`) || fallbackMessage
 }
 
 export const normalizeAssistantErrorMessage = (code, fallbackMessage = null) =>

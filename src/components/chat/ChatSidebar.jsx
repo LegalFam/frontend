@@ -50,7 +50,7 @@ export default function ChatSidebar({
     if (!term) return sessions
     return sessions.filter((s) => normalize(sessionLabel(s, t('chat.consulta'))).includes(term))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sessions, query, t.idioma])
+  }, [sessions, query, t.language])
 
   const initials = user?.name
     ? user.name.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase()

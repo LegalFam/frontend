@@ -201,7 +201,7 @@
    menú · título · tokens · salir. */
 /* La forma compacta del selector sólo entra en juego en la barra estrecha; la regla base va
    antes del media query para que éste pueda ganarle. */
-.topbarIdiomaCompacto { display: none; }
+.topbarLanguageCompact { display: none; }
 
 /* Qué se cae primero cuando la barra deja de dar de sí. El título es lo primero: el nombre de
    la consulta sigue visible en el historial del cajón, mientras que los tokens y el idioma no
@@ -216,8 +216,8 @@
   /* El cajón ya tiene un botón de salir en la fila de usuario: aquí estaba duplicado. */
   .topbar .topbarSignout { display: none; }
   /* Las tres etiquetas de corrido son 220px y no caben junto al chip de tokens. */
-  .topbar .topbarIdioma { display: none; }
-  .topbar .topbarIdiomaCompacto { display: block; }
+  .topbar .topbarLanguage { display: none; }
+  .topbar .topbarLanguageCompact { display: block; }
   /* Sin título ni logo, los dos controles que quedan se agrupan a la derecha. */
   .tokenControl { margin-left: auto; }
 }
@@ -232,10 +232,10 @@
 
 /* El selector de idioma empuja al botón de salir hacia la derecha: los dos controles de
    sesión quedan juntos al final de la barra. */
-.topbarIdioma {
+.topbarLanguage {
   margin-left: auto;
   flex-shrink: 0;
 }
-.topbarIdiomaCompacto {
+.topbarLanguageCompact {
   margin-left: 0;
 }

@@ -294,7 +294,7 @@ export default function SettingsPage() {
         <section className={styles.card}>
           <h2>{t('config.idioma.titulo')}</h2>
           <p className={styles.themeIntro}>{t('config.idioma.intro')}</p>
-          <LanguageSelector className={styles.idiomaPicker} />
+          <LanguageSelector className={styles.languagePicker} />
           <p className={styles.fieldNote}>{t('config.idioma.nota')}</p>
         </section>
 

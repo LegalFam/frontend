@@ -62,7 +62,11 @@ const sseEventToMessage = (event) => {
       // lee cuando su idioma no es el español. El español no se descarta: es la versión
       // que prevalece y la que el conmutador "Ver en español" muestra.
       content: data.message || '',
+      // `language` es la lengua que el flujo leyó del mensaje del usuario, no la que pidió
+      // la interfaz: esa queda en `languageRequested` y sólo cuando difieren, que es lo que
+      // dispara el aviso de cambio de idioma.
       language: data.language || 'es',
+      languageRequested: data.languageRequested || null,
       contentLocalized: data.messageLocalized || null,
       citations: data.citations || [],
       createdAt: data.createdAt || new Date().toISOString(),
@@ -370,7 +374,7 @@ export function useChat() {
       return data.id
     }, [navigate, store])
 
-  const sendMessage = useCallback(async (text, language = useLanguageStore.getState().idioma) => {
+  const sendMessage = useCallback(async (text, language = useLanguageStore.getState().language) => {
     const trimmed = text.trim()
     if (!trimmed || sendingTextRef.current === trimmed) return
 
@@ -611,7 +615,10 @@ export function useChat() {
               const message = sseEventToMessage(event)
               if (message) {
                 store.upsertMessage(sessionId, message)
-                store.clearPendingUserMessageStates(sessionId)
+                store.clearPendingUserMessageStates(
+                  sessionId,
+                  message.role === 'ASSISTANT' ? message.language : null
+                )
                 store.setProcessingStatus({ processing: false })
                 store.setLoading(false)
                 if (message.role === 'ASSISTANT') {

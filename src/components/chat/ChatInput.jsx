@@ -12,7 +12,7 @@ export default function ChatInput({ onSend, disabled, disabledReason, draft = nu
   // El idioma vive en el store; el control para cambiarlo está en la barra superior y en
   // Configuración, no aquí. Lo que sí queda en la base de datos es el idioma de cada mensaje
   // ya enviado, que no cambia después aunque se cambie de lengua.
-  const idioma = useLanguageStore((estado) => estado.idioma)
+  const idioma = useLanguageStore((state) => state.language)
   const appliedDraftTsRef = useRef(0)
 
   const autoResize = () => {
