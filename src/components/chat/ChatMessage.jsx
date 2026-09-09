@@ -8,6 +8,28 @@ import { tIn, tOptional, useT } from '@/i18n/translate'
 import { useLanguageStore } from '@/store/languageStore'
 import styles from './ChatMessage.module.css'
 
+// Los pasos llegan con el mismo markdown que el cuerpo del mensaje (negritas sobre el nombre
+// de cada institucion), asi que hay que renderizarlos igual y no como texto plano.
+const INLINE_MARKDOWN_ELEMENTS = ['p', 'br', 'strong', 'em', 'code', 'a']
+
+const InlineMarkdown = ({ children }) => (
+  <ReactMarkdown
+    remarkPlugins={[remarkGfm]}
+    allowedElements={INLINE_MARKDOWN_ELEMENTS}
+    components={{
+      // Dentro de un <li> un <p> rompe el flujo del texto: lo dejamos pasar sin envolver.
+      p: ({ children: content }) => <>{content}</>,
+      a: ({ href, children: content }) => (
+        <a href={href} target="_blank" rel="noopener noreferrer">
+          {content}
+        </a>
+      ),
+    }}
+  >
+    {children}
+  </ReactMarkdown>
+)
+
 const normalizeMarkdownContent = (content) => {
   if (typeof content !== 'string') return ''
   const trimmed = content.trim()
@@ -372,7 +394,11 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
       {isBot && nextSteps.length > 0 && (
         <div className={styles.guidanceBlock}>
           <span className={styles.blockTitle}>{t('chat.mensaje.siguientesPasos')}</span>
-          <ul>{nextSteps.map((item, index) => <li key={index}>{item}</li>)}</ul>
+          <ul>
+            {nextSteps.map((item, index) => (
+              <li key={index}><InlineMarkdown>{item}</InlineMarkdown></li>
+            ))}
+          </ul>
         </div>
       )}
 
