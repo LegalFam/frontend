@@ -302,19 +302,19 @@ export default function SettingsPage() {
           <h2>{t('config.apariencia.titulo')}</h2>
           <p className={styles.themeIntro}>{t('config.apariencia.intro')}</p>
           <div className={styles.themeGrid} role="radiogroup" aria-label={t('config.apariencia.titulo')}>
-            {TEMAS_PUBLICOS.map((opcion) => (
+            {TEMAS_PUBLICOS.map((id) => (
               <button
-                key={opcion.id}
+                key={id}
                 type="button"
                 role="radio"
-                className={`${styles.themeOption} ${tema === opcion.id ? styles.themeActive : ''}`}
-                onClick={() => cambiarTema(opcion.id)}
-                aria-checked={tema === opcion.id}
+                className={`${styles.themeOption} ${tema === id ? styles.themeActive : ''}`}
+                onClick={() => cambiarTema(id)}
+                aria-checked={tema === id}
               >
                 <span className={styles.themeRadio} aria-hidden="true" />
                 <span className={styles.themeText}>
-                  <strong>{opcion.nombre}</strong>
-                  <small>{opcion.descripcion}</small>
+                  <strong>{t(`config.apariencia.temas.${id}.nombre`)}</strong>
+                  <small>{t(`config.apariencia.temas.${id}.descripcion`)}</small>
                 </span>
               </button>
             ))}

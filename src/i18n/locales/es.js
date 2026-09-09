@@ -351,6 +351,17 @@ export default {
       titulo: 'Apariencia',
       intro:
         'Elige la paleta con la que quieres ver LegalFam. El cambio se aplica al instante y queda guardado en este navegador.',
+      // Las claves coinciden con los identificadores de TEMAS_PUBLICOS en theme.js.
+      temas: {
+        dorado: {
+          nombre: 'Clásico',
+          descripcion: 'Negro profundo y acento dorado, la identidad original de LegalFam.',
+        },
+        toga: {
+          nombre: 'Moderno',
+          descripcion: 'Azul marino sereno y acento en latón champagne.',
+        },
+      },
     },
 
     suscripcion: {
@@ -596,6 +607,7 @@ export default {
       verPlanes: 'Ver planes y tokens',
       fuenteLegal: 'Fuente legal',
       fuentesUtilizadas: 'Fuentes utilizadas',
+      textoFuente: 'Texto de la fuente',
       resumenAsistente: 'Resumen del asistente',
       verFuente: 'Ver fuente',
       siguientesPasos: 'Siguientes pasos',

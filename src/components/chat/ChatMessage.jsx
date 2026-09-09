@@ -136,7 +136,7 @@ function CitationQuote({ text }) {
 
   return (
     <blockquote className={styles.citationQuote}>
-      <span className={styles.citationLabel}>Texto de la fuente</span>
+      <span className={styles.citationLabel}>{t('chat.mensaje.textoFuente')}</span>
       <div
         ref={textRef}
         className={`${styles.citationQuoteText} ${expanded ? styles.citationQuoteTextExpanded : ''}`}

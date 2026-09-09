@@ -33,18 +33,12 @@ export function initTema() {
 }
 
 // Temas ofrecidos al usuario en Configuración: hoy son todos los que existen.
-export const TEMAS_PUBLICOS = [
-  {
-    id: 'dorado',
-    nombre: 'Clásico',
-    descripcion: 'Negro profundo y acento dorado, la identidad original de LegalFam.',
-  },
-  {
-    id: 'toga',
-    nombre: 'Moderno',
-    descripcion: 'Azul marino sereno y acento en latón champagne.',
-  },
-]
+//
+// Solo los identificadores. El nombre y la descripción de cada tema viven en el catálogo de
+// idiomas (config.apariencia.temas.<id>), igual que en legalGlossary.js: si el texto se
+// quedara aquí, la sección Apariencia sería lo único que siguiera en español con la
+// aplicación puesta en quechua o aymara.
+export const TEMAS_PUBLICOS = ['dorado', 'toga']
 
 export function temaActual() {
   const attr = document.documentElement.getAttribute('data-theme')
