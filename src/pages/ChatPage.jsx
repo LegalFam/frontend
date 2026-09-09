@@ -5,6 +5,7 @@ import { useAuth }        from '@/hooks/useAuth'
 import { useEdgeSafeTooltip } from '@/hooks/useEdgeSafeTooltip'
 import { usePaymentStore } from '@/store/paymentStore'
 import { formatPlanName }  from '@/utils/plans'
+import { resolveApiError } from '@/utils/apiError'
 import ChatSidebar        from '@/components/chat/ChatSidebar'
 import ChatMessage        from '@/components/chat/ChatMessage'
 import ChatInput          from '@/components/chat/ChatInput'
@@ -269,7 +270,9 @@ export default function ChatPage() {
           <>
           {showConnectionNotice && (
             <div className={styles.notice}>
-              {error || t('chat.reconectando')}
+              {/* El error se guarda como descriptor y se resuelve aquí, en cada render: así
+                  un aviso ya en pantalla se relee al cambiar de idioma. */}
+              {resolveApiError(error) || t('chat.reconectando')}
             </div>
           )}
           <div

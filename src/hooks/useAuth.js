@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { authService } from '@/services/api'
 import { useAuthStore } from '@/store/authStore'
 import { normalizeApiError } from '@/utils/apiError'
-import { t } from '@/i18n/translate'
 
 const PENDING_AUTH_REDIRECT_KEY = 'legalfam-pending-auth-redirect'
 
@@ -35,9 +34,9 @@ export function useAuth() {
       await authService.signup({ email, password, name, phone })
       return { success: true, email }
     } catch (e) {
-      const { code, message } = normalizeApiError(e, t('errores._registro'))
-      setError(message)
-      return { success: false, code, message }
+      const normalized = normalizeApiError(e, 'errores._registro')
+      setError(normalized)
+      return { success: false, code: normalized.code }
     } finally {
       setLoading(false)
     }
@@ -52,9 +51,9 @@ export function useAuth() {
       navigate(consumePendingAuthRedirect() || '/chat')
       return { success: true }
     } catch (e) {
-      const { code, message } = normalizeApiError(e, t('errores._inicioSesion'))
-      setError(message)
-      return { success: false, code, message }
+      const normalized = normalizeApiError(e, 'errores._inicioSesion')
+      setError(normalized)
+      return { success: false, code: normalized.code }
     } finally {
       setLoading(false)
     }

@@ -1,7 +1,6 @@
 import { create } from 'zustand'
 import { paymentService } from '@/services/api'
 import { normalizeApiError } from '@/utils/apiError'
-import { t } from '@/i18n/translate'
 
 export const usePaymentStore = create((set) => ({
   plans: [],
@@ -22,7 +21,7 @@ export const usePaymentStore = create((set) => ({
     } catch (e) {
       set({
         loading: false,
-        error: normalizeApiError(e, t('errores._planes')).message,
+        error: normalizeApiError(e, 'errores._planes'),
       })
       throw e
     }
@@ -34,7 +33,7 @@ export const usePaymentStore = create((set) => ({
       set({ subscription: data })
       return data
     } catch (e) {
-      set({ error: normalizeApiError(e, t('errores._suscripcion')).message })
+      set({ error: normalizeApiError(e, 'errores._suscripcion') })
       throw e
     }
   },
@@ -55,7 +54,7 @@ export const usePaymentStore = create((set) => ({
 
     if (plansResult.status === 'rejected' && subscriptionResult.status === 'rejected') {
       const e = subscriptionResult.reason
-      set({ loading: false, error: normalizeApiError(e, t('errores._planYTokens')).message })
+      set({ loading: false, error: normalizeApiError(e, 'errores._planYTokens') })
       throw e
     }
 
@@ -72,7 +71,7 @@ export const usePaymentStore = create((set) => ({
     } catch (e) {
       set({
         loading: false,
-        error: normalizeApiError(e, t('config.suscripcion.errorBaja')).message,
+        error: normalizeApiError(e, 'config.suscripcion.errorBaja'),
       })
       throw e
     }

@@ -1,3 +1,4 @@
+import { resolveApiError } from '@/utils/apiError'
 import { useT } from '@/i18n/translate'
 import styles from './CancelSubscriptionDialog.module.css'
 
@@ -34,7 +35,7 @@ export default function CancelSubscriptionDialog({ subscription, freeTokenLimit,
         onMouseDown={(e) => e.stopPropagation()}
       >
         <h2 id="cancel-subscription-title">{t('config.suscripcion.confirmarTitulo')}</h2>
-        {error && <div className="api-err">{error}</div>}
+        {error && <div className="api-err">{resolveApiError(error)}</div>}
         {/* Las cifras van interpoladas y no como <strong> intercalado: el orden de las
             palabras cambia entre lenguas y un trozo de JSX a mitad de frase no sobrevive. */}
         <p>

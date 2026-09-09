@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth'
 import ResendVerificationButton from './ResendVerificationButton'
 import { useT } from '@/i18n/translate'
 import styles from './AuthModal.module.css'
+import { resolveApiError } from '@/utils/apiError'
 
 export default function RegisterModal({ onClose, onSwitchToLogin }) {
   const t = useT()
@@ -25,13 +26,13 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
 
   const validate = () => {
     const e = {}
-    if (!fields.nombre.trim())                            e.nombre   = t('auth.validacion.requerido')
-    if (!fields.apellido.trim())                          e.apellido = t('auth.validacion.requerido')
-    if (!fields.email || !fields.email.includes('@'))     e.email    = t('auth.validacion.correoInvalido')
-    if (!fields.phone || fields.phone.length !== 9)       e.phone    = t('auth.validacion.celularDigitos')
-    if (!fields.password || fields.password.length < 8)   e.password = t('auth.validacion.contrasenaCorta')
-    if (fields.password !== fields.confirm)               e.confirm  = t('auth.validacion.contrasenaNoCoincide')
-    if (!fields.acceptedTerms)                            e.acceptedTerms = t('auth.validacion.terminosRequeridos')
+    if (!fields.nombre.trim())                            e.nombre   = 'auth.validacion.requerido'
+    if (!fields.apellido.trim())                          e.apellido = 'auth.validacion.requerido'
+    if (!fields.email || !fields.email.includes('@'))     e.email    = 'auth.validacion.correoInvalido'
+    if (!fields.phone || fields.phone.length !== 9)       e.phone    = 'auth.validacion.celularDigitos'
+    if (!fields.password || fields.password.length < 8)   e.password = 'auth.validacion.contrasenaCorta'
+    if (fields.password !== fields.confirm)               e.confirm  = 'auth.validacion.contrasenaNoCoincide'
+    if (!fields.acceptedTerms)                            e.acceptedTerms = 'auth.validacion.terminosRequeridos'
     setErrs(e)
     return !Object.keys(e).length
   }
@@ -91,7 +92,7 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
         <h2 className={styles.title}>{t('auth.registro.titulo')}</h2>
         <p className={styles.subtitle}>{t('auth.registro.subtitulo')}</p>
 
-        {error && <div className="api-err">{error}</div>}
+        {error && <div className="api-err">{resolveApiError(error)}</div>}
 
         <form onSubmit={handleSubmit} noValidate>
           <div className={styles.row}>
@@ -100,14 +101,14 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
               <input id="rg-nombre" type="text" placeholder={t('auth.campos.nombrePlaceholder')}
                 value={fields.nombre} onChange={(e) => set('nombre', e.target.value)}
                 className={errs.nombre ? styles.hasError : ''} autoComplete="given-name" />
-              {errs.nombre && <span className="field-err">{errs.nombre}</span>}
+              {errs.nombre && <span className="field-err">{t(errs.nombre)}</span>}
             </div>
             <div className={styles.fg}>
               <label htmlFor="rg-apellido">{t('auth.campos.apellido')}</label>
               <input id="rg-apellido" type="text" placeholder={t('auth.campos.apellidoPlaceholder')}
                 value={fields.apellido} onChange={(e) => set('apellido', e.target.value)}
                 className={errs.apellido ? styles.hasError : ''} autoComplete="family-name" />
-              {errs.apellido && <span className="field-err">{errs.apellido}</span>}
+              {errs.apellido && <span className="field-err">{t(errs.apellido)}</span>}
             </div>
           </div>
 
@@ -116,7 +117,7 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
             <input id="rg-email" type="email" placeholder={t('auth.campos.correoPlaceholder')}
               value={fields.email} onChange={(e) => set('email', e.target.value)}
               className={errs.email ? styles.hasError : ''} autoComplete="email" />
-            {errs.email && <span className="field-err">{errs.email}</span>}
+            {errs.email && <span className="field-err">{t(errs.email)}</span>}
           </div>
 
           <div className={styles.fg}>
@@ -130,7 +131,7 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
                   value={fields.phone} onChange={handlePhone} maxLength={9}
                   className={errs.phone ? styles.hasError : ''} style={{ width: '100%' }}
                   autoComplete="tel" />
-                {errs.phone && <span className="field-err">{errs.phone}</span>}
+                {errs.phone && <span className="field-err">{t(errs.phone)}</span>}
               </div>
             </div>
           </div>
@@ -140,7 +141,7 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
             <input id="rg-pass" type="password" placeholder={t('auth.campos.minimoPlaceholder')}
               value={fields.password} onChange={(e) => set('password', e.target.value)}
               className={errs.password ? styles.hasError : ''} autoComplete="new-password" />
-            {errs.password && <span className="field-err">{errs.password}</span>}
+            {errs.password && <span className="field-err">{t(errs.password)}</span>}
           </div>
 
           <div className={styles.fg}>
@@ -148,7 +149,7 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
             <input id="rg-confirm" type="password" placeholder={t('auth.campos.confirmarPlaceholder')}
               value={fields.confirm} onChange={(e) => set('confirm', e.target.value)}
               className={errs.confirm ? styles.hasError : ''} autoComplete="new-password" />
-            {errs.confirm && <span className="field-err">{errs.confirm}</span>}
+            {errs.confirm && <span className="field-err">{t(errs.confirm)}</span>}
           </div>
 
           <div className={styles.consent}>
@@ -165,7 +166,7 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
                 {' '}{t('auth.registro.aceptoDespues')}
               </span>
             </label>
-            {errs.acceptedTerms && <span className="field-err">{errs.acceptedTerms}</span>}
+            {errs.acceptedTerms && <span className="field-err">{t(errs.acceptedTerms)}</span>}
             <p className={styles.consentNote}>{t('auth.registro.notaDatos')}</p>
           </div>
 

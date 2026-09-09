@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import logoImg from '@/assets/logo-transparent.png'
 import { authService } from '@/services/api'
-import { normalizeApiError } from '@/utils/apiError'
+import { normalizeApiError, resolveApiError } from '@/utils/apiError'
 import { useT } from '@/i18n/translate'
 import styles from './AuthActionPage.module.css'
 
@@ -23,8 +23,8 @@ export default function ResetPasswordPage() {
 
   const validate = () => {
     const e = {}
-    if (!fields.newPassword || fields.newPassword.length < 8) e.newPassword = t('auth.validacion.contrasenaCorta')
-    if (fields.newPassword !== fields.confirm) e.confirm = t('auth.validacion.contrasenaNoCoincide')
+    if (!fields.newPassword || fields.newPassword.length < 8) e.newPassword = 'auth.validacion.contrasenaCorta'
+    if (fields.newPassword !== fields.confirm) e.confirm = 'auth.validacion.contrasenaNoCoincide'
     setErrs(e)
     return !Object.keys(e).length
   }
@@ -44,9 +44,9 @@ export default function ResetPasswordPage() {
       await authService.resetPassword({ token, newPassword: fields.newPassword })
       setDone(true)
     } catch (e) {
-      const { code, message } = normalizeApiError(e, t('auth.restablecer.errorGenerico'))
-      setTokenExpired(code === 'reset_token_invalid' || code === 'token_required')
-      setError(message)
+      const normalized = normalizeApiError(e, 'auth.restablecer.errorGenerico')
+      setTokenExpired(normalized.code === 'reset_token_invalid' || normalized.code === 'token_required')
+      setError(normalized)
     } finally {
       setLoading(false)
     }
@@ -79,7 +79,7 @@ export default function ResetPasswordPage() {
             <h1 className={styles.title}>{t('auth.restablecer.titulo')}</h1>
             <p className={styles.text}>{t('auth.restablecer.subtitulo')}</p>
 
-            {error && <div className="api-err" style={{ marginTop: '1.25rem' }}>{error}</div>}
+            {error && <div className="api-err" style={{ marginTop: '1.25rem' }}>{resolveApiError(error)}</div>}
 
             {tokenExpired ? (
               <button
@@ -101,7 +101,7 @@ export default function ResetPasswordPage() {
                     className={errs.newPassword ? styles.hasError : ''}
                     autoComplete="new-password"
                   />
-                  {errs.newPassword && <span className="field-err">{errs.newPassword}</span>}
+                  {errs.newPassword && <span className="field-err">{t(errs.newPassword)}</span>}
                 </div>
 
                 <div className={styles.fg}>
@@ -114,7 +114,7 @@ export default function ResetPasswordPage() {
                     className={errs.confirm ? styles.hasError : ''}
                     autoComplete="new-password"
                   />
-                  {errs.confirm && <span className="field-err">{errs.confirm}</span>}
+                  {errs.confirm && <span className="field-err">{t(errs.confirm)}</span>}
                 </div>
 
                 <button type="submit" className={styles.primaryBtn} disabled={loading}>

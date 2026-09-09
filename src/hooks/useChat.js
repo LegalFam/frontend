@@ -4,7 +4,7 @@ import { chatService, getApiBaseUrl, refreshAccessToken } from '@/services/api'
 import { useChatStore } from '@/store/chatStore'
 import { useAuthStore } from '@/store/authStore'
 import { usePaymentStore } from '@/store/paymentStore'
-import { normalizeApiError, normalizeAssistantErrorMessage } from '@/utils/apiError'
+import { normalizeApiError, normalizeAssistantErrorMessage, resolveApiError } from '@/utils/apiError'
 import { t } from '@/i18n/translate'
 import { useLanguageStore } from '@/store/languageStore'
 
@@ -266,7 +266,7 @@ export function useChat() {
       const { data } = await chatService.getSessions()
       store.setSessionsPage(cursorContent(data), cursorNext(data))
     } catch (e) {
-      store.setError(normalizeApiError(e, t('chat.errorSesiones')).message)
+      store.setError(normalizeApiError(e, 'chat.errorSesiones'))
       if (e.response?.status === 401) navigate('/')
     } finally {
       store.setSessionsLoading(false)
@@ -282,7 +282,7 @@ export function useChat() {
       const { data } = await chatService.getSessions({ params: { cursor } })
       store.setSessionsPage(cursorContent(data), cursorNext(data), true)
     } catch (e) {
-      store.setError(normalizeApiError(e, t('chat.errorMasSesiones')).message)
+      store.setError(normalizeApiError(e, 'chat.errorMasSesiones'))
     } finally {
       store.setSessionsLoadingMore(false)
     }
@@ -308,7 +308,7 @@ export function useChat() {
         navigate('/chat', { replace: true })
         return
       }
-      store.setError(normalizeApiError(e, t('chat.errorMensajes')).message)
+      store.setError(normalizeApiError(e, 'chat.errorMensajes'))
     } finally {
       if (messagesAbortRef.current?.controller === controller) {
         messagesAbortRef.current = null
@@ -329,7 +329,7 @@ export function useChat() {
       store.setMessagesPage(sessionId, messages, cursorNext(data), 'prepend')
       confirmUnreadAssistantReceipts(sessionId, messages).catch(() => {})
     } catch (e) {
-      store.setError(normalizeApiError(e, t('chat.errorMasMensajes')).message)
+      store.setError(normalizeApiError(e, 'chat.errorMasMensajes'))
     } finally {
       store.setMessagesLoadingMore(sessionId, false)
     }
@@ -439,14 +439,14 @@ export function useChat() {
         status: data.status,
       })
     } catch (e) {
-      const normalizedError = normalizeApiError(e, t('chat.errorEnviar'))
+      const normalizedError = normalizeApiError(e, 'chat.errorEnviar')
       const status = normalizedError.status
 
       if (!status) {
         // Sin respuesta del servidor no se sabe si el envío llegó, así que aquí no se
         // descarta nada: ni el mensaje ni la conversación recién creada. Se verifica.
         store.replaceMessage(sessionId || 'new', tempId, { state: 'unknown_delivery' })
-        store.setError(normalizedError.message)
+        store.setError(normalizedError)
         if (sessionId) await loadMessages(sessionId, { force: true })
         return
       }
@@ -465,7 +465,7 @@ export function useChat() {
       if (status === 409) {
         store.removeMessage(threadKey, tempId)
         loadProcessingStatus().catch(() => {})
-        store.setError(normalizedError.message)
+        store.setError(normalizedError)
         return
       }
 
@@ -488,13 +488,13 @@ export function useChat() {
             retryText: null,
             retryAttempted: false,
           })
-          store.setError(normalizedError.message)
+          store.setError(normalizedError)
           usePaymentStore.getState().loadSubscription().catch(() => {})
           return
         }
 
         store.removeMessage(threadKey, tempId)
-        store.setError(normalizedError.message)
+        store.setError(normalizedError)
         usePaymentStore.getState().loadSubscription().catch(() => {})
         return
       }
@@ -505,7 +505,9 @@ export function useChat() {
         // Se guarda también el código: cuando existe, ChatMessage lo vuelve a traducir al
         // renderizar. El texto queda como respaldo para los errores que sólo traen mensaje
         // del servidor, que no hay forma de traducir después.
-        content: normalizedError.message,
+        // Texto ya resuelto como respaldo: sólo se usa para los errores que llegan sin
+        // código, que no hay forma de volver a traducir. Con código manda ChatMessage.
+        content: resolveApiError(normalizedError),
         errorCode: normalizedError.code,
         citations: [],
         createdAt: new Date().toISOString(),
@@ -526,7 +528,7 @@ export function useChat() {
       await chatService.rateMessage(messageId, rating, comment)
     } catch (e) {
       await loadMessages(sessionId, { force: true })
-      store.setError(normalizeApiError(e, t('chat.errorCalificacion')).message)
+      store.setError(normalizeApiError(e, 'chat.errorCalificacion'))
       throw e
     }
   }, [loadMessages, store])
@@ -542,7 +544,7 @@ export function useChat() {
       store.removeSession(sessionId)
       if (wasActive) startNewChat()
     } catch (e) {
-      store.setError(normalizeApiError(e, t('chat.errorEliminar')).message)
+      store.setError(normalizeApiError(e, 'chat.errorEliminar'))
     }
   }, [startNewChat, store])
 
@@ -554,7 +556,7 @@ export function useChat() {
       store.upsertSession(data)
     } catch (e) {
       if (previous) store.upsertSession(previous)
-      store.setError(normalizeApiError(e, t('chat.errorRenombrar')).message)
+      store.setError(normalizeApiError(e, 'chat.errorRenombrar'))
     }
   }, [store])
 

@@ -4,7 +4,7 @@ import logoImg from '@/assets/logo-transparent.png'
 import { userService } from '@/services/api'
 import { useAuthStore } from '@/store/authStore'
 import { usePaymentStore } from '@/store/paymentStore'
-import { normalizeApiError } from '@/utils/apiError'
+import { normalizeApiError, resolveApiError } from '@/utils/apiError'
 import { TEMAS_PUBLICOS, aplicarTema, temaActual } from '@/theme'
 import { STATIC_PLANS, formatPlanName, formatPlanTokens } from '@/utils/plans'
 import BillingDialog from '@/components/billing/BillingDialog'
@@ -72,7 +72,7 @@ export default function SettingsPage() {
         setUser({ ...(useAuthStore.getState().user || {}), ...data })
       })
       .catch((e) => {
-        if (!disposed) setProfileError(normalizeApiError(e, t('config.errorPerfil')).message)
+        if (!disposed) setProfileError(normalizeApiError(e, 'config.errorPerfil'))
       })
 
     refreshBilling().catch(() => {})
@@ -101,8 +101,8 @@ export default function SettingsPage() {
     setProfileError(null)
 
     const errs = {}
-    if (!profile.nombre.trim()) errs.nombre = t('auth.validacion.requerido')
-    if (!profile.apellido.trim()) errs.apellido = t('auth.validacion.requerido')
+    if (!profile.nombre.trim()) errs.nombre = 'auth.validacion.requerido'
+    if (!profile.apellido.trim()) errs.apellido = 'auth.validacion.requerido'
     setProfileErrs(errs)
     if (Object.keys(errs).length) return
 
@@ -114,7 +114,7 @@ export default function SettingsPage() {
       setUser({ ...(useAuthStore.getState().user || {}), ...data })
       setProfileSaved(true)
     } catch (e) {
-      setProfileError(normalizeApiError(e, t('config.datos.error')).message)
+      setProfileError(normalizeApiError(e, 'config.datos.error'))
     } finally {
       setProfileSaving(false)
     }
@@ -126,9 +126,9 @@ export default function SettingsPage() {
     setPasswordError(null)
 
     const errs = {}
-    if (!passwords.current) errs.current = t('auth.validacion.requerido')
-    if (!passwords.next || passwords.next.length < 8) errs.next = t('auth.validacion.contrasenaCorta')
-    if (passwords.next !== passwords.confirm) errs.confirm = t('auth.validacion.contrasenaNoCoincide')
+    if (!passwords.current) errs.current = 'auth.validacion.requerido'
+    if (!passwords.next || passwords.next.length < 8) errs.next = 'auth.validacion.contrasenaCorta'
+    if (passwords.next !== passwords.confirm) errs.confirm = 'auth.validacion.contrasenaNoCoincide'
     setPasswordErrs(errs)
     if (Object.keys(errs).length) return
 
@@ -141,11 +141,11 @@ export default function SettingsPage() {
       setPasswords({ current: '', next: '', confirm: '' })
       setPasswordSaved(true)
     } catch (e) {
-      const normalized = normalizeApiError(e, t('config.contrasena.error'))
+      const normalized = normalizeApiError(e, 'config.contrasena.error')
       if (normalized.code === 'current_password_invalid') {
-        setPasswordErrs({ current: t('config.contrasena.actualIncorrecta') })
+        setPasswordErrs({ current: 'config.contrasena.actualIncorrecta' })
       } else {
-        setPasswordError(normalized.message)
+        setPasswordError(normalized)
       }
     } finally {
       setPasswordSaving(false)
@@ -164,7 +164,7 @@ export default function SettingsPage() {
       await cancelSubscription()
       setBillingDone(true)
     } catch (e) {
-      setBillingError(normalizeApiError(e, t('config.suscripcion.errorBaja')).message)
+      setBillingError(normalizeApiError(e, 'config.suscripcion.errorBaja'))
     }
   }
 
@@ -193,7 +193,7 @@ export default function SettingsPage() {
 
         <section className={styles.card}>
           <h2>{t('config.datos.titulo')}</h2>
-          {profileError && <div className="api-err">{profileError}</div>}
+          {profileError && <div className="api-err">{resolveApiError(profileError)}</div>}
           <form onSubmit={submitProfile} noValidate>
             <div className={styles.row}>
               <div className={styles.fg}>
@@ -206,7 +206,7 @@ export default function SettingsPage() {
                   className={profileErrs.nombre ? styles.hasError : ''}
                   autoComplete="given-name"
                 />
-                {profileErrs.nombre && <span className="field-err">{profileErrs.nombre}</span>}
+                {profileErrs.nombre && <span className="field-err">{t(profileErrs.nombre)}</span>}
               </div>
               <div className={styles.fg}>
                 <label htmlFor="st-apellido">{t('auth.campos.apellido')}</label>
@@ -218,7 +218,7 @@ export default function SettingsPage() {
                   className={profileErrs.apellido ? styles.hasError : ''}
                   autoComplete="family-name"
                 />
-                {profileErrs.apellido && <span className="field-err">{profileErrs.apellido}</span>}
+                {profileErrs.apellido && <span className="field-err">{t(profileErrs.apellido)}</span>}
               </div>
             </div>
 
@@ -239,7 +239,7 @@ export default function SettingsPage() {
 
         <section className={styles.card}>
           <h2>{t('config.contrasena.titulo')}</h2>
-          {passwordError && <div className="api-err">{passwordError}</div>}
+          {passwordError && <div className="api-err">{resolveApiError(passwordError)}</div>}
           <form onSubmit={submitPassword} noValidate>
             <div className={styles.fg}>
               <label htmlFor="st-current">{t('config.contrasena.actual')}</label>
@@ -251,7 +251,7 @@ export default function SettingsPage() {
                 className={passwordErrs.current ? styles.hasError : ''}
                 autoComplete="current-password"
               />
-              {passwordErrs.current && <span className="field-err">{passwordErrs.current}</span>}
+              {passwordErrs.current && <span className="field-err">{t(passwordErrs.current)}</span>}
             </div>
 
             <div className={styles.row}>
@@ -266,7 +266,7 @@ export default function SettingsPage() {
                   className={passwordErrs.next ? styles.hasError : ''}
                   autoComplete="new-password"
                 />
-                {passwordErrs.next && <span className="field-err">{passwordErrs.next}</span>}
+                {passwordErrs.next && <span className="field-err">{t(passwordErrs.next)}</span>}
               </div>
               <div className={styles.fg}>
                 <label htmlFor="st-confirm">{t('auth.campos.confirmar')}</label>
@@ -279,7 +279,7 @@ export default function SettingsPage() {
                   className={passwordErrs.confirm ? styles.hasError : ''}
                   autoComplete="new-password"
                 />
-                {passwordErrs.confirm && <span className="field-err">{passwordErrs.confirm}</span>}
+                {passwordErrs.confirm && <span className="field-err">{t(passwordErrs.confirm)}</span>}
               </div>
             </div>
 
@@ -324,7 +324,7 @@ export default function SettingsPage() {
 
         <section className={styles.card}>
           <h2>{t('config.suscripcion.titulo')}</h2>
-          {billingError && <div className="api-err">{billingError}</div>}
+          {billingError && <div className="api-err">{resolveApiError(billingError)}</div>}
           {subscription ? (
             <>
               <div className={styles.summary}>

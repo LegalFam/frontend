@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { usePaymentStore } from '@/store/paymentStore'
+import { resolveApiError } from '@/utils/apiError'
+import { formatPlanName } from '@/utils/plans'
 import { useT } from '@/i18n/translate'
 import logoImg from '@/assets/logo-transparent.png'
 import styles from './PaymentPage.module.css'
@@ -96,9 +98,9 @@ export default function BillingReturnPage() {
           <p>
             {canceled
               ? t('pago.retorno.canceladoTexto')
-              : error || (subscription
+              : resolveApiError(error) || (subscription
                 ? t('pago.retorno.estado', {
-                    plan: subscription.planCode,
+                    plan: formatPlanName({ code: subscription.planCode }),
                     restantes: subscription.remainingTokens,
                     limite: subscription.monthlyTokenLimit,
                   })

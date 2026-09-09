@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import logoImg from '@/assets/logo-transparent.png'
 import ResendVerificationButton from '@/components/auth/ResendVerificationButton'
 import { authService } from '@/services/api'
-import { normalizeApiError } from '@/utils/apiError'
+import { normalizeApiError, resolveApiError } from '@/utils/apiError'
 import { useT } from '@/i18n/translate'
 import styles from './AuthActionPage.module.css'
 
@@ -34,7 +34,7 @@ export default function VerifyEmailPage() {
       .verifyEmail({ token })
       .then(() => setStatus('success'))
       .catch((e) => {
-        setError(normalizeApiError(e, t('auth.verificar.errorGenerico')).message)
+        setError(normalizeApiError(e, 'auth.verificar.errorGenerico'))
         setStatus('error')
       })
   }, [token])
@@ -74,7 +74,7 @@ export default function VerifyEmailPage() {
           <>
             <div className={styles.icon}>⚠️</div>
             <h1 className={styles.title}>{t('auth.verificar.error')}</h1>
-            <p className={styles.text}>{error}</p>
+            <p className={styles.text}>{resolveApiError(error)}</p>
 
             <div className={styles.form}>
               <div className={styles.fg}>

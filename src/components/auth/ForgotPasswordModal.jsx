@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import logoImg from '@/assets/logo-transparent.png'
 import { authService } from '@/services/api'
-import { normalizeApiError } from '@/utils/apiError'
+import { normalizeApiError, resolveApiError } from '@/utils/apiError'
 import { useT } from '@/i18n/translate'
 import styles from './AuthModal.module.css'
 
@@ -27,7 +27,7 @@ export default function ForgotPasswordModal({ onClose, onSwitchToLogin, initialE
       // The response is identical for registered and unknown addresses.
       setSent(true)
     } catch (e) {
-      setError(normalizeApiError(e, t('auth.recuperar.errorEnvio')).message)
+      setError(normalizeApiError(e, 'auth.recuperar.errorEnvio'))
     } finally {
       setLoading(false)
     }
@@ -60,7 +60,7 @@ export default function ForgotPasswordModal({ onClose, onSwitchToLogin, initialE
             <h2 className={styles.title}>{t('auth.recuperar.titulo')}</h2>
             <p className={styles.subtitle}>{t('auth.recuperar.subtitulo')}</p>
 
-            {error && <div className="api-err">{error}</div>}
+            {error && <div className="api-err">{resolveApiError(error)}</div>}
 
             <form onSubmit={handleSubmit} noValidate>
               <div className={styles.fg}>

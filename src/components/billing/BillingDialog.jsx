@@ -56,7 +56,7 @@ export default function BillingDialog({ onClose }) {
       await cancelSubscription()
       setCancelOpen(false)
     } catch (e) {
-      setCancelError(normalizeApiError(e, t('config.suscripcion.errorBaja')).message)
+      setCancelError(normalizeApiError(e, 'config.suscripcion.errorBaja'))
     }
   }
 

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { authService } from '@/services/api'
-import { normalizeApiError } from '@/utils/apiError'
+import { normalizeApiError, resolveApiError } from '@/utils/apiError'
 import { useT } from '@/i18n/translate'
 import styles from './AuthModal.module.css'
 
@@ -39,10 +39,10 @@ export default function ResendVerificationButton({ email, className }) {
     setFeedback(null)
     try {
       await authService.resendVerification({ email })
-      setFeedback({ ok: true, message: t('auth.reenvio.exito') })
+      setFeedback({ ok: true, messageKey: 'auth.reenvio.exito' })
       startCooldown()
     } catch (e) {
-      setFeedback({ ok: false, message: normalizeApiError(e, t('auth.reenvio.error')).message })
+      setFeedback({ ok: false, error: normalizeApiError(e, 'auth.reenvio.error') })
     } finally {
       setSending(false)
     }
@@ -63,7 +63,9 @@ export default function ResendVerificationButton({ email, className }) {
             : t('auth.reenvio.boton')}
       </button>
       {feedback && (
-        <p className={feedback.ok ? styles.noticeHint : 'field-err'}>{feedback.message}</p>
+        <p className={feedback.ok ? styles.noticeHint : 'field-err'}>
+          {feedback.ok ? t(feedback.messageKey) : resolveApiError(feedback.error)}
+        </p>
       )}
     </>
   )

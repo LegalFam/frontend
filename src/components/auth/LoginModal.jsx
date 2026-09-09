@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth'
 import ResendVerificationButton from './ResendVerificationButton'
 import { useT } from '@/i18n/translate'
 import styles from './AuthModal.module.css'
+import { resolveApiError } from '@/utils/apiError'
 
 export default function LoginModal({ onClose, onSwitchToRegister, onForgotPassword }) {
   const t = useT()
@@ -17,8 +18,8 @@ export default function LoginModal({ onClose, onSwitchToRegister, onForgotPasswo
 
   const validate = () => {
     const e = {}
-    if (!fields.email || !fields.email.includes('@')) e.email = t('auth.validacion.correoInvalido')
-    if (!fields.password) e.password = t('auth.validacion.contrasenaRequerida')
+    if (!fields.email || !fields.email.includes('@')) e.email = 'auth.validacion.correoInvalido'
+    if (!fields.password) e.password = 'auth.validacion.contrasenaRequerida'
     setErrs(e)
     return !Object.keys(e).length
   }
@@ -43,7 +44,7 @@ export default function LoginModal({ onClose, onSwitchToRegister, onForgotPasswo
         <h2 className={styles.title}>{t('auth.login.titulo')}</h2>
         <p className={styles.subtitle}>{t('auth.login.subtitulo')}</p>
 
-        {error && <div className="api-err">{error}</div>}
+        {error && <div className="api-err">{resolveApiError(error)}</div>}
         {needsVerification && <ResendVerificationButton email={fields.email} />}
 
         <form onSubmit={handleSubmit} noValidate>
@@ -57,7 +58,7 @@ export default function LoginModal({ onClose, onSwitchToRegister, onForgotPasswo
               className={errs.email ? styles.hasError : ''}
               autoComplete="email"
             />
-            {errs.email && <span className="field-err">{errs.email}</span>}
+            {errs.email && <span className="field-err">{t(errs.email)}</span>}
           </div>
 
           <div className={styles.fg}>
@@ -91,7 +92,7 @@ export default function LoginModal({ onClose, onSwitchToRegister, onForgotPasswo
                 )}
               </button>
             </div>
-            {errs.password && <span className="field-err">{errs.password}</span>}
+            {errs.password && <span className="field-err">{t(errs.password)}</span>}
             <button
               type="button"
               className={styles.forgotLink}

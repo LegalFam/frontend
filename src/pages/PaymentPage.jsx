@@ -11,7 +11,7 @@ import {
   formatPlanTokens,
   mergePlanWithStatic,
 } from '@/utils/plans'
-import { normalizeApiError } from '@/utils/apiError'
+import { normalizeApiError, resolveApiError } from '@/utils/apiError'
 import { useT } from '@/i18n/translate'
 import logoImg from '@/assets/logo-transparent.png'
 import styles from './PaymentPage.module.css'
@@ -48,7 +48,7 @@ export default function PaymentPage() {
       })
       window.location.assign(data.url)
     } catch (err) {
-      setError(normalizeApiError(err, t('pago.errorCheckout')).message)
+      setError(normalizeApiError(err, 'pago.errorCheckout'))
       setLoading(false)
     }
   }
@@ -97,7 +97,7 @@ export default function PaymentPage() {
           <h2 className={styles.formTitle}>{t('pago.checkoutTitulo')}</h2>
           <p className={styles.formSub}>{t('pago.checkoutSub')}</p>
 
-          {error && <div className="api-err">{error}</div>}
+          {error && <div className="api-err">{resolveApiError(error)}</div>}
 
           <div className={styles.checkoutBox}>
             <p className={styles.checkoutTitle}>{formatPlanName(planData)}</p>
