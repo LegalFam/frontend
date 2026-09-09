@@ -8,6 +8,7 @@ import { normalizeApiError } from '@/utils/apiError'
 import { TEMAS_PUBLICOS, aplicarTema, temaActual } from '@/theme'
 import { STATIC_PLANS, formatPlanName, formatPlanTokens } from '@/utils/plans'
 import BillingDialog from '@/components/billing/BillingDialog'
+import CancelSubscriptionDialog from '@/components/billing/CancelSubscriptionDialog'
 import LanguageSelector from '@/components/common/LanguageSelector'
 import { useT } from '@/i18n/translate'
 import styles from './SettingsPage.module.css'
@@ -386,34 +387,12 @@ export default function SettingsPage() {
       {plansOpen && <BillingDialog onClose={() => setPlansOpen(false)} />}
 
       {cancelOpen && (
-        <div className={styles.confirmLayer} role="presentation" onMouseDown={() => setCancelOpen(false)}>
-          <section
-            className={styles.confirmDialog}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="cancel-subscription-title"
-            onMouseDown={(e) => e.stopPropagation()}
-          >
-            <h2 id="cancel-subscription-title">{t('config.suscripcion.confirmarTitulo')}</h2>
-            {/* Las cifras van interpoladas y no como <strong> intercalado: el orden de las
-                palabras cambia entre lenguas y un trozo de JSX a mitad de frase no sobrevive. */}
-            <p>
-              {t('config.suscripcion.confirmarTexto1', {
-                tokens: remainingTokens,
-                fecha: formatPeriodEnd(subscription?.currentPeriodEnd, t('config.suscripcion.finPeriodo')),
-              })}
-            </p>
-            <p>{t('config.suscripcion.confirmarTexto2', { tokens: freeTokenLimit })}</p>
-            <div className={styles.confirmActions}>
-              <button type="button" className={styles.cancelBtn} onClick={() => setCancelOpen(false)}>
-                {t('comun.volver')}
-              </button>
-              <button type="button" className={styles.deleteBtn} onClick={confirmCancelSubscription}>
-                {t('config.suscripcion.confirmarBoton')}
-              </button>
-            </div>
-          </section>
-        </div>
+        <CancelSubscriptionDialog
+          subscription={subscription}
+          freeTokenLimit={freeTokenLimit}
+          onClose={() => setCancelOpen(false)}
+          onConfirm={confirmCancelSubscription}
+        />
       )}
     </div>
   )

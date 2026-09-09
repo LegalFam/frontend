@@ -1,4 +1,7 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import CancelSubscriptionDialog from '@/components/billing/CancelSubscriptionDialog'
+import { normalizeApiError } from '@/utils/apiError'
 import {
   STATIC_PLANS,
   formatPlanName,
@@ -24,7 +27,9 @@ const formatRenewDate = (iso) => {
 export default function BillingDialog({ onClose }) {
   const t = useT()
   const navigate = useNavigate()
-  const { plans, subscription, cancelSubscription, loading: billingLoading } = usePaymentStore()
+  const { plans, subscription, cancelSubscription } = usePaymentStore()
+  const [cancelOpen, setCancelOpen] = useState(false)
+  const [cancelError, setCancelError] = useState(null)
 
   if (!subscription) return null
 
@@ -32,6 +37,9 @@ export default function BillingDialog({ onClose }) {
   const currentPlan = availablePlans.find((plan) => plan.code === subscription.planCode)
   const tokenLimit = subscription.monthlyTokenLimit || currentPlan?.monthlyTokenLimit || 0
   const remainingTokens = subscription.remainingTokens ?? 0
+  const freeTokenLimit = availablePlans.find((plan) => plan.code === 'FREE')?.monthlyTokenLimit ?? 0
+  // Sólo hay algo que dar de baja si la suscripción la cobra la pasarela y sigue viva.
+  const canCancel = subscription.provider === 'MERCADO_PAGO' && !subscription.cancelAtPeriodEnd
   const usedTokens = Math.max(tokenLimit - remainingTokens, 0)
   const tokenPercent = tokenLimit ? Math.max(0, Math.min(100, (remainingTokens / tokenLimit) * 100)) : 0
   const renewDate = formatRenewDate(subscription.currentPeriodEnd)
@@ -42,8 +50,14 @@ export default function BillingDialog({ onClose }) {
     navigate(`/pago/${planSlug(plan)}`)
   }
 
-  const handleCancelSubscription = async () => {
-    await cancelSubscription().catch(() => {})
+  const confirmCancelSubscription = async () => {
+    setCancelError(null)
+    try {
+      await cancelSubscription()
+      setCancelOpen(false)
+    } catch (e) {
+      setCancelError(normalizeApiError(e, t('config.suscripcion.errorBaja')).message)
+    }
   }
 
   return (
@@ -100,33 +114,45 @@ export default function BillingDialog({ onClose }) {
         <div className={styles.planGrid}>
           {availablePlans.map((plan) => {
             const isCurrent = plan.code === subscription.planCode
+            // El gratuito no se compra: pulsarlo llevaba a /pago/gratis, un checkout cuyo
+            // botón no hace nada porque no hay nada que cobrar. Lo que sí significa para
+            // quien paga es volver al gratuito, y eso es exactamente dar de baja: la
+            // tarjeta abre la misma confirmación que Configuración → Suscripción.
+            const isDowngrade = plan.code === 'FREE' && !isCurrent && canCancel
+            const isSelectable = !isCurrent && plan.code !== 'FREE'
             return (
               <button
                 type="button"
                 key={plan.code}
-                className={`${styles.planOption} ${isCurrent ? styles.currentPlan : ''}`}
-                onClick={() => switchPlan(plan)}
-                disabled={isCurrent}
+                className={`${styles.planOption} ${isCurrent ? styles.currentPlan : ''} ${isDowngrade ? styles.downgradePlan : ''}`}
+                onClick={() => (isDowngrade ? setCancelOpen(true) : switchPlan(plan))}
+                disabled={!isSelectable && !isDowngrade}
               >
                 <span>{formatPlanName(plan)}</span>
                 <strong>{formatPlanPrice(plan)} {formatPlanPeriod(plan)}</strong>
                 <small>{formatPlanTokens(plan)}</small>
-                <em>{isCurrent ? t('facturacion.planActivo') : t('facturacion.cambiarPlan')}</em>
+                {isCurrent && <em>{t('facturacion.planActivo')}</em>}
+                {isSelectable && <em>{t('facturacion.cambiarPlan')}</em>}
+                {isDowngrade && <em className={styles.downgradeLabel}>{t('config.suscripcion.darDeBaja')}</em>}
+                {/* Ya dada de baja: la vuelta al gratuito está en marcha, no hay nada que pulsar. */}
+                {plan.code === 'FREE' && !isCurrent && subscription.cancelAtPeriodEnd && (
+                  <em>{t('config.suscripcion.dadaDeBaja')}</em>
+                )}
               </button>
             )
           })}
         </div>
-        {subscription.provider === 'MERCADO_PAGO' && (
-          <button
-            type="button"
-            className={styles.cancelSubscriptionBtn}
-            onClick={handleCancelSubscription}
-            disabled={billingLoading}
-          >
-            {billingLoading ? t('facturacion.cancelando') : t('facturacion.cancelar')}
-          </button>
-        )}
       </section>
+
+      {cancelOpen && (
+        <CancelSubscriptionDialog
+          subscription={subscription}
+          freeTokenLimit={freeTokenLimit}
+          error={cancelError}
+          onClose={() => { setCancelOpen(false); setCancelError(null) }}
+          onConfirm={confirmCancelSubscription}
+        />
+      )}
     </div>
   )
 }

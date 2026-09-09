@@ -155,42 +155,8 @@
 }
 .dangerBtn:disabled { opacity: 0.65; cursor: wait; }
 
-.confirmLayer {
-  position: fixed; inset: 0; z-index: 220;
-  display: flex; align-items: center; justify-content: center;
-  padding: 1.25rem; background: rgba(0,0,0,0.68);
-  backdrop-filter: blur(4px);
-}
-.confirmDialog {
-  width: min(500px, 100%);
-  background: var(--black-2); border: 0.5px solid var(--accent-border);
-  border-radius: var(--radius); padding: 1.5625rem;
-  box-shadow: 0 23px 75px rgba(0,0,0,0.45);
-}
-.confirmDialog h2 {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 30px; font-weight: 400; color: var(--text-primary);
-  margin-bottom: 0.625rem;
-}
-.confirmDialog p {
-  color: var(--text-secondary); font-size: 16px; line-height: 1.6;
-  margin-bottom: 1.5625rem;
-}
-.confirmActions { display: flex; justify-content: flex-end; gap: 0.625rem; }
-.cancelBtn, .deleteBtn {
-  border-radius: var(--radius); padding: 10px 20px;
-  font-size: 15px; letter-spacing: 0.5px;
-}
-.cancelBtn {
-  background: transparent; border: 0.5px solid var(--accent-border);
-  color: var(--text-secondary);
-}
-.cancelBtn:hover { border-color: var(--accent); color: var(--accent); }
-.deleteBtn {
-  border: 0.5px solid var(--error-border);
-  background: var(--error-bg); color: #F5A5A5;
-}
-.deleteBtn:hover { border-color: var(--error); color: #FFD0D0; }
+/* La confirmación de la baja vive en components/billing/CancelSubscriptionDialog:
+   la piden esta pantalla y el diálogo de plan y tokens. */
 
 @media (max-width: 800px) {
   .header { padding: 0 1.25rem; }

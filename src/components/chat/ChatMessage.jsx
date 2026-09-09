@@ -245,7 +245,15 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
     ? message.citationSupportStatus
     : null
   const lowConfidence = message.confidenceStatus === 'LOW'
-  const showLowConfidenceFallback = lowConfidence && !citationSupportStatus
+  // Sólo se calla ante NONE, que es el único aviso que dice ya lo mismo ("verifícalo con una
+  // fuente oficial"). Con GOOD o WEAK los dos avisos hablan de cosas distintas: aquel del
+  // respaldo documental de las citas, éste de lo que la orientación alcanza a cubrir del caso.
+  //
+  // Antes exigía `!citationSupportStatus` y no salía nunca: la única rama del flujo que
+  // declara confianza baja es la del RAG, y esa siempre rellena el estado de las citas
+  // (GOOD/WEAK/NONE, con respaldo por el número de citas); las ramas sin RAG y la de
+  // preguntas aclaratorias lo dejan nulo, pero también dejan nula la confianza.
+  const showLowConfidenceFallback = lowConfidence && citationSupportStatus !== 'NONE'
   const canRetry = isSystem && retryText && !message.retryAttempted
   const showUpgrade = isSystem && message.errorCode === 'insufficient_tokens'
   const citationNotice = citationSupportStatus === 'WEAK'
@@ -478,9 +486,12 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
             onChange={(e) => setComment(e.target.value)}
             placeholder={t('chat.mensaje.comentarioPlaceholder')}
           />
-          <button type="button" onClick={() => handleRate(rated || 5)} disabled={ratingPending}>
+          {/* Sin estrella no se guarda: antes caía en un 5 implícito, así que un comentario
+              crítico se registraba como la mejor calificación posible. */}
+          <button type="button" onClick={() => handleRate(rated)} disabled={ratingPending || !rated}>
             {t('chat.mensaje.guardarFeedback')}
           </button>
+          {!rated && <span className={styles.ratingStatus}>{t('chat.mensaje.calificaPrimero')}</span>}
         </div>
       )}
     </div>

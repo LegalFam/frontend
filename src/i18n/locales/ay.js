@@ -392,8 +392,6 @@ export default {
       'Sapa jiskt’awixa jaysawi wakichata ukhaw token pist’ayi: maya token jasa jiskt’awinakataki, kimsa tokenkama jaysawi kamachi jutuwinakana thaxsinti ukhaxa.',
     planActivo: 'Jakaski plan',
     cambiarPlan: 'Plan mayjt’ayaña',
-    cancelar: 'Arknaqawi jaytaña',
-    cancelando: 'Jaytaskiwa...',
   },
 
   pago: {
@@ -528,6 +526,11 @@ export default {
     network_error: 'Chinuwixa t’unjatawa. Aruskipawina kunjamäskisa uk uñakipasktan.',
     _defecto: 'Janiw lurawi phuqhañjamäkiti. Wasitat lurañma.',
     _asistente: 'Janiw jaysawi lurañjamäkiti. Wasitat lurañma.',
+    _registro: 'Janiw cuentama lurañjamäkiti. Wasitat lurañma.',
+    _inicioSesion: 'Janiw mantañjamäkiti. Wasitat lurañma.',
+    _planes: 'Janiw plananaka apkatañjamäkiti.',
+    _suscripcion: 'Janiw arknaqawima apkatañjamäkiti.',
+    _planYTokens: 'Janiw planama ukat tokennakama machaqachañjamäkiti.',
   },
 
   chat: {
@@ -599,6 +602,7 @@ export default {
       comentario: 'Arsuwi',
       guardando: 'Imaskiwa...',
       comentarioPlaceholder: 'Jaysawit munañamarjama arsuwi',
+      calificaPrimero: 'Arsuwima imantañataki mä chanichawi ajlliñma.',
       guardarFeedback: 'Arsuwi imaña',
       calificar_one: '{{n}} warawarampi chanichaña',
       calificar_other: '{{n}} warawarampi chanichaña',

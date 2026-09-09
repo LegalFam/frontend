@@ -392,8 +392,6 @@ export default {
       'Sapa tapuyqa kutichiy listo kaptinmi tokenkunata pisiyachin: huk token pisi tapuypaq, kimsa tokenkama kutichiy kamachiy pukyukunapi sayaptin.',
     planActivo: 'Kawsaq plan',
     cambiarPlan: 'Planta tikray',
-    cancelar: 'Qatikuyta saqiy',
-    cancelando: 'Saqichkan...',
   },
 
   pago: {
@@ -528,6 +526,11 @@ export default {
     network_error: 'Tinkiyqa p’akikurqan. Rimanakuypa imayna kasqanta qhawachkaniku.',
     _defecto: 'Manam ruwayta tukuyta atirqanikuchu. Musuqmanta ruway.',
     _asistente: 'Manam kutichiyta ruwayta atirqanikuchu. Musuqmanta ruway.',
+    _registro: 'Manam cuentaykita ruwayta atirqanikuchu. Musuqmanta ruway.',
+    _inicioSesion: 'Manam yaykuyta atirqanikuchu. Musuqmanta ruway.',
+    _planes: 'Manam plankunata chaqnayta atirqanikuchu.',
+    _suscripcion: 'Manam qatikuyniykita chaqnayta atirqanikuchu.',
+    _planYTokens: 'Manam planniykita, tokenkunaykitawan musuqchayta atirqanikuchu.',
   },
 
   chat: {
@@ -599,6 +602,7 @@ export default {
       comentario: 'Rimay',
       guardando: 'Waqaychachkan...',
       comentarioPlaceholder: 'Kutichiymanta munaptiyki rimay',
+      calificaPrimero: 'Rimayniykita waqaychanaykipaq huk chaninchayta akllay.',
       guardarFeedback: 'Rimasqata waqaychay',
       calificar_one: '{{n}} quyllurwan chaninchay',
       calificar_other: '{{n}} quyllurwan chaninchay',

@@ -72,21 +72,13 @@
   color: var(--accent); font-size: 14px; font-style: normal; margin-top: auto;
 }
 .currentPlan { background: var(--accent-bg); border-color: var(--accent-border-h); }
-.cancelSubscriptionBtn {
-  width: 100%;
-  margin-top: 1.125rem;
-  min-height: 48px;
-  border: 0.5px solid rgba(238, 128, 128, 0.45);
-  border-radius: var(--radius);
-  background: transparent;
-  color: #ffb4b4;
-  font-size: 16px;
+/* Bajar al gratuito es dar de baja: se marca en rojo apagado, como el resto de acciones
+   destructivas, sin sacarla de la comparativa de planes. */
+.downgradePlan:hover:not(:disabled) {
+  border-color: rgba(238, 128, 128, 0.55);
+  background: rgba(238, 128, 128, 0.06);
 }
-.cancelSubscriptionBtn:hover:not(:disabled) {
-  border-color: #ffb4b4;
-  background: rgba(238, 128, 128, 0.08);
-}
-.cancelSubscriptionBtn:disabled { opacity: 0.65; cursor: wait; }
+.downgradeLabel { color: #ffb4b4; }
 @media (max-width: 960px) {
   .billingSummary, .planGrid { grid-template-columns: 1fr; }
 }

@@ -344,16 +344,31 @@ export function useChat() {
     }
   }, [navigate, store])
 
-  const startNewChat = useCallback(({ updateRoute = true } = {}) => {
+  // `keepThread` distingue las dos llamadas que hoy se confundían: la del botón "Nueva
+  // consulta", que sí tiene que vaciar el hilo, y la del efecto de ruta de ChatPage, que sólo
+  // lo inicializa al entrar. Sin esa distinción, el efecto pisaba cualquier aviso que se
+  // hubiera dejado en el chat nuevo al volver a él (ver el descarte de sesión de más abajo).
+  const startNewChat = useCallback(({ updateRoute = true, keepThread = false } = {}) => {
     store.setActiveSession(null)
     store.setLoading(false)
     store.setError(null)
     store.setConnectionState('idle')
-    store.setMessages('new', [welcomeMessage(user?.name?.split(' ')[0])])
+    if (!keepThread || !useChatStore.getState().messages.new?.length) {
+      store.setMessages('new', [welcomeMessage(user?.name?.split(' ')[0])])
+    }
     if (updateRoute) {
       navigate('/chat')
     }
   }, [navigate, store, user])
+
+  // Deshace una conversación que se creó para un envío que el servidor acabó rechazando.
+  // Sin esto queda en el historial una consulta vacía titulada con los primeros caracteres
+  // del texto que nunca llegó a enviarse.
+  const discardSession = useCallback(async (sessionId) => {
+    await chatService.deleteSession(sessionId).catch(() => {})
+    store.removeSession(sessionId)
+    startNewChat()
+  }, [startNewChat, store])
 
   const ensureSession = useCallback(async (initialText) => {
     const currentSessionId = useChatStore.getState().activeSessionId
@@ -383,6 +398,9 @@ export function useChat() {
 
     const tempId = `tmp_${Date.now()}`
     let sessionId = useChatStore.getState().activeSessionId
+    // Si la conversación nace de este mismo envío hay que poder deshacerla cuando el
+    // servidor lo rechaza; una que ya existía se queda como está.
+    const hadSession = Boolean(sessionId)
 
     try {
       sessionId = await ensureSession(trimmed)
@@ -425,6 +443,8 @@ export function useChat() {
       const status = normalizedError.status
 
       if (!status) {
+        // Sin respuesta del servidor no se sabe si el envío llegó, así que aquí no se
+        // descarta nada: ni el mensaje ni la conversación recién creada. Se verifica.
         store.replaceMessage(sessionId || 'new', tempId, { state: 'unknown_delivery' })
         store.setError(normalizedError.message)
         if (sessionId) await loadMessages(sessionId, { force: true })
@@ -433,8 +453,17 @@ export function useChat() {
 
       store.setLoading(false)
 
+      // Rechazo explícito del servidor: la consulta no existe para nadie. Si la
+      // conversación se había creado para este envío, se deshace y el aviso y el borrador
+      // van al chat nuevo, que es donde queda el usuario.
+      if (!hadSession && sessionId) {
+        await discardSession(sessionId)
+        sessionId = null
+      }
+      const threadKey = sessionId || 'new'
+
       if (status === 409) {
-        store.removeMessage(sessionId || 'new', tempId)
+        store.removeMessage(threadKey, tempId)
         loadProcessingStatus().catch(() => {})
         store.setError(normalizedError.message)
         return
@@ -442,13 +471,13 @@ export function useChat() {
 
       if (status === 403) {
         if (normalizedError.code === 'insufficient_tokens') {
-          // El envío se rechazó por falta de tokens: conservamos el mensaje del
-          // usuario (marcado como no enviado), devolvemos su texto al input como
+          // El envío se rechazó por falta de tokens: devolvemos su texto al input como
           // borrador (sobrevive a la ida al checkout de pago) y dejamos un aviso
-          // accionable en el hilo en lugar de descartarlo en silencio.
-          store.setDraft(sessionId || 'new', trimmed)
-          store.replaceMessage(sessionId || 'new', tempId, { state: 'failed' })
-          store.addMessage(sessionId || 'new', {
+          // accionable en el hilo en lugar de descartarlo en silencio. Si el mensaje sigue
+          // en el hilo, queda marcado como no enviado.
+          store.setDraft(threadKey, trimmed)
+          store.replaceMessage(threadKey, tempId, { state: 'failed' })
+          store.addMessage(threadKey, {
             id: `err_${Date.now()}`,
             role: 'SYSTEM',
             messageKey: 'chat.sinTokens',
@@ -464,13 +493,13 @@ export function useChat() {
           return
         }
 
-        store.removeMessage(sessionId || 'new', tempId)
+        store.removeMessage(threadKey, tempId)
         store.setError(normalizedError.message)
         usePaymentStore.getState().loadSubscription().catch(() => {})
         return
       }
 
-      store.addMessage(sessionId || 'new', {
+      store.addMessage(threadKey, {
         id: `err_${Date.now()}`,
         role: 'SYSTEM',
         // Se guarda también el código: cuando existe, ChatMessage lo vuelve a traducir al
@@ -487,7 +516,7 @@ export function useChat() {
     } finally {
       sendingTextRef.current = null
     }
-  }, [confirmUnreadAssistantReceipts, ensureSession, loadMessages, loadProcessingStatus, store, waitForOpenStream])
+  }, [confirmUnreadAssistantReceipts, discardSession, ensureSession, loadMessages, loadProcessingStatus, store, waitForOpenStream])
 
   const rateMessage = useCallback(async (messageId, rating, comment = '') => {
     const sessionId = useChatStore.getState().activeSessionId
@@ -505,8 +534,13 @@ export function useChat() {
   const deleteSession = useCallback(async (sessionId) => {
     try {
       await chatService.deleteSession(sessionId)
+      // Hay que mirarlo ANTES de quitarla: removeSession ya deja activeSessionId en null
+      // cuando la borrada era la abierta, así que preguntarlo después nunca se cumple y el
+      // chat se queda sin hilo, sin bienvenida y con la ruta apuntando a una conversación
+      // que ya no existe.
+      const wasActive = useChatStore.getState().activeSessionId === sessionId
       store.removeSession(sessionId)
-      if (useChatStore.getState().activeSessionId === sessionId) startNewChat()
+      if (wasActive) startNewChat()
     } catch (e) {
       store.setError(normalizeApiError(e, t('chat.errorEliminar')).message)
     }

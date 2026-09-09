@@ -4,6 +4,7 @@ import { useChat }        from '@/hooks/useChat'
 import { useAuth }        from '@/hooks/useAuth'
 import { useEdgeSafeTooltip } from '@/hooks/useEdgeSafeTooltip'
 import { usePaymentStore } from '@/store/paymentStore'
+import { formatPlanName }  from '@/utils/plans'
 import ChatSidebar        from '@/components/chat/ChatSidebar'
 import ChatMessage        from '@/components/chat/ChatMessage'
 import ChatInput          from '@/components/chat/ChatInput'
@@ -61,7 +62,10 @@ export default function ChatPage() {
       selectSession(routeSessionId, { updateRoute: false })
       return
     }
-    startNewChat({ updateRoute: false })
+    // keepThread: este efecto sólo inicializa el chat nuevo al entrar. Vaciar el hilo es
+    // cosa del botón "Nueva consulta"; si aquí se vaciara siempre, se perdería el aviso que
+    // deja un envío rechazado al devolver al usuario al chat nuevo.
+    startNewChat({ updateRoute: false, keepThread: true })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [routeSessionId])
 
@@ -92,7 +96,10 @@ export default function ChatPage() {
       : t('chat.consultaActual')
   const tokenLabel = subscription
     ? t('chat.tokensBadge', {
-        plan: subscription.planCode,
+        // El nombre del catálogo, no el código crudo del backend: sin esto la insignia se lee
+        // "FREE · 47/50" en las tres lenguas. formatPlanName cae al código si el plan que
+        // llega no está en el catálogo.
+        plan: formatPlanName({ code: subscription.planCode }),
         restantes: subscription.remainingTokens,
         limite: subscription.monthlyTokenLimit,
       })
@@ -281,8 +288,14 @@ export default function ChatPage() {
                   .slice(0, index)
                   .reverse()
                   .find((item) => item.role === 'USER')
+                // `content` de un mensaje del usuario es el español canónico que fijó el flujo,
+                // no lo que escribió: reintentar con eso cambia el idioma del turno. El
+                // original vive en contentLocalized cuando la consulta no fue en español.
+                const previousUserText = previousUserMessage
+                  ? previousUserMessage.contentLocalized || previousUserMessage.content
+                  : null
                 const retryText = isLastMessage && isErrorMessage && msg.errorCode !== 'insufficient_tokens'
-                  ? msg.retryText || previousUserMessage?.content
+                  ? msg.retryText || previousUserText
                   : null
                 return (
                   <ChatMessage

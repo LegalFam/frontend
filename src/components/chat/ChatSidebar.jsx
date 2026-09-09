@@ -178,6 +178,10 @@ export default function ChatSidebar({
               <input
                 className={styles.editInput}
                 value={editValue}
+                // El servidor recorta a 80 (ChatSession.MAX_TITLE_LENGTH) pero rechaza a
+                // partir de 120: sin tope, un título largo devuelve 400 y revierte el
+                // renombrado en lugar de quedarse recortado.
+                maxLength={80}
                 onChange={(e) => setEditValue(e.target.value)}
                 onBlur={() => saveEdit(s.id)}
                 onKeyDown={(e) => handleKeyDown(e, s.id)}

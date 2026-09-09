@@ -403,8 +403,6 @@ export default {
       'Cada consulta descuenta tokens cuando la respuesta queda lista: 1 token para consultas simples y hasta 3 tokens cuando la respuesta se apoya en fuentes legales.',
     planActivo: 'Plan activo',
     cambiarPlan: 'Cambiar plan',
-    cancelar: 'Cancelar suscripción',
-    cancelando: 'Cancelando...',
   },
 
   pago: {
@@ -542,6 +540,11 @@ export default {
     network_error: 'Conexión interrumpida. Estamos verificando el estado de la conversación.',
     _defecto: 'No se pudo completar la acción. Intenta nuevamente.',
     _asistente: 'No se pudo generar la respuesta. Intenta nuevamente.',
+    _registro: 'No se pudo crear la cuenta. Intenta nuevamente.',
+    _inicioSesion: 'No se pudo iniciar sesión. Intenta nuevamente.',
+    _planes: 'No se pudieron cargar los planes.',
+    _suscripcion: 'No se pudo cargar tu suscripción.',
+    _planYTokens: 'No se pudo actualizar tu plan y tokens.',
   },
 
   chat: {
@@ -614,6 +617,7 @@ export default {
       comentario: 'Comentario',
       guardando: 'Guardando...',
       comentarioPlaceholder: 'Comentario opcional sobre la respuesta',
+      calificaPrimero: 'Elige una calificación para guardar tu comentario.',
       guardarFeedback: 'Guardar feedback',
       calificar_one: 'Calificar {{n}} estrella',
       calificar_other: 'Calificar {{n}} estrellas',

@@ -1,0 +1,39 @@
+/* Mismo lenguaje visual que el resto de confirmaciones de la aplicación (borrar una
+   conversación en el panel lateral): capa oscura, tarjeta estrecha y la acción destructiva
+   a la derecha, en rojo apagado. */
+.layer {
+  position: fixed; inset: 0; z-index: 220;
+  display: flex; align-items: center; justify-content: center;
+  padding: 1.25rem; background: rgba(0,0,0,0.68);
+  backdrop-filter: blur(4px);
+}
+.dialog {
+  width: min(500px, 100%);
+  background: var(--black-2); border: 0.5px solid var(--accent-border);
+  border-radius: var(--radius); padding: 1.5625rem;
+  box-shadow: 0 23px 75px rgba(0,0,0,0.45);
+}
+.dialog h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 30px; font-weight: 400; color: var(--text-primary);
+  margin-bottom: 0.625rem;
+}
+.dialog p {
+  color: var(--text-secondary); font-size: 16px; line-height: 1.6;
+  margin-bottom: 1.5625rem;
+}
+.actions { display: flex; justify-content: flex-end; gap: 0.625rem; }
+.cancelBtn, .confirmBtn {
+  border-radius: var(--radius); padding: 10px 20px;
+  font-size: 15px; letter-spacing: 0.5px;
+}
+.cancelBtn {
+  background: transparent; border: 0.5px solid var(--accent-border);
+  color: var(--text-secondary);
+}
+.cancelBtn:hover { border-color: var(--accent); color: var(--accent); }
+.confirmBtn {
+  border: 0.5px solid var(--error-border);
+  background: var(--error-bg); color: #F5A5A5;
+}
+.confirmBtn:hover { border-color: var(--error); color: #FFD0D0; }
