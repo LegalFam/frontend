@@ -4,7 +4,7 @@ import { useT } from '@/i18n/translate'
 import styles from './HeroSection.module.css'
 
 const stats = [
-  { num: '+90%', clave: 'stat1' },
+  { num: '+88%', clave: 'stat1' },
   { num: '24/7', clave: 'stat2' },
   { num: '100%', clave: 'stat3', info: 'landing.hero.stat3Info' },
 ]
