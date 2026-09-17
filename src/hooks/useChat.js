@@ -241,10 +241,10 @@ export function useChat() {
         }
         const nextMessages = preserveOptimisticMessages(sessionId, messages)
         messages
-          .filter((message) => message.role === 'ASSISTANT' && !seenAssistantIdsRef.current.has(message.id))
+          .filter((message) => ['ASSISTANT', 'SYSTEM'].includes(message.role) && !seenAssistantIdsRef.current.has(message.id))
           .forEach((message) => {
             seenAssistantIdsRef.current.add(message.id)
-            logFaultInjection({ ev: 'history', id: message.id })
+            logFaultInjection({ ev: 'history', id: message.id, role: message.role })
           })
         const hasLoadedMessages = Boolean(useChatStore.getState().messages[sessionId]?.length)
         store.setMessagesPage(
@@ -680,10 +680,10 @@ export function useChat() {
 
           for (const chunk of chunks) {
             const event = parseSseChunk(chunk)
-            if (event.type === 'assistant_message') {
+            if (event.type === 'assistant_message' || event.type === 'assistant_error') {
               const id = parseSseData(event.data)?.messageId
               seenAssistantIdsRef.current.add(id)
-              logFaultInjection({ ev: 'sse', id })
+              logFaultInjection({ ev: event.type === 'assistant_error' ? 'sse_error' : 'sse', id })
             }
             if (event.type === 'assistant_message' || event.type === 'assistant_error') {
               const message = sseEventToMessage(event)
