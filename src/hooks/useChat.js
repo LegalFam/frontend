@@ -9,6 +9,8 @@ import { t } from '@/i18n/translate'
 import { useLanguageStore } from '@/store/languageStore'
 
 const BACKOFF_MS = [1000, 2000, 5000, 10000, 30000]
+const SSE_IDLE_TIMEOUT_MS = 45000
+const SSE_WATCHDOG_INTERVAL_MS = 5000
 
 const logFaultInjection = (payload) =>
   console.info('[FAULT-INJECTION]', JSON.stringify({ ...payload, t: Date.now() }))
@@ -606,6 +608,16 @@ export function useChat() {
       abortRef.current = controller
       setConnectionState('reconnecting')
 
+      // El servidor manda heartbeat cada 15 s. Sin bytes durante tres intervalos la conexión
+      // está muerta aunque el navegador no lo sepa, y `reader.read()` esperaría para siempre.
+      let lastActivityAt = Date.now()
+      let stale = false
+      const watchdogId = window.setInterval(() => {
+        if (Date.now() - lastActivityAt < SSE_IDLE_TIMEOUT_MS) return
+        stale = true
+        controller.abort()
+      }, SSE_WATCHDOG_INTERVAL_MS)
+
       try {
         // La suscripción va primero y la reconciliación después: entre que se pide el
         // historial y el emisor queda registrado en el servidor hay una ventana en la que
@@ -626,6 +638,9 @@ export function useChat() {
               signal: controller.signal,
             })
           } catch (e) {
+            // El refresh cambia el token y eso reinicia este efecto, que aborta el reintento:
+            // no es un refresh fallido y no debe cerrar la sesión.
+            if (controller.signal.aborted) throw e
             logout()
             navigate('/')
             return
@@ -658,6 +673,7 @@ export function useChat() {
         while (!disposed) {
           const { value, done } = await reader.read()
           if (done) break
+          lastActivityAt = Date.now()
           buffer += decoder.decode(value, { stream: true })
           const chunks = buffer.split(/\r?\n\r?\n/)
           buffer = chunks.pop() || ''
@@ -696,11 +712,13 @@ export function useChat() {
         throw new Error('SSE disconnected')
       } catch (e) {
         if (openStreamRef.current === sessionId) openStreamRef.current = null
-        if (disposed || controller.signal.aborted) return
+        if (disposed || (controller.signal.aborted && !stale)) return
         setConnectionState('reconnecting')
         const delay = BACKOFF_MS[Math.min(retryRef.current, BACKOFF_MS.length - 1)]
         retryRef.current += 1
         timerRef.current = window.setTimeout(connect, delay)
+      } finally {
+        window.clearInterval(watchdogId)
       }
     }
 
@@ -743,8 +761,11 @@ export function useChat() {
     let disposed = false
 
     const refreshProcessing = async () => {
+      if (disposed) return
       const nextStatus = await loadProcessingStatus().catch(() => null)
-      if (disposed || !nextStatus || nextStatus.processing) return
+      // Guardar el estado ya desmonta este efecto cuando `processing` pasa a false: aquí no
+      // se mira `disposed`, o la transición que se vigila nunca llega a reconciliar.
+      if (!nextStatus || nextStatus.processing) return
       usePaymentStore.getState().loadSubscription().catch(() => {})
       if (isActiveSession) {
         await reconcileRef.current?.(processingSessionId).catch(() => {})
