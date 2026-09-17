@@ -10,6 +10,14 @@ import { useLanguageStore } from '@/store/languageStore'
 
 const BACKOFF_MS = [1000, 2000, 5000, 10000, 30000]
 
+const logFaultInjection = (payload) =>
+  console.info('[FAULT-INJECTION]', JSON.stringify({ ...payload, t: Date.now() }))
+
+const setConnectionState = (state) => {
+  if (useChatStore.getState().connectionState !== state) logFaultInjection({ ev: 'conn', state })
+  useChatStore.getState().setConnectionState(state)
+}
+
 const titleFromText = (text) =>
   text.slice(0, 40) + (text.length > 40 ? '...' : '')
 
@@ -148,6 +156,7 @@ export function useChat() {
   const messagesAbortRef = useRef(null)
   const receiptRequestRef = useRef(new Map())
   const reconcileRef = useRef(null)
+  const seenAssistantIdsRef = useRef(new Set())
 
   // Sesión cuyo emisor SSE está registrado en el servidor ahora mismo. El backend crea el
   // emisor y manda `connected` de forma síncrona al atender /chat/subscribe, así que haber
@@ -194,7 +203,8 @@ export function useChat() {
       if (existingRequest) return existingRequest
 
       const request = chatService.confirmReceipt(message.id)
-        .then(() => {
+        .then((response) => {
+          logFaultInjection({ ev: 'receipt', id: message.id, ok: true, status: response?.status })
           useChatStore.getState().upsertMessage(sessionId, {
             ...message,
             receiptStatus: 'READ',
@@ -202,6 +212,7 @@ export function useChat() {
           })
         })
         .catch((e) => {
+          logFaultInjection({ ev: 'receipt', id: message.id, ok: false, status: e?.response?.status ?? null })
           receiptRequestRef.current.delete(message.id)
           throw e
         })
@@ -227,6 +238,12 @@ export function useChat() {
           return messages
         }
         const nextMessages = preserveOptimisticMessages(sessionId, messages)
+        messages
+          .filter((message) => message.role === 'ASSISTANT' && !seenAssistantIdsRef.current.has(message.id))
+          .forEach((message) => {
+            seenAssistantIdsRef.current.add(message.id)
+            logFaultInjection({ ev: 'history', id: message.id })
+          })
         const hasLoadedMessages = Boolean(useChatStore.getState().messages[sessionId]?.length)
         store.setMessagesPage(
           sessionId,
@@ -337,7 +354,7 @@ export function useChat() {
 
   const selectSession = useCallback(async (sessionId, { updateRoute = true } = {}) => {
     store.setError(null)
-    store.setConnectionState('idle')
+    setConnectionState('idle')
     store.setActiveSession(sessionId)
     if (updateRoute && sessionId) {
       navigate(`/chat/${sessionId}`)
@@ -352,7 +369,7 @@ export function useChat() {
     store.setActiveSession(null)
     store.setLoading(false)
     store.setError(null)
-    store.setConnectionState('idle')
+    setConnectionState('idle')
     if (!keepThread || !useChatStore.getState().messages.new?.length) {
       store.setMessages('new', [welcomeMessage(user?.name?.split(' ')[0])])
     }
@@ -587,7 +604,7 @@ export function useChat() {
       stop()
       const controller = new AbortController()
       abortRef.current = controller
-      store.setConnectionState('reconnecting')
+      setConnectionState('reconnecting')
 
       try {
         // La suscripción va primero y la reconciliación después: entre que se pide el
@@ -626,7 +643,7 @@ export function useChat() {
         }
         if (!response.ok || !response.body) throw new Error('SSE connection failed')
 
-        store.setConnectionState('connected')
+        setConnectionState('connected')
         openStreamRef.current = sessionId
         retryRef.current = 0
 
@@ -647,6 +664,11 @@ export function useChat() {
 
           for (const chunk of chunks) {
             const event = parseSseChunk(chunk)
+            if (event.type === 'assistant_message') {
+              const id = parseSseData(event.data)?.messageId
+              seenAssistantIdsRef.current.add(id)
+              logFaultInjection({ ev: 'sse', id })
+            }
             if (event.type === 'assistant_message' || event.type === 'assistant_error') {
               const message = sseEventToMessage(event)
               if (message) {
@@ -675,7 +697,7 @@ export function useChat() {
       } catch (e) {
         if (openStreamRef.current === sessionId) openStreamRef.current = null
         if (disposed || controller.signal.aborted) return
-        store.setConnectionState('reconnecting')
+        setConnectionState('reconnecting')
         const delay = BACKOFF_MS[Math.min(retryRef.current, BACKOFF_MS.length - 1)]
         retryRef.current += 1
         timerRef.current = window.setTimeout(connect, delay)
