@@ -118,6 +118,29 @@ describe('useChat SSE connection', () => {
 
     expect(subscribeCalls()).toHaveLength(1)
   })
+
+  it('confirms the receipt of an assistant error', async () => {
+    const streams = []
+    globalThis.fetch = abortableFetch((url, signal) => {
+      const stream = openStream(signal)
+      streams.push(stream)
+      return Promise.resolve(stream.response)
+    })
+
+    renderChat()
+    await act(flush)
+    streams[0].push('connected', 'connected')
+    streams[0].push('assistant_error', JSON.stringify({
+      sessionId: SESSION_ID,
+      messageId: 'error-1',
+      errorCode: 'upstream_timeout',
+      errorMessage: 'Assistant service timed out',
+      receiptStatus: 'PENDING',
+    }))
+    await act(flush)
+
+    expect(chatService.confirmReceipt).toHaveBeenCalledWith('error-1')
+  })
 })
 
 // Fuera de act() React renderiza las actualizaciones del store en cuanto ocurren, como en el
