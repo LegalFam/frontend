@@ -100,6 +100,7 @@ const sseEventToMessage = (event) => {
       citations: [],
       createdAt: data.createdAt || new Date().toISOString(),
       isError: true,
+      receiptStatus: data.receiptStatus,
     }
   }
 
@@ -165,11 +166,10 @@ export function useChat() {
   // recibido la cabecera de esa respuesta garantiza que ya hay a quién despachar.
   const openStreamRef = useRef(null)
 
-  // Un envío que se adelanta a la suscripción se queda sin red: si el agente falla al
-  // instante, el backend despacha el error sin emisor y lo descarta sin reintento, a
-  // diferencia de la respuesta del asistente, que sí pasa por el outbox. Esperar aquí unos
-  // segundos cuesta nada en el caso normal (la suscripción tarda milisegundos) y evita el
-  // agujero en el estreno de un chat nuevo, que es cuando la carrera se pierde siempre.
+  // Un envío que se adelanta a la suscripción deja la respuesta sin emisor: no se pierde,
+  // pero espera al historial o al reintento del outbox. Esperar aquí unos segundos cuesta
+  // nada en el caso normal (la suscripción tarda milisegundos) y evita esa demora en el
+  // estreno de un chat nuevo, que es cuando la carrera se pierde siempre.
   const waitForOpenStream = useCallback(async (sessionId, timeoutMs = 5000) => {
     if (!sessionId) return
     const deadline = Date.now() + timeoutMs
@@ -191,7 +191,7 @@ export function useChat() {
 
   const confirmUnreadAssistantReceipts = useCallback(async (sessionId, messages) => {
     const unreadAssistantMessages = messages.filter((message) =>
-      message.role === 'ASSISTANT' &&
+      (message.role === 'ASSISTANT' || message.role === 'SYSTEM') &&
       message.id &&
       message.id !== 'welcome' &&
       message.receiptStatus &&
@@ -695,8 +695,8 @@ export function useChat() {
                 )
                 store.setProcessingStatus({ processing: false })
                 store.setLoading(false)
+                confirmUnreadAssistantReceipts(sessionId, [message]).catch(() => {})
                 if (message.role === 'ASSISTANT') {
-                  confirmUnreadAssistantReceipts(sessionId, [message]).catch(() => {})
                   usePaymentStore.getState().loadSubscription().catch(() => {})
                 }
               }
