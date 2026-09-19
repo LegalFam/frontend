@@ -7,7 +7,6 @@ import { initTema } from './theme'
 import { initLanguage } from './store/languageStore'
 
 initTema()
-// Antes del primer render, para que <html lang> ya sea el correcto al pintar.
 initLanguage()
 
 ReactDOM.createRoot(document.getElementById('root')).render(

@@ -29,8 +29,6 @@ export default function Navbar({
     setActive(id)
   }
 
-  // Solo los identificadores de sección: el rótulo sale del catálogo en el render, para que
-  // cambie al cambiar de idioma.
   const links = ['sobre', 'como', 'precios', 'seguridad', 'privacidad']
 
   return (
@@ -69,8 +67,6 @@ export default function Navbar({
         </div>
 
         <div className={styles.btns}>
-          {/* El selector va antes que los botones de sesión: quien no lee español tiene que
-              poder cambiar de lengua antes de decidir si entra. */}
           <LanguageSelector />
           {isAuthenticated ? (
             <>

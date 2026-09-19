@@ -143,8 +143,7 @@ describe('useChat SSE connection', () => {
   })
 })
 
-// Fuera de act() React renderiza las actualizaciones del store en cuanto ocurren, como en el
-// navegador; dentro de act() las difiere y esconde las carreras con la limpieza del efecto.
+// Sin act(): dentro de act() React difiere las actualizaciones y esconde las carreras.
 describe('useChat with browser scheduling', () => {
   beforeEach(() => {
     globalThis.IS_REACT_ACT_ENVIRONMENT = false

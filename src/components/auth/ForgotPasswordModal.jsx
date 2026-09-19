@@ -24,7 +24,6 @@ export default function ForgotPasswordModal({ onClose, onSwitchToLogin, initialE
     setLoading(true)
     try {
       await authService.forgotPassword({ email })
-      // The response is identical for registered and unknown addresses.
       setSent(true)
     } catch (e) {
       setError(normalizeApiError(e, 'auth.recuperar.errorEnvio'))

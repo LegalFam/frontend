@@ -21,7 +21,6 @@ export default function LandingPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const { isAuthenticated, signout } = useAuth()
   const { subscription, refreshBilling } = usePaymentStore()
-  // Also opened via ?auth=..., so /verificar-correo and /restablecer-contrasena can hand off.
   const requestedModal = searchParams.get('auth')
   const [modal, setModal] = useState(
     AUTH_MODALS.includes(requestedModal) ? requestedModal : null

@@ -13,9 +13,6 @@ import LanguageSelector from '@/components/common/LanguageSelector'
 import { useT } from '@/i18n/translate'
 import styles from './SettingsPage.module.css'
 
-// La fecha se formatea siempre en es-PE: Intl no tiene datos de quechua ni de aymara, y
-// pedirle 'qu-PE' caería en el idioma por defecto del navegador, peor que el español. Lo que
-// sí se traduce es el texto que la rodea.
 const formatPeriodEnd = (iso, textoPorDefecto) => {
   if (!iso) return textoPorDefecto
   const date = new Date(iso)

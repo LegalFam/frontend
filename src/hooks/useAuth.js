@@ -24,8 +24,6 @@ export function useAuth() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  // Signup no longer establishes a session: the account stays unverified until the
-  // emailed link is opened, so the caller shows a "check your inbox" state instead.
   const signup = async ({ nombre, apellido, email, phone, password }) => {
     setLoading(true)
     setError(null)

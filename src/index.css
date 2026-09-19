@@ -1,9 +1,6 @@
-/* ── TEMAS ── un archivo por tema en src/themes/. El activo se elige con
-   el atributo data-theme en <html> (ver src/theme.js). */
 @import './themes/dorado.css';           /* por defecto (:root) */
 @import './themes/toga.css';             /* :root[data-theme="toga"] */
 
-/* ── RESET ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body {
@@ -15,7 +12,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 img { max-width: 100%; display: block; }
-/* los controles no heredan el tamano del body: el 13.33px del navegador x1.25 */
 button { font-family: 'Outfit', sans-serif; font-size: 16.7px; cursor: pointer; }
 input, textarea { font-family: 'Outfit', sans-serif; font-size: 16.7px; }
 a { text-decoration: none; color: inherit; }
@@ -25,11 +21,6 @@ a { text-decoration: none; color: inherit; }
 ::-webkit-scrollbar-thumb { background: var(--accent-dark); border-radius: 2.5px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
-/*
- * Tokens NO temáticos (iguales en todos los temas).
- * Los colores de acento, fondos y textos los aportan los archivos de
- * src/themes/ vía los @import de arriba.
- */
 :root {
   --error: #E24B4A; --error-bg: rgba(226,75,74,0.10);
   --error-border: rgba(226,75,74,0.35); --success: #1D9E75;

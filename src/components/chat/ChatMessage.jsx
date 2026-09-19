@@ -8,8 +8,6 @@ import { tIn, tOptional, useT } from '@/i18n/translate'
 import { useLanguageStore } from '@/store/languageStore'
 import styles from './ChatMessage.module.css'
 
-// Los pasos llegan con el mismo markdown que el cuerpo del mensaje (negritas sobre el nombre
-// de cada institucion), asi que hay que renderizarlos igual y no como texto plano.
 const INLINE_MARKDOWN_ELEMENTS = ['p', 'br', 'strong', 'em', 'code', 'a']
 
 const InlineMarkdown = ({ children }) => (
@@ -17,7 +15,6 @@ const InlineMarkdown = ({ children }) => (
     remarkPlugins={[remarkGfm]}
     allowedElements={INLINE_MARKDOWN_ELEMENTS}
     components={{
-      // Dentro de un <li> un <p> rompe el flujo del texto: lo dejamos pasar sin envolver.
       p: ({ children: content }) => <>{content}</>,
       a: ({ href, children: content }) => (
         <a href={href} target="_blank" rel="noopener noreferrer">
@@ -71,10 +68,6 @@ const LOCATOR_KINDS = new Set(['exact', 'prefix', 'fuzzy'])
 
 const passageKeyText = (value) => String(value || '').toLowerCase().replace(/[^0-9a-záéíóúüñ]+/g, '')
 
-// El asistente puede citar dos veces el mismo pasaje del mismo articulo y redactar un
-// resumen distinto para cada copia; el segundo dice lo mismo con otras palabras. Sin esto
-// el articulo aparece repetido. El recorte del pasaje lo elige el modelo, asi que dos
-// copias del mismo tramo pueden diferir en los bordes: se comparan por contencion.
 const isSamePassage = (a, b) => {
   if (a.sourceLocator !== b.sourceLocator) return false
 
@@ -96,8 +89,6 @@ function groupCitationsByDocument(citations) {
       byKey.set(key, group)
       groups.push(group)
     }
-    // El flujo ya deduplica, pero las conversaciones guardadas antes traen el duplicado
-    // persistido: se filtra tambien al mostrar.
     if (group.entries.some((entry) => isSamePassage(entry, citation))) continue
     group.entries.push(citation)
   }
@@ -105,23 +96,16 @@ function groupCitationsByDocument(citations) {
   return groups
 }
 
-// El pasaje literal puede ocupar varias lineas y empuja el resumen fuera de la vista.
-// Se muestra recortado a dos lineas y se despliega a pedido.
 function CitationQuote({ text }) {
   const t = useT()
   const [expanded, setExpanded] = useState(false)
   const [clamped, setClamped] = useState(false)
   const textRef = useRef(null)
 
-  // El boton solo aparece si el pasaje realmente se corta, y eso depende del ancho, no del
-  // largo del texto: se mide contra el alto real del elemento recortado. Mientras esta
-  // desplegado no se vuelve a medir, porque sin recorte no habria nada que detectar.
   useLayoutEffect(() => {
     const node = textRef.current
     if (!node || expanded) return undefined
 
-    // Sin ancho todavia no hay recorte que medir: cada palabra caeria en su propia linea y
-    // hasta un pasaje de una linea pareceria cortado. El observer vuelve a medir despues.
     const measure = () => {
       if (!node.clientWidth) return
       setClamped(node.scrollHeight - node.clientHeight > 1)
@@ -163,30 +147,13 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
   const isSystem = message.role === 'SYSTEM'
   const isUser = message.role === 'USER'
 
-  // Los avisos de sistema y la bienvenida no guardan texto sino una clave o un código de
-  // error, y se resuelven aquí: así un cambio de idioma alcanza también a lo que ya está en
-  // el hilo. El texto guardado sólo se usa cuando el error venía únicamente del servidor.
   const contenidoBase = message.messageKey
     ? t(message.messageKey, message.messageVars)
     : (isSystem && message.errorCode && tOptional(`errores.${message.errorCode}`)) || message.content
 
-  // El español es siempre la versión canónica y nunca se descarta. Cuando la conversación
-  // es en quechua o aymara se muestra la traducción, con un conmutador para ver el original:
-  // es la única forma de que el usuario, o un abogado que lo acompañe, pueda contrastar la
-  // orientación contra las normas citadas, que solo existen en español.
-  //
-  // Ojo: esto sigue a message.language, que es inmutable, y NO al idioma de la interfaz.
-  // Cambiar de idioma no reescribe una conversación pasada; sólo cambia el texto de alrededor.
   const translated = normalizeTextField(message.contentLocalized)
   const hasTranslation = Boolean(translated) && message.language && message.language !== 'es'
-  // El mensaje del usuario es la excepción: ahí `contentLocalized` no es una traducción sino
-  // lo que él mismo escribió, y el español es lo traducido a máquina. No hay nada que
-  // advertir ni que contrastar, así que se muestra siempre su texto y sin conmutador.
   const isTranslated = hasTranslation && !isUser
-
-  // El idioma del turno lo fija el flujo leyendo el texto; `languageRequested` sólo trae
-  // valor cuando eso no coincidió con lo que tenía puesto la aplicación al enviarlo. Es un
-  // dato del mensaje y no del estado de la sesión, así que el aviso sobrevive a recargar.
   const languageSwitched = Boolean(
     message.languageRequested && message.languageRequested !== message.language
   )
@@ -206,19 +173,13 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
   const citations = (message.citations || [])
     .map((citation) => ({
       sourceTitle: normalizeTextField(citation.sourceTitle) || t('chat.mensaje.fuenteLegal'),
-      // Solo el resumen se traduce; el pasaje literal de abajo se queda en español.
       sourceSnippet: normalizeTextField(
         isTranslated && !showSpanish && citation.sourceSnippetLocalized
           ? citation.sourceSnippetLocalized
           : citation.sourceSnippet
       ),
-      // El pasaje literal del documento, del que sale la ubicacion. Se muestra aparte del
-      // resumen para que se vea que dice la fuente y que agrego el asistente.
       sourceOriginalSnippet: normalizeTextField(citation.sourceOriginalSnippet),
       sourceUrl: normalizeSourceUrl(citation.sourceUrl),
-      // Solo exact/prefix/fuzzy son una ubicacion juridica. markdown_heading es el asunto
-      // del caso o ruido del OCR en resoluciones sin articulado: ahi no se muestra nada,
-      // porque el titulo de la cita ya dice lo mismo.
       sourceLocator: LOCATOR_KINDS.has(citation.sourceLocatorKind)
         ? normalizeTextField(citation.sourceLocator)
         : '',
@@ -226,8 +187,6 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
     }))
     .filter((citation) => citation.sourceTitle || citation.sourceSnippet || citation.sourceUrl)
 
-  // Un documento puede aportar varias citas, una por articulo. Se agrupan para que la
-  // lista de fuentes no crezca, sin perder la precision por articulo.
   const citationGroups = groupCitationsByDocument(citations)
   const [rated, setRated] = useState(message.rating || 0)
   const [comment, setComment] = useState(message.feedbackComment || '')
@@ -236,8 +195,6 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
   const [hover, setHover] = useState(0)
   const [sourcesOpen, setSourcesOpen] = useState(false)
   const spanishNextSteps = Array.isArray(message.nextSteps) ? message.nextSteps : []
-  // Si la traducción de los pasos falló o vino incompleta, se muestran los del español en
-  // lugar de una lista a medias.
   const nextSteps = isTranslated && !showSpanish && nextStepsTranslated.length === spanishNextSteps.length
     ? nextStepsTranslated
     : spanishNextSteps
@@ -245,14 +202,6 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
     ? message.citationSupportStatus
     : null
   const lowConfidence = message.confidenceStatus === 'LOW'
-  // Sólo se calla ante NONE, que es el único aviso que dice ya lo mismo ("verifícalo con una
-  // fuente oficial"). Con GOOD o WEAK los dos avisos hablan de cosas distintas: aquel del
-  // respaldo documental de las citas, éste de lo que la orientación alcanza a cubrir del caso.
-  //
-  // Antes exigía `!citationSupportStatus` y no salía nunca: la única rama del flujo que
-  // declara confianza baja es la del RAG, y esa siempre rellena el estado de las citas
-  // (GOOD/WEAK/NONE, con respaldo por el número de citas); las ramas sin RAG y la de
-  // preguntas aclaratorias lo dejan nulo, pero también dejan nula la confianza.
   const showLowConfidenceFallback = lowConfidence && citationSupportStatus !== 'NONE'
   const canRetry = isSystem && retryText && !message.retryAttempted
   const showUpgrade = isSystem && message.errorCode === 'insufficient_tokens'
@@ -295,13 +244,6 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
         </div>
       )}
 
-      {/* Se escribió en una lengua distinta de la que tiene puesta la aplicación, así que la
-          respuesta salió en la lengua en que se escribió y hay que decirlo. Se apila con el
-          aviso de especialista cuando ambos aplican.
-
-          Ojo: va con tIn() en el idioma del mensaje y NO con t(). Un aviso que explica "te
-          respondimos en aymara" no cumple su función si sale en quechua, que es justamente la
-          lengua que esta persona no está usando. */}
       {isBot && languageSwitched && (
         <div className={styles.languageNotice} role="note" lang={message.language}>
           <div className={styles.specialistText}>
@@ -313,8 +255,6 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
               })}
             </span>
           </div>
-          {/* Sólo mientras haya algo que cambiar: si ya se cambió el idioma de la aplicación,
-              el aviso se queda como registro de lo que pasó, pero el botón sobra. */}
           {activeLanguage !== message.language && (
             <button
               type="button"
@@ -329,8 +269,6 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
         </div>
       )}
 
-      {/* Antes del texto, no después: el aviso dice cómo hay que leer lo que sigue, y quien
-          lee una orientación legal traducida a máquina tiene que saberlo antes de leerla. */}
       {isTranslated && (
         <TranslationNotice
           language={message.language}
@@ -486,8 +424,6 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
             onChange={(e) => setComment(e.target.value)}
             placeholder={t('chat.mensaje.comentarioPlaceholder')}
           />
-          {/* Sin estrella no se guarda: antes caía en un 5 implícito, así que un comentario
-              crítico se registraba como la mejor calificación posible. */}
           <button type="button" onClick={() => handleRate(rated)} disabled={ratingPending || !rated}>
             {t('chat.mensaje.guardarFeedback')}
           </button>

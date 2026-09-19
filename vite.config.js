@@ -3,10 +3,7 @@ import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
 
 export default defineConfig(({ mode }) => {
-  // loadEnv (no process.env) porque Vite todavia no parseo el .env cuando
-  // este archivo se evalua. Necesario para exponer el front por un tunel
-  // (ngrok/cloudflared) al probar el flujo de suscripcion con webhooks
-  // reales de Mercado Pago.
+  // loadEnv: Vite aún no ha parseado el .env al evaluar este archivo.
   const env = loadEnv(mode, process.cwd(), '')
   const tunnelHosts = (env.VITE_DEV_ALLOWED_HOSTS ?? '')
     .split(',')

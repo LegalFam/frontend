@@ -3,10 +3,6 @@ import logoImg from '@/assets/logo-transparent.png'
 import { useT } from '@/i18n/translate'
 import styles from './SpecialistAssistancePage.module.css'
 
-// Sólo los datos que no se traducen nunca: la sigla con la que se conoce a la institución y
-// los teléfonos y enlaces oficiales. El nombre completo, para qué sirve y el horario salen
-// del catálogo (contactos.*), donde el nombre propio de la institución también se mantiene
-// en español: es el que aparece en la puerta y el que hay que decir al llamar.
 const RECURSOS = [
   {
     sigla: 'PNP',

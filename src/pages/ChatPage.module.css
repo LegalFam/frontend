@@ -44,8 +44,7 @@
 
 .tooltip {
   position: absolute;
-  /* --tip-shift lo calcula useEdgeSafeTooltip para que el globo no se salga
-     de la pantalla cuando el chip queda pegado a un borde. */
+  /* --tip-shift lo calcula useEdgeSafeTooltip. */
   right: calc(-1 * var(--tip-shift, 0px));
   top: calc(100% + 10px);
   z-index: 120;
@@ -85,7 +84,6 @@
   padding: 11px 15px;
 }
 
-/* Backdrop for mobile sidebar */
 .backdrop {
   display: none;
 }
@@ -176,7 +174,6 @@
   font-size: 15px;
   letter-spacing: 0.5px;
 }
-/* El diálogo de plan y tokens vive ahora en components/billing/BillingDialog. */
 @media (max-width: 960px) {
   .topbarLogoText { display: none; }
   .tokenBadge {
@@ -194,35 +191,17 @@
   }
 }
 
-/* Por debajo de este ancho el logo se comprimía hasta quedar en un muñón de 15px y el
-   título no cabía. Se saca la marca de la barra —pasa a la cabecera del cajón, ver
-   ChatSidebar.brandRow— y con el hueco que deja vuelve el título de la consulta, que ya se
-   recorta solo con puntos suspensivos. La barra queda en cuatro piezas que sí caben:
-   menú · título · tokens · salir. */
-/* La forma compacta del selector sólo entra en juego en la barra estrecha; la regla base va
-   antes del media query para que éste pueda ganarle. */
 .topbarLanguageCompact { display: none; }
 
-/* Qué se cae primero cuando la barra deja de dar de sí. El título es lo primero: el nombre de
-   la consulta sigue visible en el historial del cajón, mientras que los tokens y el idioma no
-   están en ningún otro sitio del chat.
-   Los selectores van cualificados con .topbar porque .icon-btn es una clase global y con la
-   misma especificidad gana la que aparezca más tarde en la hoja. */
 @media (max-width: 800px) {
   .topbar .topbarTitle { display: none; }
-  /* El logo se comprimía hasta quedar en un muñón de 15px: la marca —y con ella el enlace a la
-     portada— pasa a la cabecera del cajón (ChatSidebar.brandRow). */
   .topbar .topbarLogo { display: none; }
-  /* El cajón ya tiene un botón de salir en la fila de usuario: aquí estaba duplicado. */
   .topbar .topbarSignout { display: none; }
-  /* Las tres etiquetas de corrido son 220px y no caben junto al chip de tokens. */
   .topbar .topbarLanguage { display: none; }
   .topbar .topbarLanguageCompact { display: block; }
-  /* Sin título ni logo, los dos controles que quedan se agrupan a la derecha. */
   .tokenControl { margin-left: auto; }
 }
 
-/* La nota sobre por qué los nombres jurídicos siguen en español, bajo la definición. */
 .glossaryNote {
   margin-top: 0.75rem;
   font-size: 13px;
@@ -230,8 +209,6 @@
   line-height: 1.5;
 }
 
-/* El selector de idioma empuja al botón de salir hacia la derecha: los dos controles de
-   sesión quedan juntos al final de la barra. */
 .topbarLanguage {
   margin-left: auto;
   flex-shrink: 0;

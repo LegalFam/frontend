@@ -1,7 +1,3 @@
-// Catalogo de interfaz — ay. Ver i18n/translate.js para las reglas de uso.
-// Las claves siguen el patron <superficie>.<bloque>.<slot>. La paridad con los otros catalogos
-// se comprueba con `npm run i18n:check`.
-
 export default {
   comun: {
     idioma: 'Aru',
@@ -847,5 +843,4 @@ export default {
       'Jan waltawiru jan mantkasina lurañ atta ukhaxa, juk’a arunakampi kuna pasatapa, kawkinkataps, t’aqhisiri jaqinakan qawqha marani kankañapa, kuna uñacht’awinakampsa amparamankañapa. Jan uñacht’awinaka tantachañataki jan waltawiru mantamti.',
   },
 
-  // @@FIN@@
 }

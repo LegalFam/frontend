@@ -1,7 +1,3 @@
-// Catalogo de interfaz — es. Ver i18n/translate.js para las reglas de uso.
-// Las claves siguen el patron <superficie>.<bloque>.<slot>. La paridad con los otros catalogos
-// se comprueba con `npm run i18n:check`.
-
 export default {
   comun: {
     idioma: 'Idioma',
@@ -39,7 +35,6 @@ export default {
   landing: {
     hero: {
       pill: 'Derecho de Familia en el Perú',
-      // El titular se parte en tres líneas en el diseño; la palabra en cursiva va aparte.
       titulo1: 'Tu derecho a la',
       tituloEnfasis: 'justicia',
       titulo2: 'no',
@@ -49,7 +44,6 @@ export default {
       comenzar: 'Comenzar',
       irAlChat: 'Ir al chat',
       verComo: 'Ver cómo funciona',
-      // Sellos y normas: los nombres propios de estándares y leyes no se traducen.
       sello1: 'ISO/IEC 27001',
       sello2: 'Ley N. 29733',
       sello3: 'Proyecto UPC 2026',
@@ -154,8 +148,6 @@ export default {
   },
 
   planes: {
-    // Nombres por código de plan. La clave es el código que devuelve el backend, así que no
-    // hace falta un segundo mapa que mantener en paralelo.
     generico: 'Plan',
     nombre: {
       FREE: 'Plan gratuito',
@@ -168,8 +160,6 @@ export default {
       PREMIUM: 'Suscribirse',
       generico: 'Suscribirse',
     },
-    // Los precios y las cantidades se formatean siempre con es-PE: el formato del sol es
-    // asunto de la moneda, no del lector, e Intl no tiene datos de quechua ni de aymara.
     porMes: '/ mes',
     tokensMensuales: '{{cantidad}} tokens mensuales',
     mensajes: '{{cantidad}} mensajes',
@@ -222,8 +212,6 @@ export default {
       confirmarPlaceholder: 'Repite tu contraseña',
     },
 
-    // Validación en el navegador, antes de llamar al servidor. Los errores que devuelve el
-    // backend viven en errores.* porque su clave es el código de error.
     validacion: {
       requerido: 'Campo requerido.',
       correoInvalido: 'Ingresa un correo válido.',
@@ -341,8 +329,6 @@ export default {
       titulo: 'Idioma',
       intro:
         'Elige la lengua en la que quieres usar LegalFam. El cambio se aplica al instante y queda guardado en este navegador.',
-      // El usuario tiene que saber que esta misma elección viaja a la orientación legal, y que
-      // el español sigue siendo la versión que prevalece: no es un detalle de interfaz.
       nota:
         'La misma elección decide en qué lengua escribes tu consulta y lees la respuesta. La orientación se redacta siempre en español y luego se traduce: la versión en español es la que prevalece.',
     },
@@ -351,7 +337,6 @@ export default {
       titulo: 'Apariencia',
       intro:
         'Elige la paleta con la que quieres ver LegalFam. El cambio se aplica al instante y queda guardado en este navegador.',
-      // Las claves coinciden con los identificadores de TEMAS_PUBLICOS en theme.js.
       temas: {
         dorado: {
           nombre: 'Clásico',
@@ -436,8 +421,6 @@ export default {
     },
   },
 
-  // Mensajes de error de la API. La clave ES el código que devuelve el backend, así que no
-  // hay un segundo mapa que mantener sincronizado; ver utils/apiError.js.
   errores: {
     unauthorized: 'Tu sesión expiró. Inicia sesión nuevamente.',
     forbidden: 'No tienes permisos para realizar esta acción.',
@@ -536,7 +519,6 @@ export default {
     payment_gateway_checkout_url_missing: 'Mercado Pago no devolvió el enlace de pago. Intenta nuevamente.',
     payment_gateway_subscription_id_required: 'No se encontró el identificador de la suscripción en Mercado Pago.',
 
-    // Errores que no vienen del backend con un código: los produce el propio cliente.
     network_error: 'Conexión interrumpida. Estamos verificando el estado de la conversación.',
     _defecto: 'No se pudo completar la acción. Intenta nuevamente.',
     _asistente: 'No se pudo generar la respuesta. Intenta nuevamente.',
@@ -562,7 +544,6 @@ export default {
       'Estamos preparando la respuesta de esta consulta. Cuando termine, se actualizarán tus tokens y podrás enviar otra.',
     otraEnProceso:
       'Hay otra consulta en proceso. Puedes revisar tus sesiones, pero espera a que termine para enviar una nueva.',
-    // Markdown: lo renderiza ReactMarkdown igual que una respuesta del asistente.
     bienvenida:
       'Hola, **{{nombre}}**. Bienvenido/a a **LegalFam**.\n\nEstoy aquí para orientarte en temas de **Derecho de Familia** peruano: alimentos, tenencia, filiación y medidas de protección.\n\n¿Sobre qué situación legal deseas consultar hoy?',
     usuario: 'Usuario',
@@ -627,8 +608,6 @@ export default {
         'Por el tipo de situación, considera acudir a una entidad especializada como CEM, PNP o DEMUNA, según corresponda, para recibir orientación y protección directa.',
       especialistaEnlace: 'Ver contactos de emergencia',
 
-      // Se muestra cuando la lengua en que se escribió no es la que tiene puesta la
-      // aplicación. Va siempre en la lengua detectada, no en la de la interfaz.
       idiomaDetectadoTitulo: 'Idioma de la respuesta',
       idiomaDetectadoTexto:
         'Escribiste en {{idioma}} y la aplicación está en {{interfaz}}. Te respondimos en {{idioma}}.',
@@ -669,9 +648,6 @@ export default {
     glosario: {
       titulo: 'Glosario legal',
       volver: 'Volver al chat',
-      // Los nombres de las figuras jurídicas se quedan en español a propósito: son el nombre
-      // con el que existen en el ordenamiento peruano y con el que hay que pedirlas en una
-      // comisaría o un juzgado. Lo que se traduce es la explicación.
       nombresEnEspanol:
         'Los nombres de estas figuras se mantienen en español porque así aparecen en las normas y así hay que pedirlas ante un juzgado, una comisaría o la DEMUNA. La explicación sí está traducida.',
     },
@@ -793,8 +769,6 @@ export default {
     titulo: 'Términos y Condiciones',
     intro:
       'Estas condiciones regulan el uso de LegalFam. Al crear una cuenta declaras haberlas leído y aceptado.',
-    // Va como clave y no como fecha formateada porque cada lengua nombra los meses a su
-    // manera y esto es texto, no un dato calculado.
     actualizacion: 'Última actualización: julio de 2026',
 
     s1Titulo: '1. Objeto del servicio',
@@ -844,9 +818,6 @@ export default {
     llamar105: 'Llamar 105',
     listaAria: 'Instituciones de apoyo especializado',
 
-    // Las siglas y los nombres de las instituciones no se traducen en ninguna lengua: es el
-    // nombre con el que hay que pedirlas y el que aparece en la puerta. Los teléfonos y
-    // enlaces tampoco cambian.
     pnpNombre: 'Policía Nacional del Perú',
     pnpUso: 'Peligro inmediato, agresión en curso, amenazas graves o necesidad de acudir a una comisaría.',
     pnpDisponibilidad: 'Emergencias policiales a nivel nacional.',
@@ -872,5 +843,4 @@ export default {
       'Si puedes hacerlo sin ponerte en riesgo, ten a la mano una descripción breve de lo ocurrido, ubicación general, edades aproximadas de las personas afectadas y cualquier evidencia relevante. Evita exponerte para reunir pruebas.',
   },
 
-  // @@FIN@@
 }

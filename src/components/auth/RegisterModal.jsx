@@ -44,7 +44,6 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
       nombre: fields.nombre, apellido: fields.apellido,
       email: fields.email, phone: fields.phone, password: fields.password,
     })
-    // No session is created on signup: the account is unlocked by the emailed link.
     if (result.success) setRegisteredEmail(result.email)
   }
 
@@ -63,8 +62,6 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
 
           <div className={styles.notice}>
             <div className={styles.noticeIcon}>✉️</div>
-            {/* El correo va interpolado dentro de la frase: en quechua y en aymara el orden
-                de las palabras no es el del español, y así cada lengua lo coloca donde toca. */}
             <p className={styles.noticeText}>{t('auth.registro.enviamosEnlace', { correo: registeredEmail })}</p>
             <p className={styles.noticeHint}>{t('auth.registro.noLoVes')}</p>
           </div>

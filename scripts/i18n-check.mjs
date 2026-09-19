@@ -1,8 +1,3 @@
-// Paridad de claves entre los tres catalogos de interfaz. Sin dependencias: `npm run i18n:check`.
-//
-// Una clave que existe en es y falta en qu no rompe nada visible (translate.js cae al espanol),
-// y por eso mismo es el fallo mas facil de dejar pasar. Este script lo convierte en un error.
-
 import es from '../src/i18n/locales/es.js'
 import qu from '../src/i18n/locales/qu.js'
 import ay from '../src/i18n/locales/ay.js'

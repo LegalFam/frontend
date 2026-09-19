@@ -12,7 +12,6 @@ const normalize = (value) =>
     .normalize('NFD')
     .replace(/\p{Diacritic}/gu, '')
 
-// La fecha se formatea en es-PE: Intl no tiene datos de quechua ni de aymara.
 const formatDate = (iso, textoPorDefecto) => {
   if (!iso) return textoPorDefecto
   return new Date(iso).toLocaleDateString('es-PE', { day: '2-digit', month: 'short' })
@@ -104,8 +103,6 @@ export default function ChatSidebar({
 
   return (
     <aside className={`${styles.sidebar} ${!open ? styles.closed : ''}`}>
-      {/* En móvil el logo no cabe en la barra superior sin quedar aplastado, así que la marca
-          —y con ella el enlace a la portada— vive aquí, en la cabecera del cajón. */}
       <Link to="/" className={styles.brandRow} onClick={onClose} aria-label={t('chat.irAlInicio')}>
         <img src={logoImg} alt="LegalFam" className={styles.brandLogo} />
         <span className={styles.brandText}>LEGALFAM</span>
@@ -178,9 +175,7 @@ export default function ChatSidebar({
               <input
                 className={styles.editInput}
                 value={editValue}
-                // El servidor recorta a 80 (ChatSession.MAX_TITLE_LENGTH) pero rechaza a
-                // partir de 120: sin tope, un título largo devuelve 400 y revierte el
-                // renombrado en lugar de quedarse recortado.
+                // El servidor rechaza títulos de más de 120 caracteres.
                 maxLength={80}
                 onChange={(e) => setEditValue(e.target.value)}
                 onBlur={() => saveEdit(s.id)}

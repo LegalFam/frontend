@@ -1,10 +1,4 @@
-// Los mensajes de error viven en el catálogo de idiomas, en errores.<código>: la clave es el
-// código que devuelve el backend, así que no hay un segundo mapa que mantener sincronizado.
-//
-// Se resuelven con tOptional() y no con t(), y eso es lo importante de este módulo: cuando el
-// código no existe en el catálogo tiene que salir undefined, para que siga funcionando la
-// cadena clientMessage || serverMessage || fallbackMessage de normalizeApiError. Un t()
-// normal devolvería la clave y el usuario acabaría leyendo "errores.algun_codigo".
+// tOptional(): un código desconocido debe dar undefined, no la clave.
 import { t, tOptional } from '@/i18n/translate'
 
 const RETRYABLE_STATUS = new Set([408, 502, 503, 504])
@@ -19,8 +13,6 @@ const RETRYABLE_CODES = new Set([
   'agent_validation_failed',
 ])
 
-// Algunos errores llegan sin código y sólo con el mensaje del servidor, en inglés. Cada uno
-// apunta al código equivalente y se resuelve por el mismo camino que los demás.
 const FALLBACK_CODES = {
   'an unexpected error occurred': 'internal_server_error',
   'access is forbidden': 'forbidden',
@@ -67,22 +59,10 @@ export const normalizeAssistantErrorMessage = (code, fallbackMessage = null) =>
     normalizeServerMessage(fallbackMessage) || t('errores._asistente')
   )
 
-// Describe el error sin resolverlo a texto: guarda el código, el mensaje crudo del servidor y
-// la CLAVE del respaldo. El texto se produce en resolveApiError() al renderizar.
-//
-// Antes esta función devolvía la frase ya traducida y quien la llamaba la guardaba en estado.
-// Un aviso en pantalla se quedaba entonces en el idioma que hubiera en el instante del fallo,
-// aunque después se cambiara de lengua: justo lo que el producto promete que no pasa (ver
-// HU0006, los textos de la aplicación cambian en el sitio). El hilo del chat ya lo hacía bien
-// guardando `errorCode`; esto extiende la misma idea a todo lo demás.
-//
-// `fallbackKey` es una clave del catálogo, no una frase. Pasar texto aquí vuelve a congelarlo.
 export const normalizeApiError = (error, fallbackKey = 'errores._defecto') => {
   const status = error?.response?.status || null
   const detail = readDetail(error?.response?.data)
   const code = normalizeErrorCode(detail.code || error?.response?.data?.code)
-  // Crudo a propósito: normalizeServerMessage() traduce lo que puede, y eso también tiene que
-  // ocurrir al renderizar y no aquí.
   const serverMessage = detail.message || error?.response?.data?.message || null
   const hasResponse = Boolean(status)
 
@@ -109,11 +89,6 @@ export const normalizeApiError = (error, fallbackKey = 'errores._defecto') => {
   return { status, code, serverMessage, fallbackKey, retryable: false }
 }
 
-// Convierte el descriptor en la frase que lee el usuario, en el idioma de este render. Hay que
-// llamarla dentro de un componente que se suscriba al idioma (useT()), o el texto no se
-// actualizará al cambiar de lengua aunque ya no esté congelado.
-//
-// Acepta también un string por comodidad de los sitios que aún guardan texto suelto.
 export const resolveApiError = (descriptor) => {
   if (!descriptor) return ''
   if (typeof descriptor === 'string') return descriptor

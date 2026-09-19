@@ -158,7 +158,6 @@
   letter-spacing: 0.5px;
 }
 
-/* ── Vista de tarjetas (solo móvil) ── */
 .cards { display: none; }
 
 .card {
@@ -222,9 +221,6 @@
   color: var(--text-secondary);
 }
 
-/* La tabla necesita 620px más el padding del contenedor. Por debajo de eso se
-   sustituye por una tarjeta por plan, en vez de dejarla con scroll horizontal:
-   así se ve completa sin desplazarse. */
 @media (max-width: 900px) {
   .tableWrap { display: none; }
   .cards {

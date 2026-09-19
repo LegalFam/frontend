@@ -3,25 +3,12 @@ import { useT } from '@/i18n/translate'
 import { useLanguageStore } from '@/store/languageStore'
 import styles from './ChatInput.module.css'
 
-// Bloqueo de datos identificables antes de que el texto salga del navegador. El backend
-// aplica el mismo criterio en ChatPrivacyPolicy: los dos patrones tienen que ir a la par, o
-// el usuario recibe un rechazo del servidor después de que el cliente le dejara pasar.
-//
-// Cada rama pide la forma completa del dato y no un fragmento suelto, porque el falso
-// positivo aquí no molesta: impide consultar. Las fechas (12.05.2024), los números de
-// expediente (00123-2024-0-1801-JP-FC-01) y la palabra "calle" o "manzana" en una frase
-// corriente antes cortaban el envío sin que hubiera ningún dato personal.
+// Debe ir a la par con ChatPrivacyPolicy del backend.
 const personalDataPattern = new RegExp([
-  // correo
   '\\b[\\w.%+-]+@[\\w.-]+\\.[A-Za-z]{2,}\\b',
-  // celular peruano: nueve dígitos que empiezan por 9, con +51 y separadores opcionales
   '(?:\\+?51[\\s.-]?)?9\\d{2}[\\s.-]?\\d{3}[\\s.-]?\\d{3}(?!\\d)',
-  // fijo peruano con prefijo: 01 4451234, 01 445 1234, (01) 445 1234, 084 123456
   '\\b0\\d{1,2}(?:[\\s.-]?\\d{6,7}|[\\s.\\-)]\\s?\\d{3}[\\s.-]?\\d{4})\\b',
-  // DNI (y cualquier otro documento de ocho cifras seguidas)
   '\\b\\d{8}\\b',
-  // dirección: la palabra sola no basta, tiene que traer un número cerca y sin guiones de
-  // por medio, que es lo que distingue "Av. Arequipa 1234" de un código como JR-FC-05
   '\\b(?:av|avenida|jr|jiron|calle|pasaje|mz|manzana|lote)\\b\\.?[^\\n\\d-]{0,25}?\\d',
 ].join('|'), 'i')
 
@@ -29,9 +16,6 @@ export default function ChatInput({ onSend, disabled, disabledReason, draft = nu
   const t = useT()
   const ref = useRef(null)
   const [privacyError, setPrivacyError] = useState(null)
-  // El idioma vive en el store; el control para cambiarlo está en la barra superior y en
-  // Configuración, no aquí. Lo que sí queda en la base de datos es el idioma de cada mensaje
-  // ya enviado, que no cambia después aunque se cambie de lengua.
   const idioma = useLanguageStore((state) => state.language)
   const appliedDraftTsRef = useRef(0)
 
@@ -39,17 +23,13 @@ export default function ChatInput({ onSend, disabled, disabledReason, draft = nu
     const el = ref.current
     if (!el) return
     el.style.height = 'auto'
-    // La caja es border-box y scrollHeight no cuenta los bordes: sin sumarlos el
-    // contenido desborda por 1px y sale la barra de scroll con una sola línea.
+    // scrollHeight no cuenta los bordes de una caja border-box.
     const bordes = el.offsetHeight - el.clientHeight
     const alto = el.scrollHeight + bordes
     el.style.height = Math.min(alto, 150) + 'px'
     el.style.overflowY = alto > 150 ? 'auto' : 'hidden'
   }
 
-  // Recupera en el input un envío que no llegó a cursar (p. ej. sin tokens). Solo
-  // rellena si el usuario no ha escrito ya otra cosa; el nonce `ts` permite
-  // reaplicar el mismo texto tras un reintento que vuelve a fallar.
   useEffect(() => {
     const el = ref.current
     if (!el || !draft?.text) return

@@ -1,6 +1,3 @@
-/* Mismo lenguaje visual que el resto de confirmaciones de la aplicación (borrar una
-   conversación en el panel lateral): capa oscura, tarjeta estrecha y la acción destructiva
-   a la derecha, en rojo apagado. */
 .layer {
   position: fixed; inset: 0; z-index: 220;
   display: flex; align-items: center; justify-content: center;

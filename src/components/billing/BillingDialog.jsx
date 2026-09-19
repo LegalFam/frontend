@@ -14,7 +14,6 @@ import { usePaymentStore } from '@/store/paymentStore'
 import { useT } from '@/i18n/translate'
 import styles from './BillingDialog.module.css'
 
-// Fecha siempre en es-PE, como en SettingsPage: Intl no tiene datos de quechua ni de aymara.
 const formatRenewDate = (iso) => {
   if (!iso) return null
   const date = new Date(iso)
@@ -22,8 +21,6 @@ const formatRenewDate = (iso) => {
   return date.toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
-// Diálogo compartido de plan y tokens. Lo usan el chat (badge de tokens / aviso
-// de "sin tokens") y la página de configuración (usuarios del plan gratuito).
 export default function BillingDialog({ onClose }) {
   const t = useT()
   const navigate = useNavigate()
@@ -38,7 +35,6 @@ export default function BillingDialog({ onClose }) {
   const tokenLimit = subscription.monthlyTokenLimit || currentPlan?.monthlyTokenLimit || 0
   const remainingTokens = subscription.remainingTokens ?? 0
   const freeTokenLimit = availablePlans.find((plan) => plan.code === 'FREE')?.monthlyTokenLimit ?? 0
-  // Sólo hay algo que dar de baja si la suscripción la cobra la pasarela y sigue viva.
   const canCancel = subscription.provider === 'MERCADO_PAGO' && !subscription.cancelAtPeriodEnd
   const usedTokens = Math.max(tokenLimit - remainingTokens, 0)
   const tokenPercent = tokenLimit ? Math.max(0, Math.min(100, (remainingTokens / tokenLimit) * 100)) : 0
@@ -114,10 +110,6 @@ export default function BillingDialog({ onClose }) {
         <div className={styles.planGrid}>
           {availablePlans.map((plan) => {
             const isCurrent = plan.code === subscription.planCode
-            // El gratuito no se compra: pulsarlo llevaba a /pago/gratis, un checkout cuyo
-            // botón no hace nada porque no hay nada que cobrar. Lo que sí significa para
-            // quien paga es volver al gratuito, y eso es exactamente dar de baja: la
-            // tarjeta abre la misma confirmación que Configuración → Suscripción.
             const isDowngrade = plan.code === 'FREE' && !isCurrent && canCancel
             const isSelectable = !isCurrent && plan.code !== 'FREE'
             return (
@@ -134,7 +126,6 @@ export default function BillingDialog({ onClose }) {
                 {isCurrent && <em>{t('facturacion.planActivo')}</em>}
                 {isSelectable && <em>{t('facturacion.cambiarPlan')}</em>}
                 {isDowngrade && <em className={styles.downgradeLabel}>{t('config.suscripcion.darDeBaja')}</em>}
-                {/* Ya dada de baja: la vuelta al gratuito está en marcha, no hay nada que pulsar. */}
                 {plan.code === 'FREE' && !isCurrent && subscription.cancelAtPeriodEnd && (
                   <em>{t('config.suscripcion.dadaDeBaja')}</em>
                 )}

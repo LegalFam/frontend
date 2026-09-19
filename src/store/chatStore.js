@@ -1,8 +1,5 @@
 import { create } from 'zustand'
 
-// Los borradores se guardan en sessionStorage para que un envío que no se pudo
-// completar (por ejemplo, por falta de tokens) sobreviva a la ida y vuelta al
-// checkout de pago, que hace una navegación completa fuera de la SPA.
 const DRAFTS_STORAGE_KEY = 'legalfam.chat.drafts'
 
 const loadDrafts = () => {
@@ -19,8 +16,6 @@ const persistDrafts = (drafts) => {
   try {
     sessionStorage.setItem(DRAFTS_STORAGE_KEY, JSON.stringify(drafts))
   } catch {
-    // sessionStorage no disponible (modo privado, cuota llena): el borrador
-    // solo vivirá en memoria durante esta pestaña.
   }
 }
 
@@ -227,12 +222,6 @@ export const useChatStore = create((set) => ({
       },
     })),
 
-  // Al llegar la respuesta se cierra el estado de los turnos del usuario que estaban en
-  // vuelo. `language` es el que el flujo leyó del texto: se envió el de la interfaz, que es
-  // la única pista disponible antes de responder, y puede no ser la lengua en que se
-  // escribió. Corregirlo aquí evita que la burbuja del usuario quede rotulada en una lengua
-  // que no es la suya y que el conmutador "Ver en español" ofrezca un original que ya era
-  // español.
   clearPendingUserMessageStates: (sessionId, language = null) =>
     set((state) => ({
       messages: {
@@ -250,10 +239,6 @@ export const useChatStore = create((set) => ({
             state: null,
             language,
             languageRequested: message.language,
-            // Se deja la misma forma que tendrá al recargar, cuando venga del servidor: en
-            // español no hay nada que conmutar, y en las demás lenguas `contentLocalized` es
-            // lo que la persona escribió. El español canónico lo produce el flujo y este
-            // turno no lo recibe, así que hasta la recarga `content` sigue siendo el original.
             contentLocalized: language === 'es' ? null : message.contentLocalized || message.content,
           }
         }),
@@ -287,8 +272,6 @@ export const useChatStore = create((set) => ({
         persistDrafts(drafts)
         return { drafts }
       }
-      // El nonce fuerza a que el input reaplique el borrador aunque el texto
-      // sea idéntico al del intento anterior (reintento que vuelve a fallar).
       const drafts = { ...state.drafts, [sessionId]: { text: trimmed, ts: Date.now() } }
       persistDrafts(drafts)
       return { drafts }

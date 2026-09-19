@@ -15,8 +15,6 @@ import { useT } from '@/i18n/translate'
 export default function App() {
   const t = useT()
 
-  // index.html trae el título y la descripción en español, que es lo correcto para el shell
-  // previo al JS y para los rastreadores; aquí se reescriben en la lengua elegida.
   useEffect(() => {
     document.title = t('meta.titulo')
     const meta = document.querySelector('meta[name="description"]')

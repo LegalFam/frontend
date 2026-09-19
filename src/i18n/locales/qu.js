@@ -1,7 +1,3 @@
-// Catalogo de interfaz — qu. Ver i18n/translate.js para las reglas de uso.
-// Las claves siguen el patron <superficie>.<bloque>.<slot>. La paridad con los otros catalogos
-// se comprueba con `npm run i18n:check`.
-
 export default {
   comun: {
     idioma: 'Simi',
@@ -847,5 +843,4 @@ export default {
       'Mana manchaypi churakuspa atiwaqchayqa, pisi rimaywan ima kasqanta, maypi kasqanta, ñak’arisqa runakunap hayk’a watayuq kasqanta, ima rikuchiykunatapas makiykipi hap’iy. Ama rikuchiykuna huñunaykipaq manchaypi churakuychu.',
   },
 
-  // @@FIN@@
 }

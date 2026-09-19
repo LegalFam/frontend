@@ -123,9 +123,6 @@
   line-height: 1.4;
 }
 
-/* Pie del cuadro de texto: el selector de idioma (components/common/LanguageSelector, que trae
-   sus propios estilos) y la nota sobre tokens. El selector sigue aqui, junto al cuadro, porque
-   es donde se decide en que lengua se pregunta. */
 .footer {
   display: flex;
   flex-direction: column;

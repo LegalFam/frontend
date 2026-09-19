@@ -6,10 +6,6 @@ import styles from './AuthModal.module.css'
 
 const COOLDOWN_SECONDS = 60
 
-/**
- * Resends the verification email. The backend answers 204 for every address so it
- * cannot be used to probe who is registered; the confirmation copy is neutral to match.
- */
 export default function ResendVerificationButton({ email, className }) {
   const t = useT()
   const [sending, setSending] = useState(false)

@@ -25,7 +25,6 @@
   text-align: right;
 }
 
-/* FOOTER */
 .footer {
   border-top: 0.5px solid var(--accent-border);
   background: var(--black-2);

@@ -1,10 +1,3 @@
-// Los planes son datos (códigos, precios, límites); el texto que los acompaña vive en el
-// catálogo de idiomas. Las funciones de formato de este módulo resuelven ese texto al ser
-// llamadas, así que devuelven el idioma activo en ese momento y no hace falta un hook.
-//
-// Nota para quien las use: como leen el idioma sin suscribirse, el componente que las llama
-// tiene que suscribirse por su cuenta (useT()) para volver a renderizar al cambiar de lengua.
-// En la práctica todos lo hacen, porque también tienen texto propio.
 import { t, tOptional } from '@/i18n/translate'
 
 export const PLAN_SLUGS = {
@@ -18,17 +11,11 @@ export const PLAN_CODES_BY_SLUG = Object.entries(PLAN_SLUGS).reduce(
   {}
 )
 
-// Estas capacidades no dependen del plan: el backend no las restringe por tier.
-// Lo que sí cambia entre planes son los tokens mensuales, la ventana de contexto
-// del asistente y la ventana de historial visible.
-//
-// Sólo los identificadores: el texto sale de planes.incluye.* al renderizar.
 export const SHARED_PLAN_FEATURE_KEYS = ['asistente', 'fuentes', 'calificacion']
 
 export const formatPlanFeature = (clave) => t(`planes.incluye.${clave}`)
 
-// Estos valores replican los del backend en payment.properties (app.payment.plans.*),
-// que es la fuente de verdad: si cambian allí, hay que actualizarlos aquí.
+// Replica app.payment.plans.* de payment.properties del backend.
 export const STATIC_PLANS = [
   {
     code: 'FREE',
@@ -92,8 +79,6 @@ export const mergePlanWithStatic = (plan) => {
   }
 }
 
-// El catálogo manda sobre el displayName que llega del servidor, que siempre viene en
-// español; si aparece un plan cuyo código no está en el catálogo, se usa el del servidor.
 export const formatPlanName = (plan) =>
   (plan?.code && tOptional(`planes.nombre.${plan.code}`)) ||
   plan?.displayName ||
@@ -119,9 +104,6 @@ export const formatPlanTokens = (plan) =>
     cantidad: new Intl.NumberFormat('es-PE').format(plan?.monthlyTokenLimit || 0),
   })
 
-// La capacidad se expresa como múltiplo del plan gratuito para que las tres
-// columnas compartan la misma referencia. Se deriva de los límites reales, así
-// que si cambian los tokens de un plan el multiplicador sigue siendo correcto.
 const basePlanTokenLimit = () =>
   STATIC_PLANS_BY_CODE.FREE?.monthlyTokenLimit || 0
 

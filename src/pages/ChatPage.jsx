@@ -17,8 +17,6 @@ import BilingualLegalText from '@/components/common/BilingualLegalText'
 import { useT }           from '@/i18n/translate'
 import styles             from './ChatPage.module.css'
 
-// Se traducen tanto el rótulo como la pregunta: la pregunta se envía tal cual como mensaje
-// del usuario, así que tiene que estar en la lengua en la que el usuario la habría escrito.
 const CONVERSATION_PRESETS = ['alimentos', 'tenencia', 'filiacion', 'proteccion']
 
 export default function ChatPage() {
@@ -63,9 +61,6 @@ export default function ChatPage() {
       selectSession(routeSessionId, { updateRoute: false })
       return
     }
-    // keepThread: este efecto sólo inicializa el chat nuevo al entrar. Vaciar el hilo es
-    // cosa del botón "Nueva consulta"; si aquí se vaciara siempre, se perdería el aviso que
-    // deja un envío rechazado al devolver al usuario al chat nuevo.
     startNewChat({ updateRoute: false, keepThread: true })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [routeSessionId])
@@ -97,9 +92,6 @@ export default function ChatPage() {
       : t('chat.consultaActual')
   const tokenLabel = subscription
     ? t('chat.tokensBadge', {
-        // El nombre del catálogo, no el código crudo del backend: sin esto la insignia se lee
-        // "FREE · 47/50" en las tres lenguas. formatPlanName cae al código si el plan que
-        // llega no está en el catálogo.
         plan: formatPlanName({ code: subscription.planCode }),
         restantes: subscription.remainingTokens,
         limite: subscription.monthlyTokenLimit,
@@ -200,12 +192,9 @@ export default function ChatPage() {
           </span>
         )}
 
-        {/* El mismo control en sus dos formas: ancha cuando la barra da de sí, compacta
-            cuando no. El CSS decide cuál se ve; ambas escriben en el mismo store. */}
         <LanguageSelector className={styles.topbarLanguage} />
         <LanguageSelector compact className={styles.topbarLanguageCompact} />
 
-        {/* En móvil este botón se oculta: el cajón ya tiene uno en la fila de usuario. */}
         <button className={`icon-btn ${styles.topbarSignout}`} onClick={signout} title={t('chat.cerrarSesion')}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
@@ -216,7 +205,6 @@ export default function ChatPage() {
       </header>
 
       <div className={styles.body}>
-        {/* Backdrop overlay for mobile when sidebar is open */}
         {sidebarOpen && (
           <div className={styles.backdrop} onClick={() => setSidebarOpen(false)} aria-hidden="true" />
         )}
@@ -270,8 +258,6 @@ export default function ChatPage() {
           <>
           {showConnectionNotice && (
             <div className={styles.notice}>
-              {/* El error se guarda como descriptor y se resuelve aquí, en cada render: así
-                  un aviso ya en pantalla se relee al cambiar de idioma. */}
               {resolveApiError(error) || t('chat.reconectando')}
             </div>
           )}
@@ -291,9 +277,7 @@ export default function ChatPage() {
                   .slice(0, index)
                   .reverse()
                   .find((item) => item.role === 'USER')
-                // `content` de un mensaje del usuario es el español canónico que fijó el flujo,
-                // no lo que escribió: reintentar con eso cambia el idioma del turno. El
-                // original vive en contentLocalized cuando la consulta no fue en español.
+                // `content` es el español canónico; lo escrito por el usuario está en contentLocalized.
                 const previousUserText = previousUserMessage
                   ? previousUserMessage.contentLocalized || previousUserMessage.content
                   : null

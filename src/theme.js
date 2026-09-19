@@ -1,11 +1,3 @@
-// Selector de tema. DORADO es el de siempre (no lleva atributo); TOGA se activa
-// con data-theme en <html>:
-//   - toga : estética abogado — marino de sala de juntas, acento latón champagne
-//
-// Además de Configuración, se puede alternar con ?tema=toga (o ?tema=dorado para
-// volver) o desde la consola con setTema('toga').
-// La elección queda guardada en localStorage; un tema desconocido cae en dorado.
-
 const TEMAS = ['dorado', 'toga']
 const KEY = 'legalfam-tema'
 
@@ -26,18 +18,11 @@ export function initTema() {
   const desdeUrl = params.get('tema')
   if (desdeUrl) inicial = desdeUrl
 
-  // helper global para alternar el tema durante la evaluación
   if (typeof window !== 'undefined') window.setTema = aplicarTema
 
   return aplicarTema(inicial)
 }
 
-// Temas ofrecidos al usuario en Configuración: hoy son todos los que existen.
-//
-// Solo los identificadores. El nombre y la descripción de cada tema viven en el catálogo de
-// idiomas (config.apariencia.temas.<id>), igual que en legalGlossary.js: si el texto se
-// quedara aquí, la sección Apariencia sería lo único que siguiera en español con la
-// aplicación puesta en quechua o aymara.
 export const TEMAS_PUBLICOS = ['dorado', 'toga']
 
 export function temaActual() {

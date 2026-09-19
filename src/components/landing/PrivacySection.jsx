@@ -64,8 +64,6 @@ export default function PrivacySection() {
             </div>
             <div className={styles.contact}>
               <h3>{t('landing.privacidad.contactoTitulo')}</h3>
-              {/* El correo es un nodo hermano, no va a mitad de frase: así el orden de las
-                  palabras puede cambiar en cada lengua sin romper el enlace. */}
               <p>
                 {t('landing.privacidad.contactoTexto')}{' '}
                 <a href="mailto:privacidad@legalfam.pe">privacidad@legalfam.pe</a>

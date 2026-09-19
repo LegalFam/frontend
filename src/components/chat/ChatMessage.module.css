@@ -146,7 +146,6 @@
   border-color: var(--accent);
 }
 
-/* Citations */
 .citations {
   margin-top: 0.8125rem;
   display: flex;
@@ -212,8 +211,6 @@
   color: var(--accent);
   margin-bottom: 2.5px;
 }
-/* El pasaje literal se separa del resumen para que se lea de quien es cada texto: la
-   fuente cita, el asistente interpreta. */
 .citationQuote {
   margin: 0 0 7.5px;
   padding-left: 10px;
@@ -223,8 +220,6 @@
   color: var(--text-secondary);
   line-height: 1.5;
 }
-/* Recortado a dos lineas con el "..." que pone el propio recorte. Al desplegarse vuelve a
-   ser un bloque normal. */
 .citationQuoteText {
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -313,8 +308,6 @@
   background: rgba(238, 128, 128, 0.1);
   color: #ffd2d2;
 }
-/* Misma maqueta que el aviso de especialista, para que se apilen sin desalinearse, pero con
-   el acento del producto y no el rojo de peligro: cambiar de idioma no es una alerta. */
 .languageNotice {
   display: flex;
   align-items: center;
@@ -398,7 +391,6 @@
 }
 .guidanceBlock li { margin: 0.25rem 0; }
 
-/* Stars */
 .stars {
   display: flex;
   gap: 4px;
@@ -473,6 +465,3 @@
   .feedbackBox { flex-direction: column; }
   .feedbackBox button { min-height: 43px; }
 }
-
-/* Aviso de traduccion automatica. Deliberadamente discreto: acompana a la respuesta sin
-   competir con ella, pero siempre presente cuando el usuario no lee el espanol original. */

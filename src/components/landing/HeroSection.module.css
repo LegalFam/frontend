@@ -101,8 +101,7 @@
 
 .tooltip {
   position: absolute;
-  /* --tip-shift lo calcula useEdgeSafeTooltip para que el globo no se salga
-     de la pantalla cuando el icono queda pegado a un borde. */
+  /* --tip-shift lo calcula useEdgeSafeTooltip. */
   left: calc(50% + var(--tip-shift, 0px));
   bottom: calc(100% + 10px);
   z-index: 5;

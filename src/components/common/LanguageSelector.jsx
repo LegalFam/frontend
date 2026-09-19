@@ -4,15 +4,6 @@ import { useT } from '@/i18n/translate'
 import { useLanguageStore } from '@/store/languageStore'
 import styles from './LanguageSelector.module.css'
 
-// Control unico de idioma. Aparece en la barra de la portada, en la del chat y en
-// Configuracion; todos escriben en el mismo store, asi que la eleccion es una sola venga de
-// donde venga.
-//
-// Con `compact` se dibuja como un solo boton que abre las tres opciones. Es para la barra del
-// chat en movil, donde las tres etiquetas de corrido ocupan 220px y no caben junto al chip de
-// tokens. Lo que no se hace nunca es abreviar las etiquetas a "ES / QU / AY": el nombre en la
-// propia lengua es justo lo que hace reconocible el control para quien no lee espanol, asi que
-// el boton muestra el idioma activo con su nombre completo.
 export default function LanguageSelector({ className = '', compact = false }) {
   const t = useT()
   const language = useLanguageStore((state) => state.language)
@@ -20,8 +11,6 @@ export default function LanguageSelector({ className = '', compact = false }) {
   const [open, setOpen] = useState(false)
   const boxRef = useRef(null)
 
-  // Cerrar al tocar fuera o al pulsar Escape. Sin esto el desplegable se queda abierto tapando
-  // la conversacion.
   useEffect(() => {
     if (!compact || !open) return undefined
 
@@ -49,8 +38,6 @@ export default function LanguageSelector({ className = '', compact = false }) {
         setOpen(false)
       }}
       aria-pressed={language === option.code}
-      // La etiqueta va en la propia lengua para que se reconozca sin saber español; el
-      // nombre en español queda en el title para quien no reconozca la etiqueta.
       title={option.name}
       lang={option.code}
     >

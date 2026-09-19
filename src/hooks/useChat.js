@@ -15,9 +15,6 @@ const SSE_WATCHDOG_INTERVAL_MS = 5000
 const titleFromText = (text) =>
   text.slice(0, 40) + (text.length > 40 ? '...' : '')
 
-// Guarda la clave y no el texto: así la bienvenida sigue al idioma que esté activo en cada
-// momento, y no al que hubiera al abrir el chat. Lo mismo vale para los avisos de sistema de
-// más abajo. El idioma de un mensaje ya enviado, en cambio, es inmutable: vive en el servidor.
 const welcomeMessage = (name) => ({
   id: 'welcome',
   role: 'ASSISTANT',
@@ -60,13 +57,7 @@ const sseEventToMessage = (event) => {
     return {
       id: data.messageId,
       role: 'ASSISTANT',
-      // `content` es siempre el español canónico; `contentLocalized` es lo que el usuario
-      // lee cuando su idioma no es el español. El español no se descarta: es la versión
-      // que prevalece y la que el conmutador "Ver en español" muestra.
       content: data.message || '',
-      // `language` es la lengua que el flujo leyó del mensaje del usuario, no la que pidió
-      // la interfaz: esa queda en `languageRequested` y sólo cuando difieren, que es lo que
-      // dispara el aviso de cambio de idioma.
       language: data.language || 'es',
       languageRequested: data.languageRequested || null,
       contentLocalized: data.messageLocalized || null,
@@ -152,15 +143,9 @@ export function useChat() {
   const receiptRequestRef = useRef(new Map())
   const reconcileRef = useRef(null)
 
-  // Sesión cuyo emisor SSE está registrado en el servidor ahora mismo. El backend crea el
-  // emisor y manda `connected` de forma síncrona al atender /chat/subscribe, así que haber
-  // recibido la cabecera de esa respuesta garantiza que ya hay a quién despachar.
   const openStreamRef = useRef(null)
 
-  // Un envío que se adelanta a la suscripción deja la respuesta sin emisor: no se pierde,
-  // pero espera al historial o al reintento del outbox. Esperar aquí unos segundos cuesta
-  // nada en el caso normal (la suscripción tarda milisegundos) y evita esa demora en el
-  // estreno de un chat nuevo, que es cuando la carrera se pierde siempre.
+  // Un envío anterior a la suscripción SSE se queda sin emisor.
   const waitForOpenStream = useCallback(async (sessionId, timeoutMs = 5000) => {
     if (!sessionId) return
     const deadline = Date.now() + timeoutMs
@@ -258,8 +243,6 @@ export function useChat() {
     return request
   }, [confirmUnreadAssistantReceipts, store])
 
-  // El vigilante de abajo no puede depender de reconcileMessages: su identidad cambia con
-  // cada actualización del store y reiniciaría el intervalo en bucle.
   reconcileRef.current = reconcileMessages
 
   const loadSessions = useCallback(async () => {
@@ -346,10 +329,6 @@ export function useChat() {
     }
   }, [navigate, store])
 
-  // `keepThread` distingue las dos llamadas que hoy se confundían: la del botón "Nueva
-  // consulta", que sí tiene que vaciar el hilo, y la del efecto de ruta de ChatPage, que sólo
-  // lo inicializa al entrar. Sin esa distinción, el efecto pisaba cualquier aviso que se
-  // hubiera dejado en el chat nuevo al volver a él (ver el descarte de sesión de más abajo).
   const startNewChat = useCallback(({ updateRoute = true, keepThread = false } = {}) => {
     store.setActiveSession(null)
     store.setLoading(false)
@@ -363,9 +342,6 @@ export function useChat() {
     }
   }, [navigate, store, user])
 
-  // Deshace una conversación que se creó para un envío que el servidor acabó rechazando.
-  // Sin esto queda en el historial una consulta vacía titulada con los primeros caracteres
-  // del texto que nunca llegó a enviarse.
   const discardSession = useCallback(async (sessionId) => {
     await chatService.deleteSession(sessionId).catch(() => {})
     store.removeSession(sessionId)
@@ -400,8 +376,6 @@ export function useChat() {
 
     const tempId = `tmp_${Date.now()}`
     let sessionId = useChatStore.getState().activeSessionId
-    // Si la conversación nace de este mismo envío hay que poder deshacerla cuando el
-    // servidor lo rechaza; una que ya existía se queda como está.
     const hadSession = Boolean(sessionId)
 
     try {
@@ -409,9 +383,6 @@ export function useChat() {
       const userMsg = {
         id: tempId,
         role: 'USER',
-        // De forma optimista el texto ocupa las dos ranuras: es lo único que existe hasta
-        // que el flujo devuelve su traducción al español, que es la que el backend guardará
-        // como canónica.
         content: trimmed,
         language,
         contentLocalized: language === 'es' ? null : trimmed,
@@ -445,8 +416,6 @@ export function useChat() {
       const status = normalizedError.status
 
       if (!status) {
-        // Sin respuesta del servidor no se sabe si el envío llegó, así que aquí no se
-        // descarta nada: ni el mensaje ni la conversación recién creada. Se verifica.
         store.replaceMessage(sessionId || 'new', tempId, { state: 'unknown_delivery' })
         store.setError(normalizedError)
         if (sessionId) await loadMessages(sessionId, { force: true })
@@ -455,9 +424,6 @@ export function useChat() {
 
       store.setLoading(false)
 
-      // Rechazo explícito del servidor: la consulta no existe para nadie. Si la
-      // conversación se había creado para este envío, se deshace y el aviso y el borrador
-      // van al chat nuevo, que es donde queda el usuario.
       if (!hadSession && sessionId) {
         await discardSession(sessionId)
         sessionId = null
@@ -473,10 +439,6 @@ export function useChat() {
 
       if (status === 403) {
         if (normalizedError.code === 'insufficient_tokens') {
-          // El envío se rechazó por falta de tokens: devolvemos su texto al input como
-          // borrador (sobrevive a la ida al checkout de pago) y dejamos un aviso
-          // accionable en el hilo en lugar de descartarlo en silencio. Si el mensaje sigue
-          // en el hilo, queda marcado como no enviado.
           store.setDraft(threadKey, trimmed)
           store.replaceMessage(threadKey, tempId, { state: 'failed' })
           store.addMessage(threadKey, {
@@ -504,11 +466,6 @@ export function useChat() {
       store.addMessage(threadKey, {
         id: `err_${Date.now()}`,
         role: 'SYSTEM',
-        // Se guarda también el código: cuando existe, ChatMessage lo vuelve a traducir al
-        // renderizar. El texto queda como respaldo para los errores que sólo traen mensaje
-        // del servidor, que no hay forma de traducir después.
-        // Texto ya resuelto como respaldo: sólo se usa para los errores que llegan sin
-        // código, que no hay forma de volver a traducir. Con código manda ChatMessage.
         content: resolveApiError(normalizedError),
         errorCode: normalizedError.code,
         citations: [],
@@ -538,10 +495,7 @@ export function useChat() {
   const deleteSession = useCallback(async (sessionId) => {
     try {
       await chatService.deleteSession(sessionId)
-      // Hay que mirarlo ANTES de quitarla: removeSession ya deja activeSessionId en null
-      // cuando la borrada era la abierta, así que preguntarlo después nunca se cumple y el
-      // chat se queda sin hilo, sin bienvenida y con la ruta apuntando a una conversación
-      // que ya no existe.
+      // Antes de removeSession, que pone activeSessionId a null.
       const wasActive = useChatStore.getState().activeSessionId === sessionId
       store.removeSession(sessionId)
       if (wasActive) startNewChat()
@@ -591,8 +545,7 @@ export function useChat() {
       abortRef.current = controller
       store.setConnectionState('reconnecting')
 
-      // El servidor manda heartbeat cada 15 s. Sin bytes durante tres intervalos la conexión
-      // está muerta aunque el navegador no lo sepa, y `reader.read()` esperaría para siempre.
+      // Heartbeat cada 15 s: tres intervalos sin bytes = conexión muerta.
       let lastActivityAt = Date.now()
       let stale = false
       const watchdogId = window.setInterval(() => {
@@ -602,11 +555,7 @@ export function useChat() {
       }, SSE_WATCHDOG_INTERVAL_MS)
 
       try {
-        // La suscripción va primero y la reconciliación después: entre que se pide el
-        // historial y el emisor queda registrado en el servidor hay una ventana en la que
-        // cualquier evento (respuesta o error) se despacha sin nadie escuchando y se pierde
-        // sin reintento. Abriendo antes el stream, esos eventos quedan en el flujo y se leen
-        // en cuanto arranca el bucle de lectura.
+        // Suscribirse antes de reconciliar: los eventos despachados sin emisor se pierden.
         let token = useAuthStore.getState().accessToken
         let response = await fetch(apiStreamUrl(`/chat/subscribe/${sessionId}`), {
           headers: { Authorization: `Bearer ${token}` },
@@ -621,8 +570,6 @@ export function useChat() {
               signal: controller.signal,
             })
           } catch (e) {
-            // El refresh cambia el token y eso reinicia este efecto, que aborta el reintento:
-            // no es un refresh fallido y no debe cerrar la sesión.
             if (controller.signal.aborted) throw e
             logout()
             navigate('/')
@@ -645,8 +592,6 @@ export function useChat() {
         openStreamRef.current = sessionId
         retryRef.current = 0
 
-        // Sin await: el historial se reconcilia mientras el bucle ya está leyendo. La mezcla
-        // es por id, así que un mensaje que llegue por SSE en ese intervalo no se pisa.
         loadMessages(sessionId, { force: true }).catch(() => {})
 
         const reader = response.body.getReader()
@@ -726,13 +671,7 @@ export function useChat() {
     const processingSessionId = processing?.chatSessionId
     if (!processing?.processing || !processingSessionId) return undefined
 
-    // La entrega por SSE es de un solo intento: si el emisor no está registrado en el
-    // instante exacto del despacho (reconexión, cambio de sesión, la carrera del primer
-    // mensaje de un chat nuevo), el evento se pierde y no se reintenta. El error es el caso
-    // sensible, porque no pasa por el outbox como sí lo hace la respuesta del asistente.
-    // Por eso se vigila el estado de procesamiento también en la sesión activa: cuando el
-    // servidor deja de estar procesando y el hilo sigue en espera, se relee el historial,
-    // que ya tiene persistido el mensaje de error o la respuesta.
+    // SSE es de un solo intento: si el servidor terminó y el hilo sigue esperando, se relee el historial.
     const isActiveSession = processingSessionId === store.activeSessionId
     const pollIntervalMs = isActiveSession ? 10000 : 5000
 
@@ -741,8 +680,7 @@ export function useChat() {
     const refreshProcessing = async () => {
       if (disposed) return
       const nextStatus = await loadProcessingStatus().catch(() => null)
-      // Guardar el estado ya desmonta este efecto cuando `processing` pasa a false: aquí no
-      // se mira `disposed`, o la transición que se vigila nunca llega a reconciliar.
+      // Sin comprobar `disposed`: guardar el estado desmonta este efecto.
       if (!nextStatus || nextStatus.processing) return
       usePaymentStore.getState().loadSubscription().catch(() => {})
       if (isActiveSession) {

@@ -24,8 +24,6 @@ const Check = ({ etiqueta }) => (
   </span>
 )
 
-// Las filas comparativas se declaran una sola vez porque alimentan las dos
-// vistas: la tabla de escritorio y las tarjetas apiladas de móvil.
 const PLAN_SPECS = [
   {
     clave: 'capacidad',
@@ -166,8 +164,6 @@ export default function PricingSection({ isAuthenticated, currentPlanCode, onReg
           </table>
         </div>
 
-        {/* En móvil la tabla no cabe: se muestra un plan por tarjeta para no
-            depender del scroll horizontal. */}
         <div className={styles.cards}>
           {STATIC_PLANS.map((plan) => {
             const isCurrent = isAuthenticated && plan.code === currentPlanCode
