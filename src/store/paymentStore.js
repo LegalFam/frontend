@@ -8,9 +8,6 @@ export const usePaymentStore = create((set) => ({
   loading: false,
   error: null,
 
-  setPlans: (plans) => set({ plans }),
-  setSubscription: (subscription) => set({ subscription }),
-
   loadPlans: async () => {
     set({ loading: true, error: null })
     try {

@@ -15,8 +15,6 @@ export const useLanguageStore = create((set) => ({
   },
 }))
 
-export const currentLanguage = () => useLanguageStore.getState().language
-
 export function initLanguage() {
   return useLanguageStore.getState().language
 }

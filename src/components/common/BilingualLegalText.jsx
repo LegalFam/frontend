@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { TRANSLATION_NOTICE, translationNotice, languageByCode } from '@/i18n/languages'
+import { translationNotice, languageByCode } from '@/i18n/languages'
 import { tIn, useT } from '@/i18n/translate'
 import styles from './BilingualLegalText.module.css'
 
@@ -14,7 +14,7 @@ export function TranslationNotice({ language, showingSpanish, onToggle, classNam
     <div className={`${styles.notice} ${above ? styles.noticeAbove : ''} ${className}`}>
       <div className={styles.noticeText}>
         {notice.own && <span lang={language}>{notice.own}</span>}
-        <span className={styles.noticeSpanish}>{TRANSLATION_NOTICE}</span>
+        <span className={styles.noticeSpanish}>{notice.spanish}</span>
       </div>
       <button
         type="button"

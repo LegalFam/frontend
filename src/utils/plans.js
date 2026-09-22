@@ -15,7 +15,6 @@ export const SHARED_PLAN_FEATURE_KEYS = ['asistente', 'fuentes', 'calificacion']
 
 export const formatPlanFeature = (clave) => t(`planes.incluye.${clave}`)
 
-// Replica app.payment.plans.* de payment.properties del backend.
 export const STATIC_PLANS = [
   {
     code: 'FREE',

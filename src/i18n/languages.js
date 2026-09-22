@@ -44,7 +44,7 @@ export function saveLanguage(code) {
   try {
     localStorage.setItem(KEY, language)
   } catch {
-    /* modo privado */
+    /* if incognito blocks the local storage */
   }
   return language
 }

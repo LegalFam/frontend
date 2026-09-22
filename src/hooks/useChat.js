@@ -495,7 +495,6 @@ export function useChat() {
   const deleteSession = useCallback(async (sessionId) => {
     try {
       await chatService.deleteSession(sessionId)
-      // Antes de removeSession, que pone activeSessionId a null.
       const wasActive = useChatStore.getState().activeSessionId === sessionId
       store.removeSession(sessionId)
       if (wasActive) startNewChat()

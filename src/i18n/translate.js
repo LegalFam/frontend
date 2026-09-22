@@ -1,5 +1,3 @@
-// Nunca llamar a t() en el scope del módulo: quedaría fijado al idioma de arranque.
-
 import { useLanguageStore } from '@/store/languageStore'
 import catalogs from './locales'
 
@@ -17,8 +15,9 @@ function lookup(catalog, key) {
 
 function interpolate(text, vars) {
   if (!vars) return text
-  return text.replace(/\{\{(\w+)\}\}/g, (match, name) =>
-    vars[name] === undefined || vars[name] === null ? match : String(vars[name])
+  // Regex to detect this format: {{ var }}
+  return text.replace(/\{\{(\w+)}}/g, (match, name) =>
+      vars[name] === undefined || vars[name] === null ? match : String(vars[name])
   )
 }
 
@@ -62,6 +61,7 @@ export function tOptional(key, vars) {
   return text === undefined ? undefined : interpolate(text, vars)
 }
 
+// If the translation string is a plural
 export function tPlural(base, n, vars) {
   const language = useLanguageStore.getState().language
   const suffix = n === 1 && language === DEFAULT_CODE ? '_one' : '_other'
