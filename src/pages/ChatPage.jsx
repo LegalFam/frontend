@@ -11,9 +11,9 @@ import ChatMessage        from '@/components/chat/ChatMessage'
 import ChatInput          from '@/components/chat/ChatInput'
 import BillingDialog      from '@/components/billing/BillingDialog'
 import TypingIndicator    from '@/components/chat/TypingIndicator'
+import GlossaryEntry      from '@/components/chat/GlossaryEntry'
 import logoImg            from '@/assets/logo-transparent.png'
 import LanguageSelector from '@/components/common/LanguageSelector'
-import BilingualLegalText from '@/components/common/BilingualLegalText'
 import { useT }           from '@/i18n/translate'
 import styles             from './ChatPage.module.css'
 
@@ -228,32 +228,7 @@ export default function ChatPage() {
 
         <div className={styles.main}>
           {glossaryTerm ? (
-            <div className={styles.glossaryView}>
-              <article className={styles.glossaryCard}>
-                <span className={styles.glossaryEyebrow}>{t('chat.glosario.titulo')}</span>
-                <h1>{t(`glosario.${glossaryTerm}.termino`)}</h1>
-                <BilingualLegalText>
-                  {(tLegal) => (
-                    <>
-                      <p>{tLegal(`glosario.${glossaryTerm}.definicion`)}</p>
-                      <p className={styles.glossaryNote}>{tLegal('chat.glosario.nombresEnEspanol')}</p>
-                    </>
-                  )}
-                </BilingualLegalText>
-                <div className={styles.glossaryActions}>
-                  <button
-                    type="button"
-                    className={styles.glossaryBackBtn}
-                    onClick={() => setGlossaryTerm(null)}
-                  >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="15" height="15">
-                      <path d="M19 12H5M12 5l-7 7 7 7" />
-                    </svg>
-                    {t('chat.glosario.volver')}
-                  </button>
-                </div>
-              </article>
-            </div>
+            <GlossaryEntry clave={glossaryTerm} onBack={() => setGlossaryTerm(null)} />
           ) : (
           <>
           {showConnectionNotice && (
