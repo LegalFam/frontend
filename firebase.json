@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "site": "legalfam",
+    "site": "legalfam-app-2026",
     "public": "dist",
     "ignore": [
       "firebase.json",
