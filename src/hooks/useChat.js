@@ -161,7 +161,11 @@ export function useChat() {
   const waitForOpenStream = useCallback(async (sessionId, timeoutMs = 5000) => {
     if (!sessionId) return
     const deadline = Date.now() + timeoutMs
-    while (openStreamRef.current !== sessionId && Date.now() < deadline) {
+    while (
+      openStreamRef.current !== sessionId &&
+      useChatStore.getState().activeSessionId === sessionId &&
+      Date.now() < deadline
+    ) {
       await new Promise((resolve) => window.setTimeout(resolve, 50))
     }
   }, [])
@@ -292,7 +296,8 @@ export function useChat() {
   }, [store])
 
   const loadMessages = useCallback(async (sessionId, { force = false } = {}) => {
-    if (!sessionId) return
+    // Solo hay un cancelador: pedir el historial de otra sesión cancelaría la carga de la abierta.
+    if (!sessionId || useChatStore.getState().activeSessionId !== sessionId) return
     if (!force && useChatStore.getState().messages[sessionId]) return
     if (messagesAbortRef.current) {
       messagesAbortRef.current.controller.abort()
@@ -365,11 +370,12 @@ export function useChat() {
 
   const discardSession = useCallback(async (sessionId) => {
     await chatService.deleteSession(sessionId).catch(() => {})
+    const wasActive = useChatStore.getState().activeSessionId === sessionId
     store.removeSession(sessionId)
-    startNewChat()
+    if (wasActive) startNewChat()
   }, [startNewChat, store])
 
-  const ensureSession = useCallback(async (initialText) => {
+  const ensureSession = useCallback(async (initialText, messageId) => {
     const currentSessionId = useChatStore.getState().activeSessionId
     if (currentSessionId) return currentSessionId
 
@@ -379,9 +385,13 @@ export function useChat() {
         title: titleFromText(initialText),
       }
       store.addSession(session)
-      store.setActiveSession(data.id)
-      store.moveMessages('new', data.id)
-      navigate(`/chat/${data.id}`, { replace: true })
+      // Si mientras tanto abrió otro chat, la consulta sigue en segundo plano y no se le mueve de ahí.
+      const { activeSessionId, messages } = useChatStore.getState()
+      if (!activeSessionId && messages.new?.some((message) => message.id === messageId)) {
+        store.setActiveSession(data.id)
+        store.moveMessages('new', data.id)
+        navigate(`/chat/${data.id}`, { replace: true })
+      }
       chatService.updateSession(data.id, { title: session.title })
         .then(({ data: updatedSession }) => store.upsertSession(updatedSession))
         .catch(() => {})
@@ -419,9 +429,9 @@ export function useChat() {
     store.setLoading(true)
 
     try {
-      sessionId = await ensureSession(trimmed)
-      // "Nueva consulta" pulsado mientras se creaba la sesión reinicia el hilo y borra el mensaje.
+      sessionId = await ensureSession(trimmed, tempId)
       store.upsertMessage(sessionId, userMsg)
+      if (!hadSession) store.removeMessage('new', tempId)
       await confirmUnreadAssistantReceipts(
         sessionId,
         useChatStore.getState().messages[sessionId] || []

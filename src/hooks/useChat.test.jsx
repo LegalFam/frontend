@@ -307,6 +307,30 @@ describe('useChat with browser scheduling', () => {
       expect(useChatStore.getState().processingStatus.processing).toBe(false)
     })
 
+    it('does not cancel the history of the open session when asked for another one', async () => {
+      useChatStore.setState({ processingStatus: { processing: false } })
+      chatService.getProcessingStatus.mockResolvedValue({ data: { processing: false } })
+      let sendReject
+      chatService.sendMessage.mockReturnValue(new Promise((resolve, reject) => { sendReject = reject }))
+
+      const { result } = renderChat()
+      await vi.advanceTimersByTimeAsync(50)
+      result.current.chat.sendMessage('consulta', 'es')
+      await vi.advanceTimersByTimeAsync(50)
+
+      let historySignal
+      chatService.getMessages.mockImplementation((id, { signal }) => {
+        if (id === OTHER_ID) historySignal = signal
+        return new Promise(() => {})
+      })
+      result.current.chat.selectSession(OTHER_ID, { updateRoute: false })
+      await vi.advanceTimersByTimeAsync(50)
+      sendReject(new Error('Network Error'))
+      await vi.advanceTimersByTimeAsync(50)
+
+      expect(historySignal.aborted).toBe(false)
+    })
+
     it('leaves the input free once the send is accepted, whichever session is open', async () => {
       chatService.sendMessage.mockResolvedValue({ data: { userMessageId: 'user-2', status: 'PROCESSING' } })
       useChatStore.setState({ processingStatus: { processing: false } })
@@ -378,6 +402,48 @@ describe('useChat with browser scheduling', () => {
 
       const thread = useChatStore.getState().messages[SESSION_ID]
       expect(thread.some((message) => message.content === TEXT)).toBe(true)
+    })
+
+    it('stays on the session opened while the new one was being created', async () => {
+      let resolveSession
+      chatService.createSession.mockReturnValue(new Promise((resolve) => { resolveSession = resolve }))
+      chatService.sendMessage.mockResolvedValue({ data: { userMessageId: 'real', status: 'PROCESSING' } })
+
+      const { result } = renderNewChat()
+      await vi.advanceTimersByTimeAsync(10)
+      result.current.chat.sendMessage(TEXT, 'es')
+      await vi.advanceTimersByTimeAsync(10)
+      result.current.chat.selectSession('session-2')
+      await vi.advanceTimersByTimeAsync(10)
+      resolveSession({ data: { id: SESSION_ID } })
+      await vi.advanceTimersByTimeAsync(10)
+
+      const state = useChatStore.getState()
+      expect(state.activeSessionId).toBe('session-2')
+      expect(result.current.location.pathname).toBe('/chat/session-2')
+      expect(state.messages[SESSION_ID].some((message) => message.content === TEXT)).toBe(true)
+      expect(newThread().some((message) => message.content === TEXT)).toBe(false)
+      expect(chatService.sendMessage).toHaveBeenCalledWith(expect.objectContaining({ sessionId: SESSION_ID }))
+    })
+
+    it('stays on the opened session when the background send is rejected', async () => {
+      let resolveSession
+      chatService.createSession.mockReturnValue(new Promise((resolve) => { resolveSession = resolve }))
+      chatService.sendMessage.mockRejectedValue({
+        response: { status: 409, data: { code: 'message_processing_pending' } },
+      })
+
+      const { result } = renderNewChat()
+      await vi.advanceTimersByTimeAsync(10)
+      result.current.chat.sendMessage(TEXT, 'es')
+      await vi.advanceTimersByTimeAsync(10)
+      result.current.chat.selectSession('session-2')
+      await vi.advanceTimersByTimeAsync(10)
+      resolveSession({ data: { id: SESSION_ID } })
+      await vi.advanceTimersByTimeAsync(10)
+
+      expect(useChatStore.getState().activeSessionId).toBe('session-2')
+      expect(result.current.location.pathname).toBe('/chat/session-2')
     })
 
     it('keeps the text and the notice when another query is in progress', async () => {
