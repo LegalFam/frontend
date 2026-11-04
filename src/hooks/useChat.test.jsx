@@ -427,6 +427,21 @@ describe('useChat with browser scheduling', () => {
   })
 })
 
+describe('saving drafts', () => {
+  it('keeps the text while signed in and drops it after signing out', () => {
+    globalThis.fetch = vi.fn(() => new Promise(() => {}))
+    useChatStore.setState({ drafts: {} })
+    const { result } = renderChat()
+
+    result.current.chat.saveDraft(SESSION_ID, 'a medio escribir')
+    expect(useChatStore.getState().drafts[SESSION_ID].text).toBe('a medio escribir')
+
+    useAuthStore.getState().logout()
+    result.current.chat.saveDraft(SESSION_ID, 'a medio escribir')
+    expect(useChatStore.getState().drafts).toEqual({})
+  })
+})
+
 describe('signing out', () => {
   it('clears what the previous account left in the chat and billing stores', () => {
     useChatStore.setState({

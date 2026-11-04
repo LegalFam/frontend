@@ -12,9 +12,10 @@ const personalDataPattern = new RegExp([
   '\\b(?:av|avenida|jr|jiron|calle|pasaje|mz|manzana|lote)\\b\\.?[^\\n\\d-]{0,25}?\\d',
 ].join('|'), 'i')
 
-export default function ChatInput({ onSend, disabled, disabledReason, draft = null }) {
+export default function ChatInput({ onSend, onLeave, disabled, disabledReason, draft = null }) {
   const t = useT()
   const ref = useRef(null)
+  const textRef = useRef('')
   const [privacyError, setPrivacyError] = useState(null)
   const idioma = useLanguageStore((state) => state.language)
   const appliedDraftTsRef = useRef(0)
@@ -37,9 +38,19 @@ export default function ChatInput({ onSend, disabled, disabledReason, draft = nu
     appliedDraftTsRef.current = draft.ts
     if (el.value.trim()) return
     el.value = draft.text
+    textRef.current = draft.text
     autoResize()
     if (!disabled) el.focus()
   }, [draft, disabled])
+
+  // Al desmontar ya no hay textarea que leer: por eso el texto se sigue en textRef.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => () => onLeave?.(textRef.current), [])
+
+  const handleInput = (e) => {
+    textRef.current = e.target.value
+    autoResize()
+  }
 
   const handleKey = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -58,6 +69,7 @@ export default function ChatInput({ onSend, disabled, disabledReason, draft = nu
     setPrivacyError(null)
     onSend(text, idioma)
     ref.current.value = ''
+    textRef.current = ''
     autoResize()
   }
 
@@ -69,7 +81,7 @@ export default function ChatInput({ onSend, disabled, disabledReason, draft = nu
           rows={1}
           placeholder={disabled ? t('chat.input.placeholderEsperando') : t('chat.input.placeholder')}
           onKeyDown={handleKey}
-          onInput={autoResize}
+          onInput={handleInput}
           disabled={disabled}
           className={styles.textarea}
         />

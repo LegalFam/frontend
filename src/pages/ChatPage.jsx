@@ -34,7 +34,7 @@ export default function ChatPage() {
     activeSessionId, messages, messagesNextCursors, messagesLoadingMore,
     loading, processingStatus, connectionState, error, drafts,
     loadSessions, loadMoreSessions, loadMoreMessages, selectSession, startNewChat,
-    sendMessage, retryMessage, rateMessage, deleteSession, renameSession,
+    sendMessage, retryMessage, rateMessage, deleteSession, renameSession, saveDraft,
   } = useChat()
 
   const messagesContainerRef = useRef(null)
@@ -297,7 +297,9 @@ export default function ChatPage() {
             </div>
           </div>
           <ChatInput
+            key={activeKey}
             onSend={sendMessage}
+            onLeave={(text) => saveDraft(activeKey, text)}
             disabled={inputDisabled}
             disabledReason={inputDisabledReason}
             draft={drafts[activeKey] || null}

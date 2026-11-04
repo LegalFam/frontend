@@ -577,6 +577,11 @@ export function useChat() {
     await sendMessage(text)
   }, [sendMessage, store])
 
+  const saveDraft = useCallback((threadKey, text) => {
+    // El campo se desmonta después de cerrar sesión: su texto no debe pasar a la siguiente cuenta.
+    if (useAuthStore.getState().accessToken) store.setDraft(threadKey, text)
+  }, [store])
+
   useEffect(() => {
     const sessionId = store.activeSessionId
     if (!sessionId || !accessToken) return undefined
@@ -770,6 +775,7 @@ export function useChat() {
     error:           store.error,
     drafts:          store.drafts,
     clearDraft:      store.clearDraft,
+    saveDraft,
     loadSessions,
     loadMoreSessions,
     loadMoreMessages,
