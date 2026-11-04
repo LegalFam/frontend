@@ -191,6 +191,75 @@ describe('useChat with browser scheduling', () => {
     expect(chatService.getMessages).toHaveBeenCalledWith(SESSION_ID, expect.anything())
   })
 
+  describe('messages whose send failed', () => {
+    const TEXT = 'consulta'
+    const userMessages = () => useChatStore.getState().messages[SESSION_ID].filter((message) => message.role === 'USER')
+
+    beforeEach(() => {
+      globalThis.fetch = abortableFetch((url, signal) => Promise.resolve(openStream(signal).response))
+      useChatStore.setState({ messages: { [SESSION_ID]: [] }, drafts: {}, error: null, loading: false })
+    })
+
+    it('does not duplicate a message the server received when the response was lost', async () => {
+      chatService.sendMessage.mockRejectedValue(new Error('Network Error'))
+      const { result } = renderChat()
+      await vi.advanceTimersByTimeAsync(50)
+      chatService.getMessages.mockResolvedValue({
+        data: {
+          content: [{ id: 'real', role: 'USER', content: TEXT, createdAt: new Date().toISOString() }],
+          nextCursor: null,
+        },
+      })
+      chatService.getProcessingStatus.mockResolvedValue({ data: { processing: true, chatSessionId: SESSION_ID } })
+
+      await result.current.chat.sendMessage(TEXT, 'es')
+
+      expect(userMessages().map((message) => message.id)).toEqual(['real'])
+      expect(useChatStore.getState().loading).toBe(false)
+    })
+
+    it('marks as failed a message the server never received and keeps its text', async () => {
+      chatService.sendMessage.mockRejectedValue(new Error('Network Error'))
+      const { result } = renderChat()
+      await vi.advanceTimersByTimeAsync(50)
+
+      await result.current.chat.sendMessage(TEXT, 'es')
+
+      expect(userMessages()[0].state).toBe('failed')
+      expect(useChatStore.getState().drafts[SESSION_ID].text).toBe(TEXT)
+      expect(useChatStore.getState().loading).toBe(false)
+    })
+
+    it('does not leave a rejected message sending, nor duplicate it on retry', async () => {
+      chatService.sendMessage.mockRejectedValue({ response: { status: 500, data: {} } })
+      const { result } = renderChat()
+      await vi.advanceTimersByTimeAsync(50)
+
+      await result.current.chat.sendMessage(TEXT, 'es')
+      expect(userMessages()[0].state).toBe('failed')
+
+      chatService.sendMessage.mockResolvedValue({ data: { userMessageId: 'real', status: 'PROCESSING' } })
+      await result.current.chat.retryMessage(TEXT)
+
+      expect(userMessages().map((message) => message.id)).toEqual(['real'])
+    })
+
+    it('retries from a new chat', async () => {
+      useChatStore.setState({ activeSessionId: null, messages: { new: [] } })
+      chatService.createSession.mockResolvedValue({ data: { id: SESSION_ID } })
+      chatService.sendMessage.mockResolvedValue({ data: { userMessageId: 'real', status: 'PROCESSING' } })
+      const { result } = renderHook(() => useChat(), {
+        wrapper: ({ children }) => <MemoryRouter initialEntries={['/chat']}>{children}</MemoryRouter>,
+      })
+
+      const pending = result.current.retryMessage(TEXT)
+      await vi.advanceTimersByTimeAsync(6_000)
+      await pending
+
+      expect(chatService.sendMessage).toHaveBeenCalledWith(expect.objectContaining({ message: TEXT, sessionId: SESSION_ID }))
+    })
+  })
+
   describe('switching sessions with a query in progress', () => {
     const OTHER_ID = 'session-2'
     const busy = { processing: true, chatSessionId: SESSION_ID, userMessageId: 'user-1' }

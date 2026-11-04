@@ -115,6 +115,18 @@ const normalizeChatMessage = (message) => {
 const cursorNext = (data) =>
   data && typeof data === 'object' && !Array.isArray(data) ? data.nextCursor || null : null
 
+const DELIVERY_CLOCK_SKEW_MS = 60000
+
+// Se perdió la respuesta del envío, pero el servidor sí lo recibió: su mensaje reemplaza al temporal.
+const wasDelivered = (local, serverMessages) =>
+  local.state === 'unknown_delivery' &&
+  local.id?.startsWith('tmp_') &&
+  serverMessages.some((message) =>
+    message.role === 'USER' &&
+    (message.content === local.content || message.contentLocalized === local.content) &&
+    Date.parse(message.createdAt) >= Date.parse(local.createdAt) - DELIVERY_CLOCK_SKEW_MS
+  )
+
 const preserveOptimisticMessages = (sessionId, serverMessages) => {
   const current = useChatStore.getState().messages[sessionId] || []
   const serverIds = new Set(serverMessages.map((message) => message.id).filter(Boolean))
@@ -213,6 +225,9 @@ export function useChat() {
         if (signal?.aborted || useChatStore.getState().activeSessionId !== sessionId) {
           return messages
         }
+        ;(useChatStore.getState().messages[sessionId] || [])
+          .filter((message) => wasDelivered(message, messages))
+          .forEach((message) => store.removeMessage(sessionId, message.id))
         const nextMessages = preserveOptimisticMessages(sessionId, messages)
         const hasLoadedMessages = Boolean(useChatStore.getState().messages[sessionId]?.length)
         store.setMessagesPage(
@@ -385,6 +400,11 @@ export function useChat() {
     const hadSession = Boolean(sessionId)
 
     // Antes de crear la sesión: con el backend apagado, esa llamada puede tardar varios segundos.
+    // El texto de un intento fallido vuelve al campo: al reenviarlo, su burbuja sobraría.
+    ;(useChatStore.getState().messages[sessionId || 'new'] || [])
+      .filter((message) => message.state === 'failed' && message.id?.startsWith('tmp_'))
+      .forEach((message) => store.removeMessage(sessionId || 'new', message.id))
+
     const userMsg = {
       id: tempId,
       role: 'USER',
@@ -438,7 +458,16 @@ export function useChat() {
       if (!status) {
         store.replaceMessage(sessionId, tempId, { state: 'unknown_delivery' })
         store.setError(normalizedError)
-        if (sessionId) await loadMessages(sessionId, { force: true })
+        await loadMessages(sessionId, { force: true })
+        const current = await loadProcessingStatus().catch(() => null)
+        store.setLoading(false)
+        const { activeSessionId, messages } = useChatStore.getState()
+        const undelivered = activeSessionId === sessionId && current && !current.processing &&
+          (messages[sessionId] || []).some((message) => message.id === tempId)
+        if (undelivered) {
+          store.replaceMessage(sessionId, tempId, { state: 'failed' })
+          store.setDraft(sessionId, trimmed)
+        }
         return
       }
 
@@ -486,6 +515,7 @@ export function useChat() {
         return
       }
 
+      store.replaceMessage(threadKey, tempId, { state: 'failed' })
       store.addMessage(threadKey, {
         id: `err_${Date.now()}`,
         role: 'SYSTEM',
@@ -539,10 +569,10 @@ export function useChat() {
   }, [store])
 
   const retryMessage = useCallback(async (text, errorMessageId) => {
-    const sessionId = useChatStore.getState().activeSessionId
-    if (!sessionId || !text) return
+    if (!text) return
     if (errorMessageId) {
-      store.replaceMessage(sessionId, errorMessageId, { retryAttempted: true })
+      const threadKey = useChatStore.getState().activeSessionId || 'new'
+      store.replaceMessage(threadKey, errorMessageId, { retryAttempted: true })
     }
     await sendMessage(text)
   }, [sendMessage, store])
