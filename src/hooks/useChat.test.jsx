@@ -191,6 +191,67 @@ describe('useChat with browser scheduling', () => {
     expect(chatService.getMessages).toHaveBeenCalledWith(SESSION_ID, expect.anything())
   })
 
+  describe('switching sessions with a query in progress', () => {
+    const OTHER_ID = 'session-2'
+    const busy = { processing: true, chatSessionId: SESSION_ID, userMessageId: 'user-1' }
+
+    beforeEach(() => {
+      globalThis.fetch = abortableFetch((url, signal) => Promise.resolve(openStream(signal).response))
+      chatService.getProcessingStatus.mockResolvedValue({ data: busy })
+      chatService.getMessages.mockImplementation(async (id) => ({
+        data: {
+          content: id === OTHER_ID
+            ? [
+                { id: 'other-user', role: 'USER', content: 'hola', createdAt: '2026-01-01T00:00:00Z' },
+                { id: 'other-answer', role: 'ASSISTANT', content: 'resp', createdAt: '2026-01-01T00:00:01Z' },
+              ]
+            : [{ id: 'user-1', role: 'USER', content: 'consulta', createdAt: '2026-01-02T00:00:00Z' }],
+          nextCursor: null,
+        },
+      }))
+      useChatStore.setState({ activeSessionId: SESSION_ID, messages: {}, processingStatus: busy, loading: false })
+    })
+
+    it('does not end the query when opening a session that is already answered', async () => {
+      const { result } = renderChat()
+      await vi.advanceTimersByTimeAsync(50)
+      result.current.chat.selectSession(OTHER_ID, { updateRoute: false })
+      await vi.advanceTimersByTimeAsync(50)
+
+      expect(useChatStore.getState().processingStatus).toMatchObject(busy)
+    })
+
+    it('ends the query when its own session is answered', async () => {
+      chatService.getMessages.mockResolvedValue({
+        data: {
+          content: [
+            { id: 'user-1', role: 'USER', content: 'consulta', createdAt: '2026-01-02T00:00:00Z' },
+            { id: 'answer-1', role: 'ASSISTANT', content: 'resp', createdAt: '2026-01-02T00:00:05Z' },
+          ],
+          nextCursor: null,
+        },
+      })
+
+      renderChat()
+      await vi.advanceTimersByTimeAsync(50)
+
+      expect(useChatStore.getState().processingStatus.processing).toBe(false)
+    })
+
+    it('leaves the input free once the send is accepted, whichever session is open', async () => {
+      chatService.sendMessage.mockResolvedValue({ data: { userMessageId: 'user-2', status: 'PROCESSING' } })
+      useChatStore.setState({ processingStatus: { processing: false } })
+      chatService.getProcessingStatus.mockResolvedValue({ data: { processing: false } })
+
+      const { result } = renderChat()
+      await vi.advanceTimersByTimeAsync(50)
+      await result.current.chat.sendMessage('otra consulta', 'es')
+
+      expect(useChatStore.getState().loading).toBe(false)
+      expect(useChatStore.getState().processingStatus.chatSessionId).toBe(SESSION_ID)
+    })
+  })
+
   describe('sending from a new chat', () => {
     const TEXT = '¿qué es la patria potestad?'
     const welcome = { id: 'welcome', role: 'ASSISTANT', citations: [], createdAt: '2026-01-01T00:00:00Z' }

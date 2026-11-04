@@ -229,8 +229,11 @@ export function useChat() {
           .some((message) => message.role === 'ASSISTANT' || message.role === 'SYSTEM')
         if (hasTerminalMessage) {
           store.clearPendingUserMessageStates(sessionId)
-          store.setProcessingStatus({ processing: false })
-          store.setLoading(false)
+          // Esta sesión ya terminó, pero la consulta en curso puede ser de otra.
+          const pendingSessionId = useChatStore.getState().processingStatus?.chatSessionId
+          if (!pendingSessionId || pendingSessionId === sessionId) {
+            store.setProcessingStatus({ processing: false })
+          }
           usePaymentStore.getState().loadSubscription().catch(() => {})
         }
         return nextMessages
@@ -418,6 +421,8 @@ export function useChat() {
         userMessageId: data.userMessageId,
         status: data.status,
       })
+      // `loading` cubre solo el envío: desde aquí manda processingStatus, que sigue a su sesión.
+      store.setLoading(false)
     } catch (e) {
       const normalizedError = normalizeApiError(e, 'chat.errorEnviar')
       const status = normalizedError.status
