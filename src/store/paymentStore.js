@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { paymentService } from '@/services/api'
+import { useAuthStore } from '@/store/authStore'
 import { normalizeApiError } from '@/utils/apiError'
 
 export const usePaymentStore = create((set) => ({
@@ -74,3 +75,9 @@ export const usePaymentStore = create((set) => ({
     }
   },
 }))
+
+useAuthStore.subscribe((state, previous) => {
+  if (previous.accessToken && !state.accessToken) {
+    usePaymentStore.setState({ subscription: null, error: null })
+  }
+})

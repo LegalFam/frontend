@@ -332,7 +332,10 @@ export function useChat() {
   const startNewChat = useCallback(({ updateRoute = true, keepThread = false } = {}) => {
     store.setActiveSession(null)
     store.setLoading(false)
-    store.setError(null)
+    // Un 409 en un chat nuevo descarta la sesión y vuelve a /chat: este aviso tiene que sobrevivir.
+    if (!keepThread || useChatStore.getState().error?.code !== 'message_processing_pending') {
+      store.setError(null)
+    }
     store.setConnectionState('idle')
     if (!keepThread || !useChatStore.getState().messages.new?.length) {
       store.setMessages('new', [welcomeMessage(user?.name?.split(' ')[0])])
@@ -378,20 +381,24 @@ export function useChat() {
     let sessionId = useChatStore.getState().activeSessionId
     const hadSession = Boolean(sessionId)
 
+    // Antes de crear la sesión: con el backend apagado, esa llamada puede tardar varios segundos.
+    const userMsg = {
+      id: tempId,
+      role: 'USER',
+      content: trimmed,
+      language,
+      contentLocalized: language === 'es' ? null : trimmed,
+      citations: [],
+      createdAt: new Date().toISOString(),
+      state: 'sending',
+    }
+    store.addMessage(sessionId || 'new', userMsg)
+    store.setLoading(true)
+
     try {
       sessionId = await ensureSession(trimmed)
-      const userMsg = {
-        id: tempId,
-        role: 'USER',
-        content: trimmed,
-        language,
-        contentLocalized: language === 'es' ? null : trimmed,
-        citations: [],
-        createdAt: new Date().toISOString(),
-        state: 'sending',
-      }
-      store.addMessage(sessionId, userMsg)
-      store.setLoading(true)
+      // "Nueva consulta" pulsado mientras se creaba la sesión reinicia el hilo y borra el mensaje.
+      store.upsertMessage(sessionId, userMsg)
       await confirmUnreadAssistantReceipts(
         sessionId,
         useChatStore.getState().messages[sessionId] || []
@@ -415,8 +422,16 @@ export function useChat() {
       const normalizedError = normalizeApiError(e, 'chat.errorEnviar')
       const status = normalizedError.status
 
+      if (!status && !sessionId) {
+        store.removeMessage('new', tempId)
+        store.setDraft('new', trimmed)
+        store.setLoading(false)
+        store.setError(normalizedError)
+        return
+      }
+
       if (!status) {
-        store.replaceMessage(sessionId || 'new', tempId, { state: 'unknown_delivery' })
+        store.replaceMessage(sessionId, tempId, { state: 'unknown_delivery' })
         store.setError(normalizedError)
         if (sessionId) await loadMessages(sessionId, { force: true })
         return
@@ -427,11 +442,14 @@ export function useChat() {
       if (!hadSession && sessionId) {
         await discardSession(sessionId)
         sessionId = null
+      } else if (!sessionId) {
+        store.removeMessage('new', tempId)
       }
       const threadKey = sessionId || 'new'
 
       if (status === 409) {
         store.removeMessage(threadKey, tempId)
+        store.setDraft(threadKey, trimmed)
         loadProcessingStatus().catch(() => {})
         store.setError(normalizedError)
         return

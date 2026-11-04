@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { act, cleanup, renderHook } from '@testing-library/react'
 import { MemoryRouter, useLocation } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -8,6 +9,10 @@ vi.mock('@/services/api', () => ({
     getMessages: vi.fn(),
     getSessions: vi.fn(),
     confirmReceipt: vi.fn(),
+    createSession: vi.fn(),
+    sendMessage: vi.fn(),
+    updateSession: vi.fn(() => Promise.resolve({ data: {} })),
+    deleteSession: vi.fn(() => Promise.resolve({})),
   },
   paymentService: {
     getSubscription: vi.fn(() => Promise.resolve({ data: null })),
@@ -21,6 +26,7 @@ const { chatService, refreshAccessToken } = await import('@/services/api')
 const { useChat } = await import('@/hooks/useChat')
 const { useChatStore } = await import('@/store/chatStore')
 const { useAuthStore } = await import('@/store/authStore')
+const { usePaymentStore } = await import('@/store/paymentStore')
 
 const SESSION_ID = 'session-1'
 
@@ -183,5 +189,131 @@ describe('useChat with browser scheduling', () => {
     await vi.advanceTimersByTimeAsync(100)
 
     expect(chatService.getMessages).toHaveBeenCalledWith(SESSION_ID, expect.anything())
+  })
+
+  describe('sending from a new chat', () => {
+    const TEXT = '¿qué es la patria potestad?'
+    const welcome = { id: 'welcome', role: 'ASSISTANT', citations: [], createdAt: '2026-01-01T00:00:00Z' }
+    const newThread = () => useChatStore.getState().messages.new || []
+
+    // Reproduce el efecto de ChatPage que corre cada vez que la ruta vuelve a /chat.
+    const renderNewChat = () =>
+      renderHook(() => {
+        const chat = useChat()
+        const location = useLocation()
+        useEffect(() => {
+          if (location.pathname === '/chat') chat.startNewChat({ updateRoute: false, keepThread: true })
+          // eslint-disable-next-line react-hooks/exhaustive-deps
+        }, [location.pathname])
+        return { chat, location }
+      }, {
+        wrapper: ({ children }) => <MemoryRouter initialEntries={['/chat']}>{children}</MemoryRouter>,
+      })
+
+    beforeEach(() => {
+      globalThis.fetch = abortableFetch((url, signal) => Promise.resolve(openStream(signal).response))
+      useChatStore.setState({
+        activeSessionId: null,
+        messages: { new: [welcome] },
+        drafts: {},
+        error: null,
+        loading: false,
+      })
+    })
+
+    it('shows the message while the session is still being created', async () => {
+      chatService.createSession.mockReturnValue(new Promise(() => {}))
+
+      const { result } = renderNewChat()
+      await vi.advanceTimersByTimeAsync(10)
+      result.current.chat.sendMessage(TEXT, 'es')
+      await vi.advanceTimersByTimeAsync(10)
+
+      expect(newThread().find((message) => message.role === 'USER')).toMatchObject({ content: TEXT, state: 'sending' })
+      expect(useChatStore.getState().loading).toBe(true)
+    })
+
+    it('keeps the message when a new chat is opened while the session is being created', async () => {
+      let resolveSession
+      chatService.createSession.mockReturnValue(new Promise((resolve) => { resolveSession = resolve }))
+      chatService.sendMessage.mockReturnValue(new Promise(() => {}))
+
+      const { result } = renderNewChat()
+      await vi.advanceTimersByTimeAsync(10)
+      result.current.chat.sendMessage(TEXT, 'es')
+      await vi.advanceTimersByTimeAsync(10)
+      result.current.chat.startNewChat()
+      resolveSession({ data: { id: SESSION_ID } })
+      await vi.advanceTimersByTimeAsync(10)
+
+      const thread = useChatStore.getState().messages[SESSION_ID]
+      expect(thread.some((message) => message.content === TEXT)).toBe(true)
+    })
+
+    it('keeps the text and the notice when another query is in progress', async () => {
+      chatService.createSession.mockResolvedValue({ data: { id: SESSION_ID } })
+      chatService.sendMessage.mockRejectedValue({
+        response: { status: 409, data: { code: 'message_processing_pending' } },
+      })
+
+      const { result } = renderNewChat()
+      await vi.advanceTimersByTimeAsync(10)
+      result.current.chat.sendMessage(TEXT, 'es')
+      await vi.advanceTimersByTimeAsync(6_000)
+
+      const state = useChatStore.getState()
+      expect(newThread().some((message) => message.role === 'USER')).toBe(false)
+      expect(state.drafts.new.text).toBe(TEXT)
+      expect(state.error.code).toBe('message_processing_pending')
+      expect(state.loading).toBe(false)
+      expect(chatService.deleteSession).toHaveBeenCalledWith(SESSION_ID)
+    })
+
+    it('does not get stuck when the session cannot be created', async () => {
+      chatService.createSession.mockRejectedValue(new Error('Network Error'))
+
+      const { result } = renderNewChat()
+      await vi.advanceTimersByTimeAsync(10)
+      await result.current.chat.sendMessage(TEXT, 'es')
+
+      const state = useChatStore.getState()
+      expect(newThread().some((message) => message.role === 'USER')).toBe(false)
+      expect(state.drafts.new.text).toBe(TEXT)
+      expect(state.loading).toBe(false)
+    })
+
+    it('removes the pending message when creating the session is rejected', async () => {
+      chatService.createSession.mockRejectedValue({ response: { status: 500, data: {} } })
+
+      const { result } = renderNewChat()
+      await vi.advanceTimersByTimeAsync(10)
+      await result.current.chat.sendMessage(TEXT, 'es')
+
+      const state = useChatStore.getState()
+      expect(newThread().some((message) => message.role === 'USER')).toBe(false)
+      expect(newThread().some((message) => message.role === 'SYSTEM')).toBe(true)
+      expect(state.loading).toBe(false)
+    })
+  })
+})
+
+describe('signing out', () => {
+  it('clears what the previous account left in the chat and billing stores', () => {
+    useChatStore.setState({
+      sessions: [{ id: SESSION_ID }],
+      messages: { new: [{ id: 'welcome', role: 'ASSISTANT' }] },
+      drafts: { new: { text: 'borrador', ts: 1 } },
+    })
+    usePaymentStore.setState({ subscription: { planCode: 'FREE' } })
+
+    useAuthStore.getState().logout()
+
+    const chat = useChatStore.getState()
+    expect(chat.sessions).toEqual([])
+    expect(chat.messages).toEqual({})
+    expect(chat.activeSessionId).toBeNull()
+    expect(chat.drafts).toEqual({})
+    expect(sessionStorage.getItem('legalfam.chat.drafts')).toBe('{}')
+    expect(usePaymentStore.getState().subscription).toBeNull()
   })
 })

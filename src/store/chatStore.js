@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { useAuthStore } from '@/store/authStore'
 
 const DRAFTS_STORAGE_KEY = 'legalfam.chat.drafts'
 
@@ -52,7 +53,7 @@ const mergeSessions = (current, incoming, append = false) => {
   return Array.from(byId.values())
 }
 
-export const useChatStore = create((set) => ({
+const EMPTY_STATE = {
   sessions: [],
   sessionsNextCursor: null,
   sessionsLoading: false,
@@ -65,6 +66,10 @@ export const useChatStore = create((set) => ({
   processingStatus: { processing: false },
   connectionState: 'idle',
   error: null,
+}
+
+export const useChatStore = create((set) => ({
+  ...EMPTY_STATE,
   drafts: loadDrafts(),
 
   setSessions: (sessions) =>
@@ -286,3 +291,10 @@ export const useChatStore = create((set) => ({
       return { drafts }
     }),
 }))
+
+useAuthStore.subscribe((state, previous) => {
+  if (previous.accessToken && !state.accessToken) {
+    persistDrafts({})
+    useChatStore.setState({ ...EMPTY_STATE, drafts: {} })
+  }
+})

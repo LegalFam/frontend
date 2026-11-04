@@ -84,7 +84,10 @@ export default function ChatPage() {
     startNewChat()
   }
 
-  const showConnectionNotice = Boolean(error || (activeSessionId && connectionState === 'reconnecting'))
+  const visibleError = error?.code === 'message_processing_pending' && !processingStatus?.processing
+    ? null
+    : error
+  const showConnectionNotice = Boolean(visibleError || (activeSessionId && connectionState === 'reconnecting'))
   const sessionTitle   = glossaryTerm
     ? `${t('chat.glosario.titulo')} · ${t(`glosario.${glossaryTerm}.termino`)}`
     : activeSessionId
@@ -102,7 +105,7 @@ export default function ChatPage() {
     activeMessages[0]?.id === 'welcome'
   const inputDisabled = Boolean(loading || processingStatus?.processing)
   const inputDisabledReason = inputDisabled
-    ? activeSessionProcessing
+    ? loading || activeSessionProcessing
       ? t('chat.esperandoRespuesta')
       : t('chat.otraEnProceso')
     : null
@@ -233,7 +236,7 @@ export default function ChatPage() {
           <>
           {showConnectionNotice && (
             <div className={styles.notice}>
-              {resolveApiError(error) || t('chat.reconectando')}
+              {resolveApiError(visibleError) || t('chat.reconectando')}
             </div>
           )}
           <div
