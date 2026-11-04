@@ -125,6 +125,32 @@ describe('useChat SSE connection', () => {
     expect(subscribeCalls()).toHaveLength(1)
   })
 
+  it('shows a live answer after the question when the device clock runs ahead', async () => {
+    const streams = []
+    globalThis.fetch = abortableFetch((url, signal) => {
+      const stream = openStream(signal)
+      streams.push(stream)
+      return Promise.resolve(stream.response)
+    })
+    useChatStore.setState({
+      messages: {
+        [SESSION_ID]: [{ id: 'tmp_1', role: 'USER', content: 'consulta', createdAt: '2026-01-01T00:00:09Z' }],
+      },
+    })
+
+    renderChat()
+    await act(flush)
+    streams[0].push('assistant_message', JSON.stringify({
+      messageId: 'answer-1',
+      message: 'respuesta',
+      createdAt: '2026-01-01T00:00:05Z',
+    }))
+    await act(flush)
+
+    const thread = useChatStore.getState().messages[SESSION_ID]
+    expect(thread.map((message) => message.id)).toEqual(['tmp_1', 'answer-1'])
+  })
+
   it('confirms the receipt of an assistant error', async () => {
     const streams = []
     globalThis.fetch = abortableFetch((url, signal) => {
@@ -198,6 +224,22 @@ describe('useChat with browser scheduling', () => {
     beforeEach(() => {
       globalThis.fetch = abortableFetch((url, signal) => Promise.resolve(openStream(signal).response))
       useChatStore.setState({ messages: { [SESSION_ID]: [] }, drafts: {}, error: null, loading: false })
+    })
+
+    it('shows a new message after the last answer when the device clock runs behind', async () => {
+      chatService.sendMessage.mockReturnValue(new Promise(() => {}))
+      const answeredAt = new Date(Date.now() + 9_000).toISOString()
+      useChatStore.setState({
+        messages: { [SESSION_ID]: [{ id: 'answer-1', role: 'ASSISTANT', content: 'preguntas', createdAt: answeredAt }] },
+      })
+      const { result } = renderChat()
+      await vi.advanceTimersByTimeAsync(50)
+
+      result.current.chat.sendMessage('sigue igual', 'es')
+      await vi.advanceTimersByTimeAsync(10)
+
+      const thread = useChatStore.getState().messages[SESSION_ID]
+      expect(thread[thread.length - 1].content).toBe('sigue igual')
     })
 
     it('does not duplicate a message the server received when the response was lost', async () => {

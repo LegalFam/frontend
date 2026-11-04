@@ -127,6 +127,14 @@ const wasDelivered = (local, serverMessages) =>
     Date.parse(message.createdAt) >= Date.parse(local.createdAt) - DELIVERY_CLOCK_SKEW_MS
   )
 
+// El reloj del dispositivo puede no coincidir con el del servidor. Lo que llega en vivo va al
+// final del hilo hasta que el historial traiga las fechas del servidor.
+const createdAfterThread = (threadKey, createdAt = new Date().toISOString()) => {
+  const thread = useChatStore.getState().messages[threadKey] || []
+  const last = Math.max(0, ...thread.map((message) => Date.parse(message.createdAt) || 0))
+  return new Date(Math.max(Date.parse(createdAt) || Date.now(), last + 1)).toISOString()
+}
+
 const preserveOptimisticMessages = (sessionId, serverMessages) => {
   const current = useChatStore.getState().messages[sessionId] || []
   const serverIds = new Set(serverMessages.map((message) => message.id).filter(Boolean))
@@ -422,7 +430,7 @@ export function useChat() {
       language,
       contentLocalized: language === 'es' ? null : trimmed,
       citations: [],
-      createdAt: new Date().toISOString(),
+      createdAt: createdAfterThread(sessionId || 'new'),
       state: 'sending',
     }
     store.addMessage(sessionId || 'new', userMsg)
@@ -678,7 +686,10 @@ export function useChat() {
             if (event.type === 'assistant_message' || event.type === 'assistant_error') {
               const message = sseEventToMessage(event)
               if (message) {
-                store.upsertMessage(sessionId, message)
+                store.upsertMessage(sessionId, {
+                  ...message,
+                  createdAt: createdAfterThread(sessionId, message.createdAt),
+                })
                 store.clearPendingUserMessageStates(
                   sessionId,
                   message.role === 'ASSISTANT' ? message.language : null
