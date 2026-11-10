@@ -49,6 +49,18 @@ const parseSseData = (data) => {
   }
 }
 
+// Borrador en vivo de la respuesta: el texto completo escrito hasta ahora, no un delta.
+export const sseEventToStreamingReply = (event) => {
+  if (event.type !== 'assistant_draft') return null
+  const data = parseSseData(event.data)
+  if (!data?.userMessageId || typeof data.text !== 'string') return null
+  return {
+    userMessageId: data.userMessageId,
+    text: data.text,
+    sequence: Number(data.sequence) || 0,
+  }
+}
+
 const sseEventToMessage = (event) => {
   const data = parseSseData(event.data)
   if (!data?.messageId) return null
@@ -683,7 +695,13 @@ export function useChat() {
 
           for (const chunk of chunks) {
             const event = parseSseChunk(chunk)
+            if (event.type === 'assistant_draft') {
+              const reply = sseEventToStreamingReply(event)
+              if (reply) store.setStreamingReply(sessionId, reply)
+              continue
+            }
             if (event.type === 'assistant_message' || event.type === 'assistant_error') {
+              store.clearStreamingReply(sessionId)
               const message = sseEventToMessage(event)
               if (message) {
                 store.upsertMessage(sessionId, {
@@ -760,6 +778,8 @@ export function useChat() {
       const nextStatus = await loadProcessingStatus().catch(() => null)
       // Sin comprobar `disposed`: guardar el estado desmonta este efecto.
       if (!nextStatus || nextStatus.processing) return
+      // Si el definitivo no llego por SSE, el borrador quedaria colgado: se descarta.
+      useChatStore.getState().clearStreamingReply(processingSessionId)
       usePaymentStore.getState().loadSubscription().catch(() => {})
       if (isActiveSession) {
         await reconcileRef.current?.(processingSessionId).catch(() => {})
@@ -792,6 +812,7 @@ export function useChat() {
     messagesLoadingMore: store.messagesLoadingMore,
     loading:         store.loading,
     processingStatus: store.processingStatus,
+    streamingReplies: store.streamingReplies,
     connectionState: store.connectionState,
     error:           store.error,
     drafts:          store.drafts,

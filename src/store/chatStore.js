@@ -66,6 +66,9 @@ const EMPTY_STATE = {
   processingStatus: { processing: false },
   connectionState: 'idle',
   error: null,
+  // Respuesta del asistente mientras se escribe, por sesion: { userMessageId, text, sequence }.
+  // No es un mensaje: no se guarda en el hilo y desaparece cuando llega el definitivo.
+  streamingReplies: {},
 }
 
 export const useChatStore = create((set) => ({
@@ -265,6 +268,24 @@ export const useChatStore = create((set) => ({
     processingStatus: processingStatus || { processing: false },
   }),
   setConnectionState: (connectionState) => set({ connectionState }),
+
+  setStreamingReply: (sessionId, reply) =>
+    set((state) => {
+      const current = state.streamingReplies[sessionId]
+      // Los borradores pueden llegar desordenados; uno atrasado no pisa al mas nuevo.
+      if (current && current.userMessageId === reply.userMessageId && current.sequence >= reply.sequence) {
+        return {}
+      }
+      return { streamingReplies: { ...state.streamingReplies, [sessionId]: reply } }
+    }),
+
+  clearStreamingReply: (sessionId) =>
+    set((state) => {
+      if (!(sessionId in state.streamingReplies)) return {}
+      const streamingReplies = { ...state.streamingReplies }
+      delete streamingReplies[sessionId]
+      return { streamingReplies }
+    }),
   setError: (error) => set({ error }),
 
   setDraft: (sessionId, text) =>

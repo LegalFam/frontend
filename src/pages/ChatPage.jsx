@@ -32,7 +32,7 @@ export default function ChatPage() {
   const {
     sessions, sessionsNextCursor, sessionsLoading, sessionsLoadingMore,
     activeSessionId, messages, messagesNextCursors, messagesLoadingMore,
-    loading, processingStatus, connectionState, error, drafts,
+    loading, processingStatus, connectionState, error, drafts, streamingReplies,
     loadSessions, loadMoreSessions, loadMoreMessages, selectSession, startNewChat,
     sendMessage, retryMessage, rateMessage, deleteSession, renameSession, saveDraft,
   } = useChat()
@@ -47,6 +47,9 @@ export default function ChatPage() {
   const activeSessionProcessing = processingStatus?.processing &&
     processingStatus.chatSessionId &&
     processingStatus.chatSessionId === activeSessionId
+  const waitingForAssistant = Boolean(loading || activeSessionProcessing)
+  const streamingReply = activeSessionId ? streamingReplies?.[activeSessionId] : null
+  const streamingText = waitingForAssistant && streamingReply?.text ? streamingReply.text : ''
   const hasMoreMessages = Boolean(activeSessionId && messagesNextCursors[activeSessionId])
   const messagesLoadingMoreForActive = Boolean(activeSessionId && messagesLoadingMore[activeSessionId])
 
@@ -68,7 +71,7 @@ export default function ChatPage() {
   useEffect(() => {
     if (loadingOlderMessagesRef.current) return
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [activeSessionId, activeMessages.length, loading])
+  }, [activeSessionId, activeMessages.length, loading, streamingText.length])
 
   const closeSidebarOnMobile = () => {
     if (isMobile()) setSidebarOpen(false)
@@ -292,7 +295,21 @@ export default function ChatPage() {
                   </div>
                 </div>
               )}
-              {(loading || activeSessionProcessing) && <TypingIndicator />}
+              {streamingText ? (
+                <ChatMessage
+                  key={`streaming_${streamingReply.userMessageId}`}
+                  message={{
+                    id: `streaming_${streamingReply.userMessageId}`,
+                    role: 'ASSISTANT',
+                    content: streamingText,
+                    language: 'es',
+                    citations: [],
+                    isStreaming: true,
+                  }}
+                />
+              ) : (
+                waitingForAssistant && <TypingIndicator />
+              )}
               <div ref={messagesEndRef} />
             </div>
           </div>

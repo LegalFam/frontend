@@ -227,7 +227,10 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
   }
 
   return (
-    <div className={`${styles.wrap} ${isUser ? styles.user : styles.bot} ${isSystem ? styles.system : ''}`}>
+    <div
+      className={`${styles.wrap} ${isUser ? styles.user : styles.bot} ${isSystem ? styles.system : ''}`}
+      aria-busy={message.isStreaming ? true : undefined}
+    >
       <span className={styles.label}>
         {isUser ? t('chat.mensaje.tu') : isSystem ? t('chat.mensaje.sistema') : 'LegalFam'}
       </span>
@@ -394,7 +397,7 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
         </div>
       )}
 
-      {isBot && message.id && !message.id.startsWith('tmp_') && message.id !== 'welcome' && !message.isError && (
+      {isBot && message.id && !message.id.startsWith('tmp_') && message.id !== 'welcome' && !message.isError && !message.isStreaming && (
         <div className={styles.stars}>
           {[1, 2, 3, 4, 5].map((n) => (
             <button

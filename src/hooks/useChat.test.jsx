@@ -70,7 +70,12 @@ beforeEach(() => {
   chatService.getMessages.mockResolvedValue({ data: { content: [], nextCursor: null } })
   chatService.confirmReceipt.mockResolvedValue({ status: 204 })
   useAuthStore.setState({ accessToken: 'token-1', refreshToken: 'refresh-1', user: { name: 'Test' } })
-  useChatStore.setState({ activeSessionId: SESSION_ID, messages: {}, processingStatus: { processing: false } })
+  useChatStore.setState({
+    activeSessionId: SESSION_ID,
+    messages: {},
+    processingStatus: { processing: false },
+    streamingReplies: {},
+  })
 })
 
 afterEach(() => {
@@ -172,6 +177,90 @@ describe('useChat SSE connection', () => {
     await act(flush)
 
     expect(chatService.confirmReceipt).toHaveBeenCalledWith('error-1')
+  })
+})
+
+describe('useChat live answer', () => {
+  const draft = (text, sequence, userMessageId = 'user-1') =>
+    JSON.stringify({ sessionId: SESSION_ID, userMessageId, text, sequence })
+
+  it('shows the answer while it is written and replaces it with the final message', async () => {
+    const streams = []
+    globalThis.fetch = abortableFetch((url, signal) => {
+      const stream = openStream(signal)
+      streams.push(stream)
+      return Promise.resolve(stream.response)
+    })
+
+    renderChat()
+    await act(flush)
+    streams[0].push('assistant_draft', draft('Con lo que', 1))
+    streams[0].push('assistant_draft', draft('Con lo que cuentas', 2))
+    await act(flush)
+
+    expect(useChatStore.getState().streamingReplies[SESSION_ID]).toEqual({
+      userMessageId: 'user-1',
+      text: 'Con lo que cuentas',
+      sequence: 2,
+    })
+    expect(useChatStore.getState().messages[SESSION_ID] || []).toEqual([])
+
+    streams[0].push('assistant_message', JSON.stringify({ messageId: 'answer-1', message: 'Con lo que cuentas, final.' }))
+    await act(flush)
+
+    expect(useChatStore.getState().streamingReplies[SESSION_ID]).toBeUndefined()
+    expect(useChatStore.getState().messages[SESSION_ID].map((message) => message.content)).toEqual([
+      'Con lo que cuentas, final.',
+    ])
+  })
+
+  it('ignores a draft that arrives after a newer one', async () => {
+    const streams = []
+    globalThis.fetch = abortableFetch((url, signal) => {
+      const stream = openStream(signal)
+      streams.push(stream)
+      return Promise.resolve(stream.response)
+    })
+
+    renderChat()
+    await act(flush)
+    streams[0].push('assistant_draft', draft('texto mas largo', 3))
+    streams[0].push('assistant_draft', draft('texto', 2))
+    await act(flush)
+
+    expect(useChatStore.getState().streamingReplies[SESSION_ID].text).toBe('texto mas largo')
+  })
+
+  it('clears the live answer when the turn ends in an error', async () => {
+    const streams = []
+    globalThis.fetch = abortableFetch((url, signal) => {
+      const stream = openStream(signal)
+      streams.push(stream)
+      return Promise.resolve(stream.response)
+    })
+
+    renderChat()
+    await act(flush)
+    streams[0].push('assistant_draft', draft('Empezando', 1))
+    await act(flush)
+    streams[0].push('assistant_error', JSON.stringify({ messageId: 'error-1', errorCode: 'upstream_error' }))
+    await act(flush)
+
+    expect(useChatStore.getState().streamingReplies[SESSION_ID]).toBeUndefined()
+  })
+
+  it('drops a live answer left behind when processing ends without the final event', async () => {
+    useChatStore.setState({
+      processingStatus: { processing: true, chatSessionId: SESSION_ID },
+      streamingReplies: { [SESSION_ID]: { userMessageId: 'user-1', text: 'a medias', sequence: 4 } },
+    })
+    globalThis.fetch = abortableFetch((url, signal) => Promise.resolve(openStream(signal).response))
+    chatService.getProcessingStatus.mockResolvedValue({ data: { processing: false } })
+
+    renderChat()
+    await act(flush)
+
+    expect(useChatStore.getState().streamingReplies[SESSION_ID]).toBeUndefined()
   })
 })
 
