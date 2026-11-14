@@ -387,6 +387,7 @@ export default {
     costeTokens:
       'Sapa jiskt’awixa jaysawi wakichata ukhaw token pist’ayi: maya token jasa jiskt’awinakataki, kimsa tokenkama jaysawi kamachi jutuwinakana thaxsinti ukhaxa.',
     planActivo: 'Jakaski plan',
+    volverGratuito: 'Chanini janiw planar kutt’aña',
     cambiarPlan: 'Plan mayjt’ayaña',
   },
 
@@ -533,12 +534,16 @@ export default {
     abrirHistorial: 'Qillqata jist’araña jan ukax jist’antaña',
     irAlInicio: 'Qalltawiru saraña',
     cerrarSesion: 'Mistuña',
+    cerrarSesionTitulo: '¿Mistuñati?',
+    cerrarSesionTexto: 'Jiskt’añanak sarantañataki, correomampi contraseñamampi wasitat mantañamawa.',
     consulta: 'Jiskt’awi',
     consultaActual: 'Jichha jiskt’awi',
     tokensBadge: '{{plan}} · {{restantes}}/{{limite}} token',
+    tokensBadgeCorto: '{{restantes}}/{{limite}} token',
     verPlanYTokens: 'Plan ukat tokennaka uñjaña',
     reconectando: 'Aruskipawimpi wasitat chinuskiwa...',
     cargandoAnteriores: 'Nayrïri yatiyawinaka apkatasjki...',
+    cargandoConversacion: 'Aruskipäwi apkatasjki...',
     presetsLabel: 'Wal jiskt’at jiskt’awimpi qalltam',
     esperandoRespuesta:
       'Aka jiskt’awina jaysawipa wakichasktan. Tukuyani ukhaxa tokennakamaw machaqachasini, ukatxa yaqha khitañ atixtawa.',
@@ -599,7 +604,8 @@ export default {
       guardando: 'Imaskiwa...',
       comentarioPlaceholder: 'Jaysawit munañamarjama arsuwi',
       calificaPrimero: 'Arsuwima imantañataki mä chanichawi ajlliñma.',
-      guardarFeedback: 'Arsuwi imaña',
+      guardarComentario: 'Arsuwi imaña',
+      valoracionGuardada: 'Chaninchäwimax imatawa.',
       calificar_one: '{{n}} warawarampi chanichaña',
       calificar_other: '{{n}} warawarampi chanichaña',
 

@@ -1,5 +1,6 @@
 import { resolveApiError } from '@/utils/apiError'
 import { useT } from '@/i18n/translate'
+import { useEscapeKey } from '@/hooks/useEscapeKey'
 import styles from './CancelSubscriptionDialog.module.css'
 
 const formatPeriodEnd = (iso, textoPorDefecto) => {
@@ -11,6 +12,7 @@ const formatPeriodEnd = (iso, textoPorDefecto) => {
 
 export default function CancelSubscriptionDialog({ subscription, freeTokenLimit, error, onClose, onConfirm }) {
   const t = useT()
+  useEscapeKey(onClose)
 
   return (
     // Evita cerrar también el diálogo padre.

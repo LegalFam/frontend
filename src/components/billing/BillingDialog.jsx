@@ -11,6 +11,7 @@ import {
   planSlug,
 } from '@/utils/plans'
 import { usePaymentStore } from '@/store/paymentStore'
+import { useEscapeKey } from '@/hooks/useEscapeKey'
 import { useT } from '@/i18n/translate'
 import styles from './BillingDialog.module.css'
 
@@ -27,6 +28,7 @@ export default function BillingDialog({ onClose }) {
   const { plans, subscription, cancelSubscription } = usePaymentStore()
   const [cancelOpen, setCancelOpen] = useState(false)
   const [cancelError, setCancelError] = useState(null)
+  useEscapeKey(onClose, !cancelOpen)
 
   if (!subscription) return null
 
@@ -125,7 +127,7 @@ export default function BillingDialog({ onClose }) {
                 <small>{formatPlanTokens(plan)}</small>
                 {isCurrent && <em>{t('facturacion.planActivo')}</em>}
                 {isSelectable && <em>{t('facturacion.cambiarPlan')}</em>}
-                {isDowngrade && <em className={styles.downgradeLabel}>{t('config.suscripcion.darDeBaja')}</em>}
+                {isDowngrade && <em className={styles.downgradeLabel}>{t('facturacion.volverGratuito')}</em>}
                 {plan.code === 'FREE' && !isCurrent && subscription.cancelAtPeriodEnd && (
                   <em>{t('config.suscripcion.dadaDeBaja')}</em>
                 )}

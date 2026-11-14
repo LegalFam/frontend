@@ -192,6 +192,7 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
   const [comment, setComment] = useState(message.feedbackComment || '')
   const [feedbackOpen, setFeedbackOpen] = useState(false)
   const [ratingPending, setRatingPending] = useState(false)
+  const [ratingSaved, setRatingSaved] = useState(false)
   const [hover, setHover] = useState(0)
   const [sourcesOpen, setSourcesOpen] = useState(false)
   const spanishNextSteps = Array.isArray(message.nextSteps) ? message.nextSteps : []
@@ -216,9 +217,11 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
     const previous = rated
     setRated(stars)
     setRatingPending(true)
+    setRatingSaved(false)
     try {
       await onRate?.(message.id, stars, comment)
       setFeedbackOpen(false)
+      setRatingSaved(true)
     } catch {
       setRated(previous)
     } finally {
@@ -416,6 +419,9 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
             {t('chat.mensaje.comentario')}
           </button>
           {ratingPending && <span className={styles.ratingStatus}>{t('chat.mensaje.guardando')}</span>}
+          {ratingSaved && !ratingPending && (
+            <span className={styles.ratingStatus} role="status">{t('chat.mensaje.valoracionGuardada')}</span>
+          )}
         </div>
       )}
 
@@ -428,7 +434,7 @@ export default function ChatMessage({ message, onRate, onRetry, retryText, onUpg
             placeholder={t('chat.mensaje.comentarioPlaceholder')}
           />
           <button type="button" onClick={() => handleRate(rated)} disabled={ratingPending || !rated}>
-            {t('chat.mensaje.guardarFeedback')}
+            {t('chat.mensaje.guardarComentario')}
           </button>
           {!rated && <span className={styles.ratingStatus}>{t('chat.mensaje.calificaPrimero')}</span>}
         </div>

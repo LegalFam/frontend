@@ -387,6 +387,7 @@ export default {
     costeTokens:
       'Cada consulta descuenta tokens cuando la respuesta queda lista: 1 token para consultas simples y hasta 3 tokens cuando la respuesta se apoya en fuentes legales.',
     planActivo: 'Plan activo',
+    volverGratuito: 'Volver al plan gratuito',
     cambiarPlan: 'Cambiar plan',
   },
 
@@ -533,12 +534,16 @@ export default {
     abrirHistorial: 'Abrir o cerrar historial',
     irAlInicio: 'Ir al inicio',
     cerrarSesion: 'Cerrar sesión',
+    cerrarSesionTitulo: '¿Cerrar sesión?',
+    cerrarSesionTexto: 'Tendrás que volver a ingresar con tu correo y contraseña para seguir consultando.',
     consulta: 'Consulta',
     consultaActual: 'Consulta Actual',
     tokensBadge: '{{plan}} · {{restantes}}/{{limite}} tokens',
+    tokensBadgeCorto: '{{restantes}}/{{limite}} tokens',
     verPlanYTokens: 'Ver plan y tokens',
     reconectando: 'Reconectando con el chat...',
     cargandoAnteriores: 'Cargando mensajes anteriores...',
+    cargandoConversacion: 'Cargando conversación...',
     presetsLabel: 'Empieza con una consulta frecuente',
     esperandoRespuesta:
       'Estamos preparando la respuesta de esta consulta. Cuando termine, se actualizarán tus tokens y podrás enviar otra.',
@@ -599,7 +604,8 @@ export default {
       guardando: 'Guardando...',
       comentarioPlaceholder: 'Comentario opcional sobre la respuesta',
       calificaPrimero: 'Elige una calificación para guardar tu comentario.',
-      guardarFeedback: 'Guardar feedback',
+      guardarComentario: 'Guardar comentario',
+      valoracionGuardada: 'Valoración guardada.',
       calificar_one: 'Calificar {{n}} estrella',
       calificar_other: 'Calificar {{n}} estrellas',
 

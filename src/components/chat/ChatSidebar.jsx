@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import logoImg from '@/assets/logo-transparent.png'
 import { useAuth } from '@/hooks/useAuth'
+import ConfirmDialog from '@/components/common/ConfirmDialog'
 import { LEGAL_GLOSSARY } from './legalGlossary'
 import { useT } from '@/i18n/translate'
 import styles from './ChatSidebar.module.css'
@@ -35,9 +36,10 @@ export default function ChatSidebar({
   onSelectGlossaryTerm,
   activeGlossaryTerm,
   onClose,
+  onSignout,
 }) {
   const t = useT()
-  const { user, signout } = useAuth()
+  const { user } = useAuth()
   const [editingId, setEditingId] = useState(null)
   const [editValue, setEditValue] = useState('')
   const [deleteTarget, setDeleteTarget] = useState(null)
@@ -184,7 +186,7 @@ export default function ChatSidebar({
                 autoFocus
               />
             ) : (
-              <span className={styles.name}>{sessionLabel(s, t('chat.consulta'))}</span>
+              <span className={styles.name} title={sessionLabel(s, t('chat.consulta'))}>{sessionLabel(s, t('chat.consulta'))}</span>
             )}
 
             <div className={styles.actions}>
@@ -264,7 +266,7 @@ export default function ChatSidebar({
             <span className={styles.userEmail}>{user?.email || ''}</span>
           </div>
         </Link>
-        <button className={styles.logoutBtn} onClick={signout} title={t('chat.cerrarSesion')}>
+        <button className={styles.logoutBtn} onClick={onSignout} title={t('chat.cerrarSesion')}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
             <polyline points="16 17 21 12 16 7"/>
@@ -274,26 +276,13 @@ export default function ChatSidebar({
       </div>
 
       {deleteTarget && (
-        <div className={styles.confirmLayer} role="presentation" onMouseDown={() => setDeleteTarget(null)}>
-          <section
-            className={styles.confirmDialog}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="delete-session-title"
-            onMouseDown={(e) => e.stopPropagation()}
-          >
-            <h2 id="delete-session-title">{t('chat.sidebar.eliminarTitulo')}</h2>
-            <p>{t('chat.sidebar.eliminarTexto', { titulo: sessionLabel(deleteTarget, t('chat.consulta')) })}</p>
-            <div className={styles.confirmActions}>
-              <button className={styles.cancelBtn} onClick={() => setDeleteTarget(null)}>
-                {t('comun.cancelar')}
-              </button>
-              <button className={styles.deleteBtn} onClick={confirmDeleteSession}>
-                {t('chat.sidebar.eliminar')}
-              </button>
-            </div>
-          </section>
-        </div>
+        <ConfirmDialog
+          title={t('chat.sidebar.eliminarTitulo')}
+          text={t('chat.sidebar.eliminarTexto', { titulo: sessionLabel(deleteTarget, t('chat.consulta')) })}
+          confirmLabel={t('chat.sidebar.eliminar')}
+          onConfirm={confirmDeleteSession}
+          onClose={() => setDeleteTarget(null)}
+        />
       )}
     </aside>
   )

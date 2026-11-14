@@ -10,6 +10,7 @@ import ChatSidebar        from '@/components/chat/ChatSidebar'
 import ChatMessage        from '@/components/chat/ChatMessage'
 import ChatInput          from '@/components/chat/ChatInput'
 import BillingDialog      from '@/components/billing/BillingDialog'
+import ConfirmDialog      from '@/components/common/ConfirmDialog'
 import TypingIndicator    from '@/components/chat/TypingIndicator'
 import GlossaryEntry      from '@/components/chat/GlossaryEntry'
 import logoImg            from '@/assets/logo-transparent.png'
@@ -17,15 +18,18 @@ import LanguageSelector from '@/components/common/LanguageSelector'
 import { useT }           from '@/i18n/translate'
 import styles             from './ChatPage.module.css'
 
+const MOBILE_QUERY = '(max-width: 960px)'
+
 const CONVERSATION_PRESETS = ['alimentos', 'tenencia', 'filiacion', 'proteccion']
 
 export default function ChatPage() {
   const t = useT()
   const { signout } = useAuth()
   const { sessionId: routeSessionId } = useParams()
-  const isMobile = () => window.innerWidth <= 960
+  const isMobile = () => window.matchMedia(MOBILE_QUERY).matches
   const [sidebarOpen, setSidebarOpen] = useState(() => !isMobile())
   const [billingOpen, setBillingOpen] = useState(false)
+  const [signoutOpen, setSignoutOpen] = useState(false)
   const [glossaryTerm, setGlossaryTerm] = useState(null)
   const { subscription, refreshBilling } = usePaymentStore()
 
@@ -56,7 +60,21 @@ export default function ChatPage() {
   useEffect(() => {
     loadSessions()
     refreshBilling().catch(() => {})
+    // Otra pestaña pudo gastar tokens: el saldo se relee al volver a esta.
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') refreshBilling().catch(() => {})
+    }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => document.removeEventListener('visibilitychange', onVisible)
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Al cruzar el punto de corte el panel vuelve a su estado por defecto, para que el botón no quede desfasado.
+  useEffect(() => {
+    const query = window.matchMedia(MOBILE_QUERY)
+    const onChange = (e) => setSidebarOpen(!e.matches)
+    query.addEventListener('change', onChange)
+    return () => query.removeEventListener('change', onChange)
   }, [])
 
   useEffect(() => {
@@ -103,6 +121,13 @@ export default function ChatPage() {
         limite: subscription.monthlyTokenLimit,
       })
     : null
+  const tokenLabelShort = subscription
+    ? t('chat.tokensBadgeCorto', {
+        restantes: subscription.remainingTokens,
+        limite: subscription.monthlyTokenLimit,
+      })
+    : null
+  const historyLoading = Boolean(activeSessionId && !messages[activeSessionId] && !visibleError)
   const showPresets = !activeSessionId &&
     activeMessages.length === 1 &&
     activeMessages[0]?.id === 'welcome'
@@ -171,8 +196,10 @@ export default function ChatPage() {
               onClick={() => setBillingOpen(true)}
               title={t('chat.verPlanYTokens')}
               aria-describedby="token-cost-hint"
+              aria-label={tokenLabel}
             >
-              {tokenLabel}
+              <span className={styles.tokenLabelFull}>{tokenLabel}</span>
+              <span className={styles.tokenLabelShort}>{tokenLabelShort}</span>
               <svg
                 className={styles.tokenInfoIcon}
                 viewBox="0 0 24 24"
@@ -201,7 +228,7 @@ export default function ChatPage() {
         <LanguageSelector className={styles.topbarLanguage} />
         <LanguageSelector compact className={styles.topbarLanguageCompact} />
 
-        <button className={`icon-btn ${styles.topbarSignout}`} onClick={signout} title={t('chat.cerrarSesion')}>
+        <button className={`icon-btn ${styles.topbarSignout}`} onClick={() => setSignoutOpen(true)} title={t('chat.cerrarSesion')}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
             <polyline points="16 17 21 12 16 7"/>
@@ -230,6 +257,7 @@ export default function ChatPage() {
           onSelectGlossaryTerm={setGlossaryTerm}
           activeGlossaryTerm={glossaryTerm}
           onClose={closeSidebarOnMobile}
+          onSignout={() => setSignoutOpen(true)}
         />
 
         <div className={styles.main}>
@@ -248,6 +276,9 @@ export default function ChatPage() {
             onScroll={handleMessagesScroll}
           >
             <div className={styles.messagesInner}>
+              {historyLoading && (
+                <div className={styles.historyLoader}>{t('chat.cargandoConversacion')}</div>
+              )}
               {messagesLoadingMoreForActive && (
                 <div className={styles.historyLoader}>{t('chat.cargandoAnteriores')}</div>
               )}
@@ -327,6 +358,15 @@ export default function ChatPage() {
       </div>
 
       {billingOpen && <BillingDialog onClose={() => setBillingOpen(false)} />}
+      {signoutOpen && (
+        <ConfirmDialog
+          title={t('chat.cerrarSesionTitulo')}
+          text={t('chat.cerrarSesionTexto')}
+          confirmLabel={t('chat.cerrarSesion')}
+          onConfirm={signout}
+          onClose={() => setSignoutOpen(false)}
+        />
+      )}
     </div>
   )
 }

@@ -387,6 +387,7 @@ export default {
     costeTokens:
       'Sapa tapuyqa kutichiy listo kaptinmi tokenkunata pisiyachin: huk token pisi tapuypaq, kimsa tokenkama kutichiy kamachiy pukyukunapi sayaptin.',
     planActivo: 'Kawsaq plan',
+    volverGratuito: 'Mana chaniyuq planman kutiy',
     cambiarPlan: 'Planta tikray',
   },
 
@@ -533,12 +534,16 @@ export default {
     abrirHistorial: 'Qillqasqata kichay icha wichqay',
     irAlInicio: 'Qallariyman riy',
     cerrarSesion: 'Lluqsiy',
+    cerrarSesionTitulo: '¿Lluqsinkichu?',
+    cerrarSesionTexto: 'Tapukuyta qatipanaykipaq correoykiwan contraseñaykiwan yapamanta yaykunayki kanqa.',
     consulta: 'Tapuy',
     consultaActual: 'Kunan tapuy',
     tokensBadge: '{{plan}} · {{restantes}}/{{limite}} token',
+    tokensBadgeCorto: '{{restantes}}/{{limite}} token',
     verPlanYTokens: 'Planta, tokenkunatawan qhaway',
     reconectando: 'Rimanawan musuqmanta tinkichkan...',
     cargandoAnteriores: 'Ñawpaq willaykunata chaqnachkan...',
+    cargandoConversacion: 'Rimanakuyta chaqnachkan...',
     presetsLabel: 'Sapa kuti tapusqa tapuywan qallariy',
     esperandoRespuesta:
       'Kay tapuypa kutichiyninta wakichichkaniku. Tukuruptinmi tokenniykikuna musuqchakunqa, hinaspam hukta apachiyta atinki.',
@@ -599,7 +604,8 @@ export default {
       guardando: 'Waqaychachkan...',
       comentarioPlaceholder: 'Kutichiymanta munaptiyki rimay',
       calificaPrimero: 'Rimayniykita waqaychanaykipaq huk chaninchayta akllay.',
-      guardarFeedback: 'Rimasqata waqaychay',
+      guardarComentario: 'Rimasqata waqaychay',
+      valoracionGuardada: 'Chaninchasqayki waqaychasqa.',
       calificar_one: '{{n}} quyllurwan chaninchay',
       calificar_other: '{{n}} quyllurwan chaninchay',
 

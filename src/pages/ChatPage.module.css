@@ -40,6 +40,8 @@
 .tokenInfoIcon { width: 20px; height: 20px; flex-shrink: 0; opacity: 0.75; }
 .tokenBadge:hover .tokenInfoIcon { opacity: 1; }
 
+.tokenLabelShort { display: none; }
+
 .tokenControl { position: relative; display: flex; align-items: center; flex-shrink: 0; }
 
 .tooltip {
@@ -137,10 +139,9 @@
 }
 @media (max-width: 960px) {
   .topbarLogoText { display: none; }
-  .tokenBadge {
-    max-width: 165px; overflow: hidden; text-overflow: ellipsis;
-    padding: 6.5px 10px;
-  }
+  .tokenBadge { padding: 6.5px 10px; white-space: nowrap; }
+  .tokenLabelFull { display: none; }
+  .tokenLabelShort { display: inline; }
   .messages { padding: 1.25rem 0.9375rem; }
   .topbar { padding: 0 0.9375rem; gap: 10px; }
   .backdrop {

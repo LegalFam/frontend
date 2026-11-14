@@ -11,12 +11,15 @@ import PrivacySection from '@/components/landing/PrivacySection'
 import LoginModal       from '@/components/auth/LoginModal'
 import RegisterModal    from '@/components/auth/RegisterModal'
 import ForgotPasswordModal from '@/components/auth/ForgotPasswordModal'
+import ConfirmDialog    from '@/components/common/ConfirmDialog'
 import { useAuth }      from '@/hooks/useAuth'
+import { useT }         from '@/i18n/translate'
 import { usePaymentStore } from '@/store/paymentStore'
 
 const AUTH_MODALS = ['login', 'register', 'forgot']
 
 export default function LandingPage() {
+  const t = useT()
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const { isAuthenticated, signout } = useAuth()
@@ -26,6 +29,7 @@ export default function LandingPage() {
     AUTH_MODALS.includes(requestedModal) ? requestedModal : null
   ) // 'login' | 'register' | 'forgot' | null
   const [forgotEmail, setForgotEmail] = useState('')
+  const [signoutOpen, setSignoutOpen] = useState(false)
 
   useEffect(() => {
     if (!searchParams.has('auth')) return
@@ -50,7 +54,7 @@ export default function LandingPage() {
         onLoginClick={()    => setModal('login')}
         onRegisterClick={() => isAuthenticated ? navigate('/chat') : setModal('register')}
         onChatClick={() => navigate('/chat')}
-        onSignoutClick={signout}
+        onSignoutClick={() => setSignoutOpen(true)}
       />
 
       <main>
@@ -91,6 +95,15 @@ export default function LandingPage() {
           onClose={()          => setModal(null)}
           onSwitchToLogin={() => setModal('login')}
           initialEmail={forgotEmail}
+        />
+      )}
+      {signoutOpen && (
+        <ConfirmDialog
+          title={t('chat.cerrarSesionTitulo')}
+          text={t('chat.cerrarSesionTexto')}
+          confirmLabel={t('nav.cerrarSesion')}
+          onConfirm={() => { setSignoutOpen(false); signout() }}
+          onClose={() => setSignoutOpen(false)}
         />
       )}
     </>
