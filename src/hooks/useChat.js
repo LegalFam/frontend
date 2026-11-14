@@ -12,8 +12,9 @@ const BACKOFF_MS = [1000, 2000, 5000, 10000, 30000]
 const SSE_IDLE_TIMEOUT_MS = 45000
 const SSE_WATCHDOG_INTERVAL_MS = 5000
 
-const titleFromText = (text) =>
-  text.slice(0, 40) + (text.length > 40 ? '...' : '')
+const MAX_TITLE_LENGTH = 80
+
+const titleFromText = (text) => text.slice(0, MAX_TITLE_LENGTH)
 
 const welcomeMessage = (name) => ({
   id: 'welcome',
