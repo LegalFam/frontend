@@ -630,7 +630,7 @@ export function useChat() {
       stop()
       const controller = new AbortController()
       abortRef.current = controller
-      store.setConnectionState('reconnecting')
+      store.setConnectionState(retryRef.current > 0 ? 'reconnecting' : 'connecting')
 
       // Heartbeat cada 15 s: tres intervalos sin bytes = conexión muerta.
       let lastActivityAt = Date.now()
@@ -741,6 +741,7 @@ export function useChat() {
       }
     }
 
+    retryRef.current = 0
     connect()
 
     return () => {
