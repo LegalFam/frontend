@@ -11,5 +11,11 @@ export default defineConfig({
   },
   test: {
     environment: 'jsdom',
+    coverage: {
+      provider: 'v8',
+      include: ['src/**/*.{js,jsx}'],
+      exclude: ['src/main.jsx', 'src/i18n/locales/**', 'src/**/*.test.{js,jsx}'],
+      reporter: ['text-summary', 'html'],
+    },
   },
 })
